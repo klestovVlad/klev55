@@ -30,7 +30,6 @@
     "react-dom": "^19.3.0",
     "react-router-dom": "^7.18.4",
     "suncalc": "^2.0.2",
-    "vaul": "^1.1.2",
     "zustand": "^5.0.15"
   },
   "devDependencies": {

@@ -1,32 +1,77 @@
-import { type ReactNode } from 'react';
-import { Drawer } from 'vaul';
+import { useEffect, useRef, useState, type ReactNode, type PointerEvent as RPointerEvent } from 'react';
 import { useDesktop } from '@/lib/useMedia';
 import './sheet.css';
 
+export type SnapKey = 'peek' | 'half' | 'full';
+/** Visible height of the sheet as a fraction of the viewport (the tab bar sits below). */
+export const SNAPS: Record<SnapKey, number> = { peek: 0.34, half: 0.62, full: 0.96 };
+
 interface Props {
   children: ReactNode;
-  snap: number | string | null;
-  onSnap: (s: number | string | null) => void;
+  snap: SnapKey;
+  onSnap: (s: SnapKey) => void;
 }
 
-const SNAPS = [0.34, 0.62, 0.96];
-export const SHEET_SNAPS = SNAPS;
-
-/** Bottom sheet on mobile (vaul, non-modal so the map stays live), side panel on desktop. */
+/**
+ * Bottom sheet on mobile, side panel on desktop. Three snap points; drag on the
+ * handle/header area, tap the handle to cycle. Body scrolls independently.
+ * Hand-rolled instead of a library so the behaviour is identical on every device.
+ */
 export function Sheet({ children, snap, onSnap }: Props) {
   const desktop = useDesktop();
+  const [vh, setVh] = useState(() => (typeof window !== 'undefined' ? window.innerHeight : 800));
+  const [dragY, setDragY] = useState<number | null>(null);
+  const start = useRef<{ y: number; t: number; base: number } | null>(null);
+
+  useEffect(() => {
+    const h = () => setVh(window.innerHeight);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+
   if (desktop) return <aside className="panel">{children}</aside>;
+
+  const visible = (k: SnapKey) => Math.round(vh * SNAPS[k]);
+  const current = dragY ?? visible(snap);
+  const onDown = (e: RPointerEvent) => {
+    start.current = { y: e.clientY, t: Date.now(), base: visible(snap) };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+  const onMove = (e: RPointerEvent) => {
+    if (!start.current) return;
+    const next = Math.max(visible('peek') * 0.6, Math.min(visible('full'), start.current.base - (e.clientY - start.current.y)));
+    setDragY(next);
+  };
+  const onUp = (e: RPointerEvent) => {
+    if (!start.current) return;
+    const dy = start.current.y - e.clientY; // up = positive
+    const dt = Math.max(1, Date.now() - start.current.t);
+    const v = dy / dt; // px per ms
+    const end = start.current.base + dy;
+    start.current = null;
+    setDragY(null);
+    const keys: SnapKey[] = ['peek', 'half', 'full'];
+    if (Math.abs(dy) < 6) {
+      // tap on the handle: cycle
+      onSnap(keys[(keys.indexOf(snap) + 1) % keys.length]);
+      return;
+    }
+    if (Math.abs(v) > 0.6) {
+      const i = keys.indexOf(snap);
+      onSnap(keys[Math.max(0, Math.min(2, i + (v > 0 ? 1 : -1)))]);
+      return;
+    }
+    let best: SnapKey = 'peek';
+    for (const k of keys) if (Math.abs(visible(k) - end) < Math.abs(visible(best) - end)) best = k;
+    onSnap(best);
+  };
+
   return (
-    <Drawer.Root open modal={false} dismissible={false} snapPoints={SNAPS} activeSnapPoint={snap} setActiveSnapPoint={onSnap} snapToSequentialPoint>
-      <Drawer.Portal>
-        <Drawer.Content className="sheet" aria-label="Панель мест">
-          <div className="sheet__handle-wrap">
-            <Drawer.Handle className="sheet__handle" />
-          </div>
-          <Drawer.Title className="visually-hidden">Панель мест</Drawer.Title>
-          <div className="sheet__body">{children}</div>
-        </Drawer.Content>
-      </Drawer.Portal>
-    </Drawer.Root>
+    <section className={`sheet${dragY != null ? ' sheet--dragging' : ''}`} style={{ transform: `translateY(calc(100% - ${current}px))` }} aria-label="Панель мест">
+      <div className="sheet__grip" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} role="button" tabIndex={0} aria-label={snap === 'full' ? 'Свернуть панель' : 'Развернуть панель'} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSnap(snap === 'full' ? 'peek' : snap === 'peek' ? 'half' : 'full'); } }}>
+        <span className="sheet__handle" />
+      </div>
+      <div className="sheet__body">{children}</div>
+    </section>
   );
 }

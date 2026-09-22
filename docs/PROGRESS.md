@@ -34,3 +34,9 @@ Done: all 28 species (content + photos, 28/28 licensed), water.geojson (1777 fea
 In progress: 2 spot-author agents (content/spots/*.json); build-water rerun for KZ jurisdiction (name:ru fix).
 Next: build-spots (nearest water ≤300 m, OSRM), then screenshots at 390×844 / 1440×900, fix layout; qa-data.ts; PWA check; README, DEMO.md; Playwright smoke; Lighthouse.
 Known: overpass-api.de blocks our IP; using overpass.openstreetmap.fr. No live hydrology (documented in UI). Photo licenses include CC BY-SA 2.5/3.0/4.0, CC BY 3.0, PD — no NC so far.
+
+## Update 2026-09-22 16:00
+
+Done: spots batch 2 (26 files), pipeline build-spots verified (OSRM ok), KZ mask (SKO + Pavlodar), model recalibrated (base 38), perf split (maplibre chunk 1.05 MB, index 0.4 MB, lazy screens), README, DEMO.md, CI workflows, Playwright config (Chromium mobile/desktop), Lighthouse script.
+In progress: spots batch 1 agent (city/south/paid, ~30 files); e2e mobile run.
+Next: build-spots on the full set → qa → e2e both projects → lighthouse → fix findings → final PROGRESS/commit. Then manual content review pass (species texts) and screenshot pass 390/1440 light+dark.

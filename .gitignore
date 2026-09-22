@@ -7,3 +7,5 @@ scripts/.cache
 qa/screenshots/*.png
 *.log
 public/maplibre
+test-results
+playwright-report

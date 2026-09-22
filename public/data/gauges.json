@@ -1,0 +1,111 @@
+{
+ "meta": {
+  "generated_at": "2026-09-22T11:08:51.090Z",
+  "sources": [
+   "Open-Meteo archive + forecast (CC BY 4.0) — расчёт льда",
+   "allrivers.info — последние опубликованные измерения гидропостов"
+  ],
+  "license": "CC BY 4.0 (Open-Meteo); измерения — по условиям allrivers.info",
+  "notes": "Живых данных об уровне Иртыша в открытом доступе нет (АИС ГМВО закрыта, allrivers не обновляется с 2024). Лёд — расчёт по морозам, не измерение."
+ },
+ "ice": [
+  {
+   "station": "omsk",
+   "kind": "river",
+   "state": "none",
+   "ice_on": null,
+   "thickness_cm": null,
+   "fdd": 0,
+   "days_since_ice_on": null,
+   "est_ice_off": null,
+   "note": "Льда нет: устойчивых морозов в этом сезоне ещё не было.",
+   "provenance": "generated"
+  },
+  {
+   "station": "krutinka",
+   "kind": "lake",
+   "state": "none",
+   "ice_on": null,
+   "thickness_cm": null,
+   "fdd": 0,
+   "days_since_ice_on": null,
+   "est_ice_off": null,
+   "note": "Льда нет: устойчивых морозов в этом сезоне ещё не было.",
+   "provenance": "generated"
+  },
+  {
+   "station": "cherlak",
+   "kind": "river",
+   "state": "none",
+   "ice_on": null,
+   "thickness_cm": null,
+   "fdd": 0,
+   "days_since_ice_on": null,
+   "est_ice_off": null,
+   "note": "Льда нет: устойчивых морозов в этом сезоне ещё не было.",
+   "provenance": "generated"
+  }
+ ],
+ "items": [
+  {
+   "id": "irtysh-omsk",
+   "name": "Иртыш — Омск",
+   "river": "Иртыш",
+   "coords": [
+    73.37,
+    54.98
+   ],
+   "source": "allrivers.info (Центр регистра и кадастра)",
+   "source_url": "https://allrivers.info/gauge/irtysh-omsk",
+   "level_cm": 211,
+   "level_trend_cm_24h": 0,
+   "water_temp_c": null,
+   "ice": null,
+   "measured_at": "2024-05-13T00:00:00+06:00",
+   "history": [],
+   "provenance": "measured"
+  },
+  {
+   "id": "irtyish-rp-cherlak",
+   "name": "Иртыш — Черлак",
+   "river": "Иртыш",
+   "coords": [
+    74.8,
+    54.16
+   ],
+   "source": "allrivers.info (Центр регистра и кадастра)",
+   "source_url": "https://allrivers.info/gauge/irtyish-rp-cherlak",
+   "level_cm": 538,
+   "level_trend_cm_24h": 0,
+   "water_temp_c": null,
+   "ice": null,
+   "measured_at": "2024-05-13T00:00:00+06:00",
+   "history": [],
+   "provenance": "measured"
+  },
+  {
+   "id": "irtyish-tara",
+   "name": "Иртыш — Тара",
+   "river": "Иртыш",
+   "coords": [
+    74.37,
+    56.9
+   ],
+   "source": "allrivers.info (Центр регистра и кадастра)",
+   "source_url": "https://allrivers.info/gauge/irtyish-tara",
+   "level_cm": 496,
+   "level_trend_cm_24h": 0,
+   "water_temp_c": null,
+   "ice": null,
+   "measured_at": "2024-05-13T00:00:00+06:00",
+   "history": [],
+   "provenance": "measured"
+  }
+ ],
+ "thresholds_cm": {
+  "person": 7,
+  "ice_fishing_gims": 10,
+  "group_crossing": 15,
+  "car": 30
+ }
+}

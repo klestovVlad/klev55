@@ -1,7 +1,7 @@
 import { cachedFetch } from './cache';
 
 // lz4 mirror has been the reliable one; the main host answers 504 "too busy" under load.
-const ENDPOINTS = ['https://lz4.overpass-api.de/api/interpreter', 'https://overpass-api.de/api/interpreter'];
+const ENDPOINTS = ['https://overpass.openstreetmap.fr/api/interpreter', 'https://lz4.overpass-api.de/api/interpreter', 'https://overpass-api.de/api/interpreter'];
 let lastCall = 0;
 const MIN_GAP_MS = 4000; // rate limit: 2 slots per IP; be polite
 

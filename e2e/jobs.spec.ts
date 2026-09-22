@@ -121,3 +121,41 @@ test('10. gear glossary: list, card, and a linked term on a species page', async
   await expect(page.locator('.gpop').getByText(/Подробнее в словаре/)).toBeVisible();
   await shot(page, '10-gear');
 });
+
+test('11. a dropped pin opens the point estimate with a chance range, rules and gear', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForFunction(() => typeof (window as any).__dropPin === 'function' && !!(window as any).__map?.getLayer('water-fill'), null, { timeout: 30_000 });
+  await page.waitForTimeout(800);
+  await page.evaluate(() => (window as any).__dropPin(73.2, 55.3)); // on the Irtysh north of Omsk, no described spot under it
+  await expect(page.locator('.here__verdict')).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator('.ss__title')).toContainText('Иртыш');
+  await expect(page.locator('.ss__sp').first()).toContainText('≈'); // a range, never a point value
+  await expect(page.locator('.pin-marker')).toBeVisible();
+  await page.getByRole('tab', { name: 'Правила сегодня' }).click();
+  await expect(page.locator('.rules-today .callout').first()).toBeVisible();
+  await page.getByRole('tab', { name: 'Что брать' }).click();
+  await expect(page.locator('.gadv__it').first()).toBeVisible();
+  await page.getByRole('button', { name: 'Сохранить как моё место' }).click();
+  await page.getByRole('button', { name: 'Сохранить', exact: true }).click();
+  await expect(page.locator('.here__mine')).toBeVisible();
+  await page.getByRole('button', { name: '‹ Все места' }).click();
+  await expect(page.getByRole('heading', { name: 'Мои места' })).toBeVisible();
+  await shot(page, '11-pin');
+});
+
+test('12. marking decoder and my box: a rod code is explained, an owned item gets a tick', async ({ page }) => {
+  await page.goto('/gear');
+  const input = page.locator('#decoder-input');
+  await expect(input).toBeVisible({ timeout: 20_000 });
+  await input.fill('S762ML-F 5-21g 70SP-MR');
+  await expect(page.locator('.decoder__parts li')).toHaveCount(3);
+  await expect(page.locator('.decoder__parts')).toContainText(/суспендер/);
+  await input.fill('XXT-C');
+  await expect(page.locator('.decoder__none')).toContainText(/название модели/);
+  await page.goto('/gear/dzhig');
+  await page.getByRole('button', { name: '+ В мой ящик' }).click();
+  await expect(page.getByRole('button', { name: '✓ В моём ящике' })).toBeVisible();
+  await page.goto('/species/esox-lucius');
+  await expect(page.locator('h1')).toContainText('Щука');
+  await shot(page, '12-decoder');
+});

@@ -18,6 +18,8 @@ interface State {
   panelOpen: boolean;
   /** Selected water osm_id (opens the water sheet). */
   waterId: number | null;
+  /** A dropped pin [lon, lat]: the «точка на воде» estimate is built for it (with waterId when it lies on known water). */
+  pin: [number, number] | null;
   layers: { infra: boolean; observations: boolean; satellite: boolean; zones: boolean; zonesAll: boolean; weather: boolean; heat: boolean; particles: boolean };
   theme: Theme;
   set: (p: Partial<State>) => void;
@@ -42,6 +44,7 @@ export const useStore = create<State>((set) => ({
   spotId: null,
   panelOpen: false,
   waterId: null,
+  pin: null,
   layers: { infra: true, observations: false, satellite: false, zones: true, zonesAll: false, weather: true, heat: true, particles: false },
   theme: savedTheme,
   set: (p) => set(p),

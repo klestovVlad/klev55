@@ -66,3 +66,15 @@ Base 38 so that a top spot (+10), peak month (+16), dawn hour (+15) and stable p
 - Water clarity is inferred from level trend only.
 - Ice-on / ice-off dates come from a freezing-degree-day estimate (see `scripts/ice.ts`), which is itself `generated`.
 - Weights are expert priors, not fitted. Tune them in one file.
+
+## Point estimate («точка на воде», `src/model/here.ts`)
+
+For an arbitrary coordinate the model has no authored spot. It builds one:
+
+1. **Class of water** from the tapped OSM feature (`river|stream|canal|riverbank|oxbow → river`, `lake|pond|reservoir|wetland → lake`, nothing → unknown). The class picks the rules window (rivers 20.04–20.05, lakes 25.04–25.05), the ice station kind and the wind penalty, exactly as for authored spots.
+2. **Neighbours**: described places of the same class within 30 km, nearest 5, weighted 1/d². Their species ranks, methods, seasons and `best_months` (months carrying ≥ ½ of the weight) are folded into a synthesized `Spot` (`confidence 0`, `provenance generated`).
+3. **Species**: union of neighbours (weight = rank/5 × share of neighbourhood), GBIF/iNaturalist records within 20 km (+0.6 × min(n,5)/5) and habitat match by water class (+0.3 common / +0.15 local; rare, banned, bait-sized and paid-pond-only species are skipped). Banned species still appear when observed, with score 0.
+4. **Chance range**: `chance()` run with the species' rank set to the neighbours' minimum and maximum; a unanimous or single neighbour still yields ±5 around the mean-rank run. No same-class neighbour → no chance shown, the sheet says why. Best hours come from the mean-rank run.
+5. **Weather** is the nearest grid cell (distance shown), **drive time** is the straight-line estimate the planner already uses (`km × 1.3 / 70 km/h`).
+
+Everything on the sheet is labelled with its source; the UI never prints a single number for a point.

@@ -19,6 +19,7 @@ import { chanceColor, dayShort, driveText, MONTHS_SHORT, timeHM } from '@/lib/fo
 import { startOfOmskDay, addHours } from '@/lib/time';
 import './spotsheet.css';
 import { GearText, GearList } from '@/components/GearText';
+import { GearAdvice } from '@/components/GearAdvice';
 
 export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => void }) {
   const d = useAllData();
@@ -84,6 +85,7 @@ export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => vo
         </Tabs.List>
 
         <Tabs.Content value="how" className="tabs__panel">
+          {chosen && <GearAdvice species={chosen} date={date} ice={hydro.ice_on} spotMethods={spotSp?.methods} />}
           {chosen && ctx && (
             <>
               <h3>Когда клюёт {chosen.names.ru.toLowerCase()}: {dayShort(day0)} и {dayShort(addHours(day0, 24))}</h3>
@@ -125,7 +127,7 @@ export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => vo
                     </dl>
                   </details>
                 ))}
-              <p className="caption"><Link to={`/species/${chosen.id}`}>Всё про {chosen.names.ru.toLowerCase()} →</Link></p>
+              <p className="caption"><Link to={`/species/${chosen.id}`}>{chosen.names.ru}: карточка вида →</Link></p>
             </div>
           )}
           <p className="caption">Лучшие месяцы здесь: {spot.best_months.map((m) => MONTHS_SHORT[m - 1]).join(', ')}. {spot.best_hours_note} <ProvenanceBadge kind="generated" /></p>

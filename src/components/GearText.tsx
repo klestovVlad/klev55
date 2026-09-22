@@ -7,35 +7,21 @@ import * as Popover from '@radix-ui/react-popover';
 import { Link } from 'react-router-dom';
 import { useGear } from '@/data/load';
 import type { GearItem } from '@/data/types';
+import { buildGearIndex, type GearIndex } from '@/lib/gearIndex';
 import './geartext.css';
 
-interface Index {
-  re: RegExp | null;
-  byAlias: Map<string, GearItem>;
-}
-
-function buildIndex(items: GearItem[]): Index {
-  const byAlias = new Map<string, GearItem>();
-  for (const g of items) for (const a of [g.name, ...g.aliases]) byAlias.set(a.toLowerCase(), g);
-  const aliases = [...byAlias.keys()].sort((a, b) => b.length - a.length).map((a) => a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  if (!aliases.length) return { re: null, byAlias };
-  // Cyrillic-aware word boundaries.
-  const re = new RegExp(`(?<![а-яёa-z])(${aliases.join('|')})(?![а-яёa-z])`, 'giu');
-  return { re, byAlias };
-}
-
-export function useGearIndex(): Index {
+export function useGearIndex(): GearIndex {
   const gear = useGear();
-  return useMemo(() => buildIndex(gear.data?.items ?? []), [gear.data]);
+  return useMemo(() => buildGearIndex(gear.data?.items ?? []), [gear.data]);
 }
 
-export function GearTerm({ item, children }: { item: GearItem; children: ReactNode }) {
+export function GearTerm({ item, children, className = 'gterm' }: { item: GearItem; children: ReactNode; className?: string }) {
   const [open, setOpen] = useState(false);
   const base = import.meta.env.BASE_URL;
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
-        <button type="button" className="gterm">{children}</button>
+        <button type="button" className={className}>{children}</button>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content className="gpop" sideOffset={6} collisionPadding={12}>

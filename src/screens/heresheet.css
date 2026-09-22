@@ -1,0 +1,6 @@
+.here__verdict { font-family: var(--font-voice); font-size: var(--t-lead); line-height: 1.35; margin: 6px 0 10px; }
+.here__mine { color: var(--river); font-weight: 500; }
+.here__save { margin: 16px 0 4px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.here__form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; width: 100%; }
+.here__input { flex: 1; min-width: 160px; min-height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r-control); background: var(--surface); color: var(--ink); font-size: var(--t-body); }
+.here__input:focus-visible { outline: 2px solid var(--river); outline-offset: 1px; }

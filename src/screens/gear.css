@@ -14,3 +14,37 @@
 .gear-scheme { width: 100%; max-width: 420px; aspect-ratio: 3 / 2; object-fit: contain; padding: 12px; background: var(--wash); border-radius: var(--r-control); margin: 8px 0; }
 :root[data-theme='dark'] .gear-card__scheme, :root[data-theme='dark'] .gear-scheme, :root[data-theme='dark'] .gpop__scheme { filter: invert(0.9) hue-rotate(180deg); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .gear-card__scheme, :root:not([data-theme='light']) .gear-scheme, :root:not([data-theme='light']) .gpop__scheme { filter: invert(0.9) hue-rotate(180deg); } }
+
+/* Marking decoder */
+.decoder { margin: 4px 0 16px; }
+.decoder__label { display: block; font-weight: 600; margin-bottom: 6px; }
+.decoder__input { width: 100%; min-height: var(--tap); padding: 0 14px; border: 1px solid var(--line); border-radius: var(--r-control); background: var(--surface); color: var(--ink); font-size: var(--t-body); font-variant-numeric: tabular-nums; }
+.decoder__input:focus-visible { outline: 2px solid var(--river); outline-offset: 1px; }
+.decoder__examples { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.decoder__ex { border: 0; cursor: pointer; font-variant-numeric: tabular-nums; color: var(--river); }
+.decoder__parts { list-style: none; padding: 0; margin: 10px 0 4px; }
+.decoder__parts li { padding: 8px 0; border-top: 1px solid var(--line); }
+.decoder__parts li:last-child { border-bottom: 1px solid var(--line); }
+.decoder__head { margin-bottom: 2px; }
+.decoder__detail { font-size: var(--t-caption); line-height: 1.45; }
+.decoder__none { margin: 10px 0 4px; }
+.decoder__links { margin: 8px 0 4px; font-size: var(--t-caption); }
+.decoder__legend { margin-top: 10px; font-size: var(--t-caption); }
+.decoder__legend summary { color: var(--river); cursor: pointer; min-height: 32px; display: flex; align-items: center; }
+.decoder__legend .kv { margin: 8px 0; }
+
+/* Determination key */
+.gkey-wrap { margin: 4px 0 12px; border-bottom: 1px solid var(--line); }
+.gkey { padding: 6px 0 4px; }
+.gkey__q { font-family: var(--font-voice); font-size: var(--t-lead); margin: 4px 0 6px; }
+.gkey__opt { min-height: 48px; }
+.gkey__nav { display: flex; gap: 8px; margin-top: 10px; }
+.gkey__box { margin-top: 6px; }
+.gkey__box--on { color: var(--reed); }
+.gkey .gear-grid { margin-top: 4px; }
+
+/* My box */
+.gear__filters { margin: 4px 0 8px; }
+.gear-card { position: relative; }
+.gear-card__own { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; background: var(--reed); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 600; }
+.gear__box-note { display: inline-block; margin-top: 4px; }

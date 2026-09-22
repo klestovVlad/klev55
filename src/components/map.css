@@ -18,3 +18,8 @@
 .map details.maplibregl-ctrl-attrib:not(:focus-within):not(:hover) .maplibregl-ctrl-attrib-inner { display: none; }
 .map details.maplibregl-ctrl-attrib:not(:focus-within):not(:hover) { padding: 0; }
 .wind-canvas { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+
+/* The dropped pin (DOM marker): ink pin with a surface-coloured outline, no shadow (one elevation system). */
+.pin-marker { color: var(--ink); width: 24px; height: 32px; pointer-events: none; }
+.pin-marker svg { display: block; }
+.score--range { font-size: 13px; min-width: 60px; }

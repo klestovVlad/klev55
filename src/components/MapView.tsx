@@ -7,6 +7,7 @@ maplibregl.setWorkerUrl(`${import.meta.env.BASE_URL}maplibre/maplibre-gl-worker.
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { FeatureCollection } from 'geojson';
 import { useStore } from '@/app/store';
+import { usePins } from '@/data/pins';
 import { useWater, useZones, useObservations, useAdmin, useInfra } from '@/data/load';
 import { infraIcon, INFRA_LABEL } from './infraIcons';
 import { useSpotScores } from '@/model/useScores';
@@ -63,6 +64,9 @@ export function MapView() {
   useHeatLayer(mapRef.current, loaded, dark, scores, layers.heat);
   const set = useStore((s) => s.set);
   const spotId = useStore((s) => s.spotId);
+  const pin = useStore((s) => s.pin);
+  const pins = usePins((s) => s.pins);
+  const markerRef = useRef<maplibregl.Marker | null>(null);
 
   // Create map once.
   useEffect(() => {
@@ -338,7 +342,7 @@ export function MapView() {
       m.addLayer({ id: 'spots-label', type: 'symbol', source: 'spots', minzoom: 8.5, filter: ['!', ['has', 'point_count']], layout: { 'text-field': ['get', 'name'], 'text-size': 12, 'text-font': ['Noto Sans Regular'], 'text-offset': [0, 1.3], 'text-anchor': 'top', 'text-optional': true }, paint: { 'text-color': dark ? '#e6ecef' : '#14232b', 'text-halo-color': dark ? '#0f1a20' : '#ffffff', 'text-halo-width': 1.4 } });
       m.on('click', 'spots', (e) => {
         const id = e.features?.[0]?.properties?.id as string | undefined;
-        if (id) set({ spotId: id, waterId: null });
+        if (id) set({ spotId: id, waterId: null, pin: null });
       });
       m.on('click', 'clusters', (e) => {
         const f = e.features?.[0];
@@ -367,15 +371,16 @@ export function MapView() {
           });
         });
       });
+      // A tap on water opens the point estimate AT the tap (not the body's centroid).
       m.on('click', 'water-fill', (e) => {
-        if (m.queryRenderedFeatures(e.point, { layers: ['spots', 'clusters'] }).length) return;
+        if (m.queryRenderedFeatures(e.point, { layers: ['spots', 'clusters', 'mypins'].filter((l) => m.getLayer(l)) }).length) return;
         const p = e.features?.[0]?.properties as any;
-        if (p?.osm_id) set({ waterId: p.osm_id, spotId: null });
+        if (p?.osm_id) set({ waterId: p.osm_id, spotId: null, pin: [e.lngLat.lng, e.lngLat.lat] });
       });
       m.on('click', 'water-hit', (e) => {
-        if (m.queryRenderedFeatures(e.point, { layers: ['spots', 'clusters', 'water-fill'] }).length) return;
+        if (m.queryRenderedFeatures(e.point, { layers: ['spots', 'clusters', 'water-fill', 'mypins'].filter((l) => m.getLayer(l)) }).length) return;
         const p = e.features?.[0]?.properties as any;
-        if (p?.osm_id) set({ waterId: p.osm_id, spotId: null });
+        if (p?.osm_id) set({ waterId: p.osm_id, spotId: null, pin: [e.lngLat.lng, e.lngLat.lat] });
       });
       const onZone = (e: maplibregl.MapMouseEvent & { features?: any[] }) => {
         if (m.queryRenderedFeatures(e.point, { layers: ['spots', 'clusters'] }).length) return;
@@ -403,6 +408,139 @@ export function MapView() {
       }
     }
   }, [loaded, scores, dark, spotId, set]);
+
+  // Drop a pin anywhere: long press (touch or mouse) or right click. Water under the finger (±14 px) becomes the body.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !loaded || (m as any)._klevPinHandlers) return;
+    (m as any)._klevPinHandlers = true;
+    const drop = (lngLat: maplibregl.LngLat, pt: maplibregl.Point) => {
+      const layers = ['spots', 'clusters', 'mypins'].filter((l) => m.getLayer(l));
+      if (layers.length && m.queryRenderedFeatures(pt, { layers }).length) return; // a real place is under the finger: its own handler opens it
+      // Which water is «under the finger»: a polygon exactly at the point wins, then a named body, then rivers over streams.
+      const wl = ['water-fill', 'water-hit'].filter((l) => m.getLayer(l));
+      const exact = new Set(wl.length ? m.queryRenderedFeatures(pt, { layers: wl }).map((f) => f.properties?.osm_id) : []);
+      const rank: Record<string, number> = { river: 0, riverbank: 1, oxbow: 2, reservoir: 3, lake: 4, pond: 5, canal: 6, stream: 7, wetland: 8 };
+      const hit = (wl.length ? m.queryRenderedFeatures([[pt.x - 14, pt.y - 14], [pt.x + 14, pt.y + 14]], { layers: wl }) : [])
+        .filter((f) => f.properties?.osm_id)
+        .sort((a, b) => Number(exact.has(b.properties!.osm_id)) - Number(exact.has(a.properties!.osm_id)) || Number(!!b.properties!.name) - Number(!!a.properties!.name) || (rank[a.properties!.type] ?? 9) - (rank[b.properties!.type] ?? 9));
+      const water = hit[0]?.properties?.osm_id as number | undefined;
+      try {
+        if ((navigator as any).userActivation?.hasBeenActive) navigator.vibrate?.(12);
+      } catch {
+        /* unsupported */
+      }
+      useStore.getState().set({ pin: [lngLat.lng, lngLat.lat], waterId: water ?? null, spotId: null, panelOpen: false });
+    };
+    let timer: number | null = null;
+    let start: maplibregl.Point | null = null;
+    const cancel = () => {
+      if (timer != null) window.clearTimeout(timer);
+      timer = null;
+      start = null;
+    };
+    const arm = (e: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent, ms: number) => {
+      cancel();
+      start = e.point;
+      const { lngLat, point } = e;
+      timer = window.setTimeout(() => {
+        timer = null;
+        drop(lngLat, point);
+      }, ms);
+    };
+    const moved = (e: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => {
+      if (start && Math.hypot(e.point.x - start.x, e.point.y - start.y) > 8) cancel();
+    };
+    m.on('touchstart', (e) => (e.originalEvent.touches.length === 1 ? arm(e, 550) : cancel()));
+    m.on('touchmove', moved);
+    m.on('touchend', cancel);
+    m.on('touchcancel', cancel);
+    m.on('mousedown', (e) => (e.originalEvent.button === 0 ? arm(e, 650) : cancel()));
+    m.on('mousemove', moved);
+    m.on('mouseup', cancel);
+    m.on('dragstart', cancel);
+    m.on('zoomstart', cancel);
+    m.on('contextmenu', (e) => {
+      e.preventDefault();
+      cancel();
+      drop(e.lngLat, e.point);
+    });
+    (window as any).__dropPin = (lng: number, lat: number) => drop(new maplibregl.LngLat(lng, lat), m.project([lng, lat])); // e2e
+  }, [loaded]);
+
+  // The dropped pin: one DOM marker, moved or removed with the store.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !loaded) return;
+    if (!pin) {
+      markerRef.current?.remove();
+      markerRef.current = null;
+      return;
+    }
+    if (!markerRef.current) {
+      const el = document.createElement('div');
+      el.className = 'pin-marker';
+      el.setAttribute('aria-hidden', 'true');
+      el.innerHTML = '<svg viewBox="0 0 24 32" width="24" height="32"><path d="M12 31c-1-6-9-11-9-19a9 9 0 0 1 18 0c0 8-8 13-9 19z" fill="currentColor" stroke="var(--surface)" stroke-width="2"/><circle cx="12" cy="12" r="3.5" fill="var(--surface)"/></svg>';
+      markerRef.current = new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(pin).addTo(m);
+    } else markerRef.current.setLngLat(pin);
+    const isMobile = window.innerWidth < 900;
+    const dur = document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 400;
+    const target = m.project(pin);
+    const r = m.getCanvas().getBoundingClientRect();
+    // Keep the pin visible above the sheet / beside the panel; do not zoom out.
+    const hidden = isMobile ? target.y > r.height * 0.45 || target.y < 120 : target.x < 460 || target.y < 100;
+    if (hidden) m.easeTo({ center: pin, zoom: Math.max(m.getZoom(), 9.5), offset: isMobile ? [0, -r.height * 0.18] : [220, 0], duration: dur });
+  }, [pin, loaded]);
+
+  // Saved pins («мои места»): a symbol layer with a flag and the name.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !loaded) return;
+    if (!m.hasImage('mypin')) {
+      const s = 2;
+      const c = document.createElement('canvas');
+      c.width = c.height = 22 * s;
+      const ctx = c.getContext('2d')!;
+      ctx.scale(s, s);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = dark ? '#0f1a20' : '#ffffff';
+      ctx.fillStyle = dark ? '#7fb0cc' : '#2f5d75';
+      ctx.beginPath();
+      ctx.moveTo(6, 21);
+      ctx.lineTo(6, 2);
+      ctx.lineTo(19, 6.5);
+      ctx.lineTo(6, 11);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(6, 11);
+      ctx.lineTo(6, 21);
+      ctx.stroke();
+      m.addImage('mypin', ctx.getImageData(0, 0, c.width, c.height), { pixelRatio: s });
+    }
+    const fc: FeatureCollection = { type: 'FeatureCollection', features: pins.map((p) => ({ type: 'Feature', geometry: { type: 'Point', coordinates: [p.lon, p.lat] }, properties: { id: p.id, name: p.name, waterId: p.waterId } })) };
+    if (m.getSource('mypins')) (m.getSource('mypins') as maplibregl.GeoJSONSource).setData(fc);
+    else {
+      m.addSource('mypins', { type: 'geojson', data: fc });
+      m.addLayer({
+        id: 'mypins',
+        type: 'symbol',
+        source: 'mypins',
+        layout: { 'icon-image': 'mypin', 'icon-anchor': 'bottom-left', 'icon-offset': [-6, 0], 'icon-allow-overlap': true, 'text-field': ['get', 'name'], 'text-size': 12, 'text-font': ['Noto Sans Regular'], 'text-anchor': 'top', 'text-offset': [0, 0.4], 'text-optional': true },
+        paint: { 'text-color': dark ? '#e6ecef' : '#14232b', 'text-halo-color': dark ? '#0f1a20' : '#ffffff', 'text-halo-width': 1.4 },
+      });
+      m.on('click', 'mypins', (e) => {
+        const p = e.features?.[0]?.properties as any;
+        const g = (e.features?.[0]?.geometry as any)?.coordinates as [number, number] | undefined;
+        if (!p || !g) return;
+        set({ pin: [g[0], g[1]], waterId: p.waterId ?? null, spotId: null });
+      });
+      m.on('mouseenter', 'mypins', () => (m.getCanvas().style.cursor = 'pointer'));
+      m.on('mouseleave', 'mypins', () => (m.getCanvas().style.cursor = ''));
+    }
+  }, [loaded, pins, dark, set]);
 
   // Fly to selected spot.
   useEffect(() => {

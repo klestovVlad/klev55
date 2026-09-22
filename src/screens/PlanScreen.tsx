@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useStore } from '@/app/store';
 import { useAllData } from '@/model/useScores';
-import { useAdvice } from '@/data/load';
+import { useAdvice, useSpeciesFull } from '@/data/load';
 import { chance } from '@/model/bite';
 import { weatherAt } from '@/model/weather';
 import { nearestSeries } from '@/data/weatherGrid';
@@ -16,6 +16,7 @@ import { addHours, omskParts, startOfOmskDay } from '@/lib/time';
 import type { MethodName, Season, SpeciesLite as Species, Spot } from '@/data/types';
 import './plan.css';
 import { GearText } from '@/components/GearText';
+import { GearAdvice } from '@/components/GearAdvice';
 
 const METHODS: MethodName[] = ['спиннинг', 'фидер', 'поплавок', 'донка', 'жерлицы', 'мормышка', 'балансир'];
 const MINS = [30, 60, 120, 240];
@@ -55,6 +56,7 @@ interface PlanRow {
 export function PlanScreen() {
   const d = useAllData();
   const advice = useAdvice();
+  const full = useSpeciesFull();
   const nav = useNavigate();
   const set = useStore((s) => s.set);
   const [params, setParams] = useSearchParams();
@@ -112,6 +114,8 @@ export function PlanScreen() {
   }, [d.spots.data, species, d.weather.data, d.gauges.data, d.zones.data, d.rules.data, sel.join(','), method, day.getTime(), boat, maxMin]);
 
   const top = rows[0];
+  const topFull = top ? full.data?.items.find((s) => s.id === top.species.id) : undefined;
+  const topIce = top ? hydroFor(top.spot, d.gauges.data?.items, d.gauges.data?.ice, d.zones.data, day).ice_on : false;
   const checklists = (advice.data?.checklists ?? []).filter((c) => (c.method === 'любой' || c.method === method || (!method && top && top.spot.species.find((s) => s.id === top.species.id)?.methods.includes(c.method as MethodName))) && (c.season === 'любой' || c.season === season)).slice(0, 3);
 
   const share = async () => {
@@ -194,9 +198,12 @@ export function PlanScreen() {
         </ol>
         {rows.length > 8 && <p className="caption">Ещё {rows.length - 8} {plural(rows.length - 8, 'место', 'места', 'мест')} на карте с теми же фильтрами.</p>}
 
-        {checklists.length > 0 && (
+        {(checklists.length > 0 || topFull) && (
           <div className="section">
             <h2>Что взять</h2>
+            {top && topFull && (
+              <GearAdvice species={topFull} date={addHours(day, 9)} ice={topIce} spotMethods={top.spot.species.find((s) => s.id === top.species.id)?.methods} title={`На ${topFull.names.ru.toLowerCase()}, ${top.spot.name}`} />
+            )}
             {checklists.map((c) => (
               <details key={c.id} className="method">
                 <summary><strong>{c.title}</strong></summary>

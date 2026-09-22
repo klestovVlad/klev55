@@ -6,6 +6,7 @@ import { FilterBar } from '@/components/FilterBar';
 import { Sheet, type SnapKey } from '@/components/Sheet';
 import { TimeScrubber } from '@/components/TimeScrubber';
 import { SpotList } from '@/components/SpotList';
+import { PinList } from '@/components/PinList';
 const SpotSheet = lazy(() => import('@/screens/SpotSheet').then((m) => ({ default: m.SpotSheet })));
 const WaterSheet = lazy(() => import('@/screens/WaterSheet').then((m) => ({ default: m.WaterSheet })));
 import { useStore } from '@/app/store';
@@ -20,7 +21,7 @@ export function MapScreen() {
   const [snap, setSnap] = useState<SnapKey>('peek');
   const desktop = useDesktop();
   const peek = !desktop && snap === 'peek';
-  const { spotId, waterId, speciesId, layers, panelOpen } = useStore();
+  const { spotId, waterId, pin, speciesId, layers, panelOpen } = useStore();
   const prevSnap = useRef<SnapKey | null>(null);
   const set = useStore((s) => s.set);
   const { scores, date, ready, offline } = useSpotScores();
@@ -29,8 +30,8 @@ export function MapScreen() {
   const sp = species.data?.items.find((s) => s.id === speciesId);
 
   useEffect(() => {
-    if (spotId || waterId) setSnap('half');
-  }, [spotId, waterId]);
+    if (spotId || waterId != null || pin) setSnap('half');
+  }, [spotId, waterId, pin]);
 
   // One overlay at a time on a phone: the layers panel collapses the sheet, closing it restores the snap.
   useEffect(() => {
@@ -64,15 +65,15 @@ export function MapScreen() {
         <div className="map map--loading" aria-hidden="true" />
       )}
       <FilterBar />
-      {layers.weather && !spotId && !waterId && !panelOpen && <WeatherLegend fetchedAt={grid.data?.fetched_at} />}
+      {layers.weather && !spotId && waterId == null && !pin && !panelOpen && <WeatherLegend fetchedAt={grid.data?.fetched_at} />}
       <Sheet snap={snap} onSnap={(k) => { if (panelOpen) { prevSnap.current = null; set({ panelOpen: false }); } setSnap(k); }}>
         {spotId ? (
           <Suspense fallback={<div className="skeleton" style={{ width: '60%' }} />}>
             <SpotSheet spotId={spotId} onBack={() => set({ spotId: null })} />
           </Suspense>
-        ) : waterId ? (
+        ) : waterId != null || pin ? (
           <Suspense fallback={<div className="skeleton" style={{ width: '60%' }} />}>
-            <WaterSheet waterId={waterId} onBack={() => set({ waterId: null })} />
+            <WaterSheet waterId={waterId} pin={pin} onBack={() => set({ waterId: null, pin: null })} />
           </Suspense>
         ) : (
           <>
@@ -80,6 +81,7 @@ export function MapScreen() {
             {offline && <p className="caption">Нет прогноза — включите интернет. Места, рыбы и правила работают офлайн.</p>}
             <TimeScrubber />
             <ConditionsStrip date={date} />
+            {!peek && snap !== 'min' && <PinList />}
             <h2 className="mapscreen__h2">Куда ехать</h2>
             <SpotList scores={scores} limit={peek || snap === 'min' ? 3 : 80} />
             {peek && scores.length > 3 && (

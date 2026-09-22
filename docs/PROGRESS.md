@@ -56,3 +56,9 @@ Next: rerun lighthouse + e2e; screenshot pass (light/dark, 390/1440) → qa/scre
 Added after v0.1: weather grid (D-026/027) with the map overlay on by default; infrastructure layer (D-028); drive-time filters (D-029); best window in rows (D-030); shadows removed from map controls; water always under spot bubbles; PWA install button. QA ok (payload 2.70 MB), e2e 14/14, Lighthouse perf 86.
 
 Deployed 2026-09-22 to GitHub Pages: https://klestovvlad.github.io/klev55/ (repo klestovVlad/klev55, workflow deploy-pages.yml; Pages site created via `gh api -X POST repos/.../pages -f build_type=workflow`). Live check: map loads, data and worker served, 404.html fallback for client routes.
+
+## Update 2026-09-22, late evening — «точка на воде» + снасти
+
+Added: point estimate for any coordinate (long press / right click / tap on water; D-037), «Мои места» (D-038), «Взять с собой» on spot sheets, point sheet and planner + «мой ящик» (D-039), marking decoder and determination key on the gear screen (D-040). New modules: `src/model/here.ts`, `useHere.ts`, `gearAdvice.ts`, `src/lib/marking.ts`, `gearIndex.ts`, `src/data/{box,pins,gearKey}.ts`, components `GearAdvice`, `MarkingDecoder`, `GearKey`, `PinList`; `WaterSheet` rewritten. Unit tests 41; e2e 12 jobs × 2 projects.
+Known: the in-app Browser pane does not bring up WebGL on the desktop viewport (map verified on mobile viewport and via Playwright). Photo recognition of tackle deferred (needs a backend).
+Next candidates: OSRM live drive time for pins (public demo server, cached), «где я стою» GPS warning, countdown to the best window.

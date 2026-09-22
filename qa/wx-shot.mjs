@@ -1,0 +1,16 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'dark' });
+const page = await ctx.newPage();
+await page.goto('http://localhost:5173/');
+await page.waitForSelector('.rows .row-btn', { timeout: 30000 });
+await page.waitForFunction(() => window.__map && window.__map.loaded(), null, { timeout: 30000 });
+await page.getByRole('button', { name: 'Слои и фильтры' }).click();
+await page.getByRole('button', { name: 'Ветер и осадки' }).click();
+await page.getByRole('button', { name: 'Слои и фильтры' }).click();
+await page.evaluate(() => window.__map.jumpTo({ center: [73.37, 54.99], zoom: 5.7 }));
+await page.waitForTimeout(4000);
+const stats = await page.evaluate(() => { const m = window.__map; return { cloud: m.querySourceFeatures('wx-cloud').length, rain: m.querySourceFeatures('wx-rain').length, wind: m.queryRenderedFeatures({ layers: ['wx-wind'] }).length }; });
+console.log(JSON.stringify(stats));
+await page.screenshot({ path: 'qa/screenshots/weather-desktop-dark.png' });
+await browser.close();

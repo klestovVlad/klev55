@@ -6,8 +6,11 @@
 import { useEffect, useMemo } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import type { Map as MLMap } from 'maplibre-gl';
-import interpolate from '@turf/interpolate';
 import isobands from '@turf/isobands';
+import pointGrid from '@turf/point-grid';
+import circle from '@turf/circle';
+import intersect from '@turf/intersect';
+import bbox from '@turf/bbox';
 import { featureCollection, point } from '@turf/helpers';
 import type { FeatureCollection } from 'geojson';
 import type { WeatherGrid } from '@/data/weatherGrid';
@@ -39,17 +42,54 @@ export function buildWeatherGeo(grid: WeatherGrid | undefined, date: Date) {
     })
     .filter((f): f is NonNullable<typeof f> => !!f);
   const points = featureCollection(pts) as FeatureCollection;
-  let rain = empty;
-  let cloud = empty;
+  return { points, rain: bands(pts, 'precip', RAIN_BREAKS), cloud: bands(pts, 'cloud', CLOUD_BREAKS) };
+}
+
+// The 200 km circle: interpolation covers all of it and bands are clipped to it, so the overlay ends exactly at the drawn ring.
+const CIRCLE = circle([73.37, 54.99], 200, { steps: 96, units: 'kilometers' });
+const CIRCLE_BBOX = bbox(CIRCLE) as [number, number, number, number];
+const GRID = pointGrid(CIRCLE_BBOX, 16, { units: 'kilometers' }); // regular grid: marching squares needs a full matrix
+
+function kmBetween(a: number[], b: number[]): number {
+  const dLat = (b[1] - a[1]) * 111.2;
+  const dLon = (b[0] - a[0]) * 111.2 * Math.cos(((a[1] + b[1]) / 2) * (Math.PI / 180));
+  return Math.hypot(dLat, dLon);
+}
+
+/** IDW over the circle grid → isobands → clipped to the circle. */
+function bands(pts: any[], prop: string, breaks: number[]): FeatureCollection {
+  const empty = featureCollection([]) as FeatureCollection;
+  if (pts.length < 3) return empty;
+  const grid = featureCollection(
+    GRID.features.map((g) => {
+      let num = 0;
+      let den = 0;
+      for (const p of pts) {
+        const d = Math.max(1, kmBetween(g.geometry.coordinates, p.geometry.coordinates));
+        const w = 1 / (d * d);
+        num += w * p.properties[prop];
+        den += w;
+      }
+      return point(g.geometry.coordinates, { [prop]: den ? num / den : 0 });
+    }),
+  );
   try {
-    const gridRain = interpolate(points as any, 18, { gridType: 'point', property: 'precip', units: 'kilometers', weight: 2 });
-    rain = isobands(gridRain as any, RAIN_BREAKS, { zProperty: 'precip' }) as FeatureCollection;
-    const gridCloud = interpolate(points as any, 18, { gridType: 'point', property: 'cloud', units: 'kilometers', weight: 2 });
-    cloud = isobands(gridCloud as any, CLOUD_BREAKS, { zProperty: 'cloud' }) as FeatureCollection;
+    const raw = isobands(grid as any, breaks, { zProperty: prop }) as FeatureCollection;
+    const clipped = raw.features
+      .map((f) => {
+        try {
+          const c = intersect(featureCollection([f as any, CIRCLE as any]));
+          return c ? { ...c, properties: f.properties } : null;
+        } catch {
+          return null;
+        }
+      })
+      .filter((f): f is NonNullable<typeof f> => !!f);
+    return featureCollection(clipped as any) as FeatureCollection;
   } catch {
-    /* interpolation needs ≥ 3 points; keep bands empty */
+    return empty;
   }
-  return { points, rain, cloud };
+
 }
 
 function arrowImage(dark: boolean): ImageData {

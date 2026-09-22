@@ -25,7 +25,7 @@ export function solunarDay(date: Date, lat: number, lon: number): SolunarDay {
 
   const noon = new Date(day0.getTime() + 12 * 3600000);
   const sun = SunCalc.getTimes(noon, lat, lon);
-  const moonTimes = SunCalc.getMoonTimes(day0, lat, lon, true);
+  const moonTimes = SunCalc.getMoonTimes(day0, lat, lon);
   const illum = SunCalc.getMoonIllumination(noon);
 
   // Transit / underfoot: scan the day in 10-minute steps for altitude extremes.
@@ -47,10 +47,10 @@ export function solunarDay(date: Date, lat: number, lon: number): SolunarDay {
   }
 
   const res: SolunarDay = {
-    sunrise: sun.sunrise,
-    sunset: sun.sunset,
-    dawn: sun.dawn,
-    dusk: sun.dusk,
+    sunrise: sun.sunrise as Date,
+    sunset: sun.sunset as Date,
+    dawn: sun.dawn as Date,
+    dusk: sun.dusk as Date,
     moonrise: moonTimes.rise ?? null,
     moonset: moonTimes.set ?? null,
     transit,

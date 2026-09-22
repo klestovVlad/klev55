@@ -1,0 +1,10 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const page = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();
+page.on('requestfailed', (r) => console.log('FAILED', r.url().slice(0, 120), r.failure()?.errorText));
+page.on('response', (r) => { if (r.status() >= 400) console.log('HTTP', r.status(), r.url().slice(0, 120)); });
+page.on('console', (m) => { if (m.type() !== 'log' && m.type() !== 'debug') console.log(m.type(), m.text().slice(0, 160)); });
+await page.goto('http://localhost:4173/');
+await page.waitForTimeout(8000);
+console.log('worker reqs:', (await page.evaluate(() => performance.getEntriesByType('resource').map((e) => e.name).filter((n) => /worker|openfreemap/.test(n)).slice(0, 5))));
+await browser.close();

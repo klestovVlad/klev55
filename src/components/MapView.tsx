@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import type { Map as MLMap } from 'maplibre-gl';
+// MapLibre resolves its worker with a dynamic `new URL(...)` that bundlers cannot follow, and the worker imports a sibling
+// module; both are copied to public/maplibre by scripts/copy-maplibre-worker.mjs (predev/prebuild).
+maplibregl.setWorkerUrl(`${import.meta.env.BASE_URL}maplibre/maplibre-gl-worker.mjs`);
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { FeatureCollection } from 'geojson';
 import { useStore } from '@/app/store';

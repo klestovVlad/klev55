@@ -91,7 +91,7 @@ test('8. search finds a spot and a fish', async ({ page }) => {
 
 test('9. tapping a cluster bubble zooms in to split it', async ({ page }) => {
   await page.goto('/');
-  await page.waitForFunction(() => (window as any).__map?.loaded() && (window as any).__map.getLayer('clusters'), null, { timeout: 30_000 });
+  await page.waitForFunction(() => !!(window as any).__map?.getLayer('clusters') && (window as any).__map.queryRenderedFeatures({ layers: ['clusters'] }).length > 0, null, { timeout: 30_000 });
   await page.waitForTimeout(1500);
   const target = await page.evaluate(() => {
     const m = (window as any).__map;

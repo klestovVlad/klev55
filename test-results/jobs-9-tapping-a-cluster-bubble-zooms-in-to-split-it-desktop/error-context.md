@@ -48,7 +48,7 @@ TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.
         - generic: ветер по потоку
         - generic: дождь
         - generic: облака
-        - generic: прогноз на выбранный час, 15:39
+        - generic: прогноз на выбранный час, 15:42
       - complementary [ref=e32]:
         - paragraph [ref=e33]: "Щука сейчас: отлично — Омь у Калачинска, 92 мин"
         - generic [ref=e34]:
@@ -803,7 +803,7 @@ TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.
   91  | 
   92  | test('9. tapping a cluster bubble zooms in to split it', async ({ page }) => {
   93  |   await page.goto('/');
-> 94  |   await page.waitForFunction(() => (window as any).__map?.loaded() && (window as any).__map.getLayer('clusters'), null, { timeout: 30_000 });
+> 94  |   await page.waitForFunction(() => !!(window as any).__map?.getLayer('clusters') && (window as any).__map.queryRenderedFeatures({ layers: ['clusters'] }).length > 0, null, { timeout: 30_000 });
       |              ^ TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.
   95  |   await page.waitForTimeout(1500);
   96  |   const target = await page.evaluate(() => {

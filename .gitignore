@@ -6,3 +6,4 @@ research/raw/*.html
 scripts/.cache
 qa/screenshots/*.png
 *.log
+public/maplibre

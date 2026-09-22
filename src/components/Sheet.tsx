@@ -19,19 +19,25 @@ interface Props {
  */
 export function Sheet({ children, snap, onSnap }: Props) {
   const desktop = useDesktop();
-  const [vh, setVh] = useState(() => (typeof window !== 'undefined' ? window.innerHeight : 800));
+  const ref = useRef<HTMLElement>(null);
+  // Height of the area the sheet lives in (map area above the tab bar), not the window: otherwise "full" overshoots the top.
+  const [vh, setVh] = useState(() => (typeof window !== 'undefined' ? window.innerHeight - 60 : 800));
   const [dragY, setDragY] = useState<number | null>(null);
   const start = useRef<{ y: number; t: number; base: number } | null>(null);
 
   useEffect(() => {
-    const h = () => setVh(window.innerHeight);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
-  }, []);
+    const el = ref.current?.parentElement;
+    if (!el) return;
+    const measure = () => setVh(el.clientHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [desktop]);
 
   if (desktop) return <aside className="panel">{children}</aside>;
 
-  const visible = (k: SnapKey) => Math.round(vh * SNAPS[k]);
+  const visible = (k: SnapKey) => (k === 'full' ? vh - 8 : Math.round(vh * SNAPS[k]));
   const current = dragY ?? visible(snap);
   const onDown = (e: RPointerEvent) => {
     start.current = { y: e.clientY, t: Date.now(), base: visible(snap) };
@@ -67,7 +73,7 @@ export function Sheet({ children, snap, onSnap }: Props) {
   };
 
   return (
-    <section className={`sheet${dragY != null ? ' sheet--dragging' : ''}`} style={{ transform: `translateY(calc(100% - ${current}px))` }} aria-label="Панель мест">
+    <section ref={ref} className={`sheet${dragY != null ? ' sheet--dragging' : ''}`} style={{ height: `${Math.min(current, vh)}px` }} aria-label="Панель мест">
       <div className="sheet__grip" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} role="button" tabIndex={0} aria-label={snap === 'full' ? 'Свернуть панель' : 'Развернуть панель'} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSnap(snap === 'full' ? 'peek' : snap === 'peek' ? 'half' : 'full'); } }}>
         <span className="sheet__handle" />
       </div>

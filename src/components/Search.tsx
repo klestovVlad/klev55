@@ -4,6 +4,7 @@ import { Command } from 'cmdk';
 import { useNavigate } from 'react-router-dom';
 import { useSpecies, useSpots, useWater, useGear } from '@/data/load';
 import { useStore } from '@/app/store';
+import { usePins } from '@/data/pins';
 import './dialog.css';
 import './search.css';
 
@@ -13,6 +14,7 @@ export function Search({ open, onOpenChange }: { open: boolean; onOpenChange: (o
   const spots = useSpots();
   const water = useWater(open); // 1.3 MB overlay: fetch only when the search opens
   const gear = useGear();
+  const pins = usePins((s) => s.pins);
   const set = useStore((s) => s.set);
   const nav = useNavigate();
   const waters = useMemo(() => {
@@ -38,6 +40,19 @@ export function Search({ open, onOpenChange }: { open: boolean; onOpenChange: (o
             </div>
             <Command.List className="search__list">
               <Command.Empty className="empty">Ничего не нашлось. Попробуйте «Иртыш», «затон», «щука».</Command.Empty>
+              {pins.some((p) => filt(p.name)) && (
+                <Command.Group heading="Мои места">
+                  {pins
+                    .filter((p) => filt(p.name))
+                    .slice(0, 6)
+                    .map((p) => (
+                      <Command.Item key={p.id} value={`pin ${p.id}`} onSelect={() => { set({ pin: [p.lon, p.lat], pinFrom: 'list', waterId: p.waterId, spotId: null }); nav('/'); onOpenChange(false); }}>
+                        <span>{p.name}</span>
+                        <span className="muted">моё место</span>
+                      </Command.Item>
+                    ))}
+                </Command.Group>
+              )}
               <Command.Group heading="Места">
                 {(spots.data?.items ?? [])
                   .filter((s) => filt(s.name) || filt(s.water_name) || filt(s.district))

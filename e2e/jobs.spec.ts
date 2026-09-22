@@ -140,6 +140,21 @@ test('11. a dropped pin opens the point estimate with a chance range, rules and 
   await expect(page.locator('.here__mine')).toBeVisible();
   await page.getByRole('button', { name: '‹ Все места' }).click();
   await expect(page.getByRole('heading', { name: 'Мои места' })).toBeVisible();
+  // Choosing a saved place centres the map on it.
+  await page.evaluate(() => (window as any).__map.jumpTo({ center: [74.5, 54.3], zoom: 7 }));
+  await page.locator('.rows .row-btn', { hasText: 'Иртыш, берег' }).first().click();
+  await expect(page.locator('.here__mine')).toBeVisible();
+  await page.waitForTimeout(900);
+  const c = await page.evaluate(() => ({ ...(window as any).__map.getCenter(), z: (window as any).__map.getZoom() }));
+  expect(Math.abs(c.lng - 73.2)).toBeLessThan(0.15);
+  expect(Math.abs(c.lat - 55.3)).toBeLessThan(0.15);
+  expect(c.z).toBeGreaterThanOrEqual(10.5);
+  // …and the search finds it by name.
+  await page.getByRole('button', { name: '‹ Все места' }).click();
+  await page.getByRole('button', { name: 'Поиск мест, водоёмов и рыб' }).click();
+  await page.locator('.search__input').fill('берег');
+  await expect(page.locator('[cmdk-item]', { hasText: 'моё место' }).first()).toBeVisible();
+  await page.keyboard.press('Escape');
   await shot(page, '11-pin');
 });
 

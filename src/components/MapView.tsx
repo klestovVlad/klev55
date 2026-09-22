@@ -65,6 +65,7 @@ export function MapView() {
   const set = useStore((s) => s.set);
   const spotId = useStore((s) => s.spotId);
   const pin = useStore((s) => s.pin);
+  const pinFrom = useStore((s) => s.pinFrom);
   const pins = usePins((s) => s.pins);
   const markerRef = useRef<maplibregl.Marker | null>(null);
 
@@ -430,7 +431,7 @@ export function MapView() {
       } catch {
         /* unsupported */
       }
-      useStore.getState().set({ pin: [lngLat.lng, lngLat.lat], waterId: water ?? null, spotId: null, panelOpen: false });
+      useStore.getState().set({ pin: [lngLat.lng, lngLat.lat], pinFrom: 'map', waterId: water ?? null, spotId: null, panelOpen: false });
     };
     let timer: number | null = null;
     let start: maplibregl.Point | null = null;
@@ -488,9 +489,16 @@ export function MapView() {
     const dur = document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 400;
     const target = m.project(pin);
     const r = m.getCanvas().getBoundingClientRect();
-    // Keep the pin visible above the sheet / beside the panel; do not zoom out.
+    const offset: [number, number] = isMobile ? [0, -r.height * 0.18] : [220, 0];
+    if (pinFrom === 'list') {
+      // Chosen from «Мои места» or the search: centre on it, close enough to see the bank.
+      m.easeTo({ center: pin, zoom: Math.max(m.getZoom(), 11), offset, duration: dur });
+      return;
+    }
+    // Dropped on the map: keep it under the finger unless the sheet / panel would hide it; do not zoom out.
     const hidden = isMobile ? target.y > r.height * 0.45 || target.y < 120 : target.x < 460 || target.y < 100;
-    if (hidden) m.easeTo({ center: pin, zoom: Math.max(m.getZoom(), 9.5), offset: isMobile ? [0, -r.height * 0.18] : [220, 0], duration: dur });
+    if (hidden) m.easeTo({ center: pin, zoom: Math.max(m.getZoom(), 9.5), offset, duration: dur });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pin, loaded]);
 
   // Saved pins («мои места»): a symbol layer with a flag and the name.
@@ -535,7 +543,7 @@ export function MapView() {
         const p = e.features?.[0]?.properties as any;
         const g = (e.features?.[0]?.geometry as any)?.coordinates as [number, number] | undefined;
         if (!p || !g) return;
-        set({ pin: [g[0], g[1]], waterId: p.waterId ?? null, spotId: null });
+        set({ pin: [g[0], g[1]], pinFrom: 'map', waterId: p.waterId ?? null, spotId: null });
       });
       m.on('mouseenter', 'mypins', () => (m.getCanvas().style.cursor = 'pointer'));
       m.on('mouseleave', 'mypins', () => (m.getCanvas().style.cursor = ''));

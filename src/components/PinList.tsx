@@ -11,7 +11,7 @@ function PinRow({ p, date }: { p: Pin; date: Date }) {
   const r = top?.range ?? null;
   return (
     <li>
-      <button type="button" className="row-btn" onClick={() => set({ pin: [p.lon, p.lat], waterId: p.waterId, spotId: null })}>
+      <button type="button" className="row-btn" onClick={() => set({ pin: [p.lon, p.lat], pinFrom: 'list', waterId: p.waterId, spotId: null })}>
         <span className="score score--range" style={{ background: r ? chanceColor(Math.round((r.lo + r.hi) / 2)) : undefined }} aria-label={r ? `шанс примерно ${r.lo}–${r.hi}` : 'оценки нет'}>
           {r ? `≈${r.lo}–${r.hi}` : '·'}
         </span>

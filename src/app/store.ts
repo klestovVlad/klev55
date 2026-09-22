@@ -20,6 +20,8 @@ interface State {
   waterId: number | null;
   /** A dropped pin [lon, lat]: the «точка на воде» estimate is built for it (with waterId when it lies on known water). */
   pin: [number, number] | null;
+  /** Where the pin came from: dropped on the map (stay put) or chosen from a list/search (centre the map on it). */
+  pinFrom: 'map' | 'list';
   layers: { infra: boolean; observations: boolean; satellite: boolean; zones: boolean; zonesAll: boolean; weather: boolean; heat: boolean; particles: boolean };
   theme: Theme;
   set: (p: Partial<State>) => void;
@@ -45,6 +47,7 @@ export const useStore = create<State>((set) => ({
   panelOpen: false,
   waterId: null,
   pin: null,
+  pinFrom: 'map',
   layers: { infra: true, observations: false, satellite: false, zones: true, zonesAll: false, weather: true, heat: true, particles: false },
   theme: savedTheme,
   set: (p) => set(p),

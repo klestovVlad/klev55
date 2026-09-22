@@ -12,9 +12,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/*.svg', 'icons/*.png'],
+      includeAssets: ['icons/*.png', 'favicon.png', 'og.jpg'],
       manifest: {
-        name: 'Клёв 55 — рыбалка в Омской области',
+        name: 'Клёв 55 — карта и прогноз рыбалки',
         short_name: 'Клёв 55',
         description: 'Карта, прогноз клёва и правила рыбалки в 200 км от Омска',
         lang: 'ru',
@@ -25,7 +25,7 @@ export default defineConfig({
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {

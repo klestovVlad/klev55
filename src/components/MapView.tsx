@@ -337,7 +337,27 @@ export function MapView() {
       m.on('click', 'clusters', (e) => {
         const f = e.features?.[0];
         if (!f) return;
-        (m.getSource('spots') as maplibregl.GeoJSONSource).getClusterExpansionZoom((f.properties as any).cluster_id).then((z: number) => m.easeTo({ center: (f.geometry as any).coordinates, zoom: z }));
+        const src = m.getSource('spots') as maplibregl.GeoJSONSource;
+        const id = (f.properties as any).cluster_id as number;
+        // Zoom so the bubble visibly splits: fit the cluster's members with padding, never less than the expansion zoom + 0.5.
+        Promise.all([src.getClusterExpansionZoom(id), src.getClusterLeaves(id, 50, 0)]).then(([z, leaves]: [number, any[]]) => {
+          const coords = leaves.map((l) => l.geometry.coordinates as [number, number]);
+          if (coords.length < 2) {
+            m.easeTo({ center: (f.geometry as any).coordinates, zoom: Math.max(z + 0.5, m.getZoom() + 1.5), duration: 500 });
+            return;
+          }
+          const lons = coords.map((c) => c[0]);
+          const lats = coords.map((c) => c[1]);
+          const desktop = window.innerWidth >= 900;
+          m.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], {
+            padding: desktop ? { top: 120, bottom: 80, left: 500, right: 80 } : { top: 140, bottom: window.innerHeight * 0.4, left: 40, right: 40 },
+            maxZoom: 13,
+            duration: 500,
+          });
+          m.once('moveend', () => {
+            if (m.getZoom() < z + 0.5) m.easeTo({ zoom: z + 0.5, duration: 250 });
+          });
+        });
       });
       m.on('click', 'water-fill', (e) => {
         if (m.queryRenderedFeatures(e.point, { layers: ['spots', 'clusters'] }).length) return;

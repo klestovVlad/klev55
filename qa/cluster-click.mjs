@@ -1,0 +1,22 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+const page = await ctx.newPage();
+page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') console.log('console:', m.text().slice(0, 200)); });
+await page.goto('http://localhost:5173/');
+await page.waitForFunction(() => window.__map && window.__map.loaded() && window.__map.getLayer('clusters'), null, { timeout: 30000 });
+await page.waitForTimeout(3000);
+const info = await page.evaluate(() => {
+  const m = window.__map;
+  const cs = m.queryRenderedFeatures({ layers: ['clusters'] }).map((c) => ({ c, p: m.project(c.geometry.coordinates) })).filter(({ p }) => p.x > 600 && p.y > 150 && p.y < 800);
+  if (!cs.length) return null;
+  const { c, p } = cs[0];
+  const top = m.queryRenderedFeatures([p.x, p.y]).map((f) => f.layer.id);
+  return { x: p.x, y: p.y, zoom: m.getZoom(), count: c.properties.point_count, layersAtPoint: top };
+});
+console.log('before', JSON.stringify(info));
+const box = await page.locator('.maplibregl-canvas').boundingBox();
+await page.mouse.click(box.x + info.x, box.y + info.y);
+await page.waitForTimeout(1500);
+console.log('after zoom', await page.evaluate(() => window.__map.getZoom()));
+await browser.close();

@@ -114,7 +114,7 @@ test('10. gear glossary: list, card, and a linked term on a species page', async
   await expect(page.getByText(/Размеры/)).toBeVisible();
   await page.goto('/species/esox-lucius');
   await expect(page.locator('h1')).toContainText('Щука');
-  const term = page.locator('.gterm').first();
+  const term = page.locator('.gterm:visible').first();
   await expect(term).toBeVisible({ timeout: 20_000 });
   await term.click();
   await expect(page.locator('.gpop')).toBeVisible();

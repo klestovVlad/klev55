@@ -1,0 +1,13 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const page = await (await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'light' })).newPage();
+page.on('pageerror', (e) => console.log('pageerror', String(e).slice(0, 200)));
+await page.goto('http://localhost:5173/');
+await page.waitForFunction(() => window.__map && window.__map.loaded() && window.__map.getLayer('heat'), null, { timeout: 30000 });
+await page.getByRole('button', { name: 'Слои и фильтры' }).click();
+await page.getByRole('button', { name: 'Ветер частицами' }).click();
+await page.getByRole('button', { name: 'Слои и фильтры' }).click();
+await page.waitForTimeout(3500);
+console.log(JSON.stringify(await page.evaluate(() => ({ heat: window.__map.querySourceFeatures('heat').length, canvas: !!document.querySelector('.wind-canvas') }))));
+await page.screenshot({ path: 'qa/screenshots/heat-particles-desktop.png' });
+await browser.close();

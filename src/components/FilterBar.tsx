@@ -49,6 +49,8 @@ export function FilterBar() {
           </div>
           <div className="chip-row">
             <Chip small selected={layers.weather} onClick={() => toggleLayer('weather')}>Ветер и осадки</Chip>
+            <Chip small selected={layers.particles} onClick={() => toggleLayer('particles')}>Ветер частицами</Chip>
+            <Chip small selected={layers.heat} onClick={() => toggleLayer('heat')}>Поле шанса</Chip>
             <Chip small selected={layers.zones} onClick={() => toggleLayer('zones')}>Запретные зоны</Chip>
             <Chip small selected={layers.zonesAll} onClick={() => toggleLayer('zonesAll')}>Ямы вне сезона</Chip>
             <Chip small selected={layers.infra} onClick={() => toggleLayer('infra')}>Мосты, спуски, магазины</Chip>

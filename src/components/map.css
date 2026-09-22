@@ -17,3 +17,4 @@
 /* Attribution stays collapsed until the ⓘ is focused/hovered: keeps a 300px text block off the first paint (it was the LCP element). */
 .map details.maplibregl-ctrl-attrib:not(:focus-within):not(:hover) .maplibregl-ctrl-attrib-inner { display: none; }
 .map details.maplibregl-ctrl-attrib:not(:focus-within):not(:hover) { padding: 0; }
+.wind-canvas { position: absolute; inset: 0; pointer-events: none; z-index: 5; }

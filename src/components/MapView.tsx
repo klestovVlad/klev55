@@ -13,6 +13,8 @@ import { useSpotScores } from '@/model/useScores';
 import { activeZones } from '@/model/hydro';
 import { useWeatherGrid } from '@/data/weatherGrid';
 import { useWeatherLayer } from './useWeatherLayer';
+import { useHeatLayer } from './useHeatLayer';
+import { WindParticles } from './WindParticles';
 import { CHANCE_HEX } from '@/lib/format';
 import './map.css';
 
@@ -58,6 +60,7 @@ export function MapView() {
   const { scores, date } = useSpotScores();
   const grid = useWeatherGrid();
   useWeatherLayer(mapRef.current, loaded, dark, grid.data, date, layers.weather);
+  useHeatLayer(mapRef.current, loaded, dark, scores, layers.heat);
   const set = useStore((s) => s.set);
   const spotId = useStore((s) => s.spotId);
 
@@ -412,7 +415,12 @@ export function MapView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spotId, loaded]);
 
-  return <div ref={ref} className="map" role="region" aria-label="Карта мест рыбалки" />;
+  return (
+    <>
+      <div ref={ref} className="map" role="region" aria-label="Карта мест рыбалки" />
+      {loaded && <WindParticles map={mapRef.current} grid={grid.data} date={date} visible={layers.particles} dark={dark} />}
+    </>
+  );
 }
 
 export function flyTo(map: MLMap | null, coords: [number, number], zoom = 10) {

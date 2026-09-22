@@ -3,7 +3,10 @@ import sharp from 'sharp';
 import { mkdirSync } from 'node:fs';
 mkdirSync('public/icons', { recursive: true });
 const icon = 'design/icon-source.png';
-const BG = { r: 13, g: 59, b: 46, alpha: 1 }; // icon's dark green, for platforms that forbid transparency
+// Icon's own background, sampled from the source so the maskable/iOS variants blend seamlessly.
+const { data } = await sharp(icon).raw().toBuffer({ resolveWithObject: true });
+const i = (200 * 1254 + 200) * 4;
+const BG = { r: data[i], g: data[i + 1], b: data[i + 2], alpha: 1 };
 for (const s of [512, 192, 96, 64, 32]) await sharp(icon).resize(s, s).png().toFile(`public/icons/icon-${s}.png`);
 // iOS: square, opaque, no rounded corners (iOS rounds itself).
 await sharp(icon).resize(180, 180).flatten({ background: BG }).png().toFile('public/icons/apple-touch-icon.png');

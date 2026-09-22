@@ -340,10 +340,12 @@ export function MapView() {
         const src = m.getSource('spots') as maplibregl.GeoJSONSource;
         const id = (f.properties as any).cluster_id as number;
         // Zoom so the bubble visibly splits: fit the cluster's members with padding, never less than the expansion zoom + 0.5.
+        // No animation when the tab is hidden (rAF paused) or the user prefers reduced motion: the jump must still happen.
+        const dur = document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 500;
         Promise.all([src.getClusterExpansionZoom(id), src.getClusterLeaves(id, 50, 0)]).then(([z, leaves]: [number, any[]]) => {
           const coords = leaves.map((l) => l.geometry.coordinates as [number, number]);
           if (coords.length < 2) {
-            m.easeTo({ center: (f.geometry as any).coordinates, zoom: Math.max(z + 0.5, m.getZoom() + 1.5), duration: 500 });
+            m.easeTo({ center: (f.geometry as any).coordinates, zoom: Math.max(z + 0.5, m.getZoom() + 1.5), duration: dur });
             return;
           }
           const lons = coords.map((c) => c[0]);
@@ -352,10 +354,10 @@ export function MapView() {
           m.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], {
             padding: desktop ? { top: 120, bottom: 80, left: 500, right: 80 } : { top: 140, bottom: window.innerHeight * 0.4, left: 40, right: 40 },
             maxZoom: 13,
-            duration: 500,
+            duration: dur,
           });
           m.once('moveend', () => {
-            if (m.getZoom() < z + 0.5) m.easeTo({ zoom: z + 0.5, duration: 250 });
+            if (m.getZoom() < z + 0.5) m.easeTo({ zoom: z + 0.5, duration: dur ? 250 : 0 });
           });
         });
       });
@@ -403,7 +405,7 @@ export function MapView() {
     const s = scores.find((x) => x.spot.id === spotId);
     if (!s) return;
     const isMobile = window.innerWidth < 900;
-    m.easeTo({ center: s.spot.coords, zoom: Math.max(m.getZoom(), 10), offset: isMobile ? [0, -window.innerHeight * 0.18] : [0, 0], duration: 500 });
+    m.easeTo({ center: s.spot.coords, zoom: Math.max(m.getZoom(), 10), offset: isMobile ? [0, -window.innerHeight * 0.18] : [0, 0], duration: document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 500 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spotId, loaded]);
 

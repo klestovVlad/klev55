@@ -88,3 +88,20 @@ test('8. search finds a spot and a fish', async ({ page }) => {
   await expect(page.locator('[cmdk-item]', { hasText: 'Щука' }).first()).toBeVisible();
   await shot(page, '08-search');
 });
+
+test('9. tapping a cluster bubble zooms in to split it', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForFunction(() => (window as any).__map?.loaded() && (window as any).__map.getLayer('clusters'), null, { timeout: 30_000 });
+  await page.waitForTimeout(1500);
+  const target = await page.evaluate(() => {
+    const m = (window as any).__map;
+    const r = m.getCanvas().getBoundingClientRect();
+    const cs = m.queryRenderedFeatures({ layers: ['clusters'] }).map((c: any) => m.project(c.geometry.coordinates)).filter((p: any) => p.x > 60 && p.x < r.width - 60 && p.y > 130 && p.y < r.height * 0.5);
+    return cs[0] ? { x: r.left + cs[0].x, y: r.top + cs[0].y, zoom: m.getZoom() } : null;
+  });
+  test.skip(!target, 'no cluster bubble in view at this viewport');
+  await page.mouse.click(target!.x, target!.y);
+  await page.waitForTimeout(1200);
+  const zoom = await page.evaluate(() => (window as any).__map.getZoom());
+  expect(zoom).toBeGreaterThan(target!.zoom + 0.8);
+});

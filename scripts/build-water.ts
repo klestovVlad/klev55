@@ -6,7 +6,7 @@
 import { writeFileSync, mkdirSync } from 'node:fs';
 import * as turf from '@turf/turf';
 import osmtogeojson from 'osmtogeojson';
-import { overpass } from './lib/overpass';
+import { overpass, overpassTiled } from './lib/overpass';
 import { overpassBbox, circleBbox, insideCircle, CENTER } from './lib/geo';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 
@@ -63,20 +63,17 @@ async function main() {
 
   console.log('1/6 named rivers and canals');
   const rivers = toGeo(
-    await overpass(`(way["waterway"~"^(river|canal)$"]["name"](${bbox}););out geom;`, 'rivers'),
+    await overpassTiled((t) => `(way["waterway"~"^(river|canal)$"]["name"](${t}););out geom;`, circleBbox(), 'rivers'),
   );
   console.log('   ways:', rivers.features.length);
 
   console.log('2/6 named streams');
-  const streams = toGeo(await overpass(`(way["waterway"="stream"]["name"](${bbox}););out geom;`, 'streams'));
+  const streams = toGeo(await overpassTiled((t) => `(way["waterway"="stream"]["name"](${t}););out geom;`, circleBbox(), 'streams'));
   console.log('   ways:', streams.features.length);
 
   console.log('3/6 named lakes, ponds, reservoirs (whole circle)');
   const lakes = toGeo(
-    await overpass(
-      `(nwr["natural"="water"]["name"](${bbox});nwr["landuse"="reservoir"]["name"](${bbox}););out geom;`,
-      'lakes',
-    ),
+    await overpassTiled((t) => `(nwr["natural"="water"]["name"](${t});nwr["landuse"="reservoir"]["name"](${t}););out geom;`, circleBbox(), 'lakes'),
   );
   console.log('   features:', lakes.features.length);
 
@@ -88,15 +85,16 @@ async function main() {
 
   console.log('5/6 Irtysh riverbank polygons (whole circle)');
   const riverbank = toGeo(
-    await overpass(`(nwr["natural"="water"]["water"="river"](${bbox}););out geom;`, 'riverbank'),
+    await overpassTiled((t) => `(nwr["natural"="water"]["water"="river"](${t}););out geom;`, circleBbox(), 'riverbank'),
   );
   console.log('   features:', riverbank.features.length);
 
   console.log('6/6 admin boundaries: Омская область + Kazakh oblasts touching the circle');
   const admin = toGeo(
     await overpass(
-      `(relation["boundary"="administrative"]["admin_level"="4"]["name"="Омская область"];relation["boundary"="administrative"]["admin_level"="4"]["name"~"^(Северо-Казахстанская|Павлодарская)"];);out geom;`,
+      `(relation["boundary"="administrative"]["admin_level"="4"]["name"~"^(Омская область|Северо-Казахстанская область|Павлодарская область)$"](${bbox}););out geom;`,
       'admin',
+      600,
     ),
   );
   console.log('   features:', admin.features.length, admin.features.map((f) => f.properties?.name));

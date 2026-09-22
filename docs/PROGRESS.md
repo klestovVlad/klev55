@@ -2,24 +2,28 @@
 
 _Read this first after any context reset. Then BRIEF.md and DECISIONS.md._
 
-## Status (2026-09-22)
+## Status (2026-09-22, end of day) — DONE, v0.1
 
-- [x] Project dir, git init, BRIEF.md, DECISIONS.md
-- [ ] Phase 1 research (SOURCES.md, FUNNEL.md, UX_NOTES.md) — IN PROGRESS
-- [ ] App skeleton (Vite + React + TS)
-- [ ] Data pipeline scripts
-- [ ] Knowledge layer (species, spots, advice)
-- [ ] Chance model + tests
-- [ ] UI screens
-- [ ] QA, PWA, docs, deploy
+- [x] Research: research/SOURCES.md, FUNNEL.md, RULES_RAW.md (ред. 08.06.2026, 56 ям), SPOTS_CANDIDATES.md (88), UX_NOTES.md
+- [x] Data pipeline: water.json (1777 features, KZ mask), admin.geojson, rules.json + zones.geojson (29 pits in circle), gauges.json (ice estimate + stale allrivers), observations.geojson (70), species.json + species-index.json (28, all photos licensed), spots.json (56: 5 paid, 34 ice, OSRM drive times), advice.json (14 checklists, 21 sections)
+- [x] Model: src/model (22 unit tests), docs/MODEL.md
+- [x] UI: map (chance dots, clusters, zones, water tap, search, filters, scrubber), spot sheet (verdict, hour chart, 7-day outlook, rules today, water/ice), water sheet, species list + calendar + pages, planner (URL state, share), rules/safety/about, light/dark, PWA offline
+- [x] QA: `npm run qa` ok (payload 2.62 MB); e2e 14/14 mobile+desktop incl. offline reload (qa/screenshots/); Lighthouse mobile perf 86 / a11y 100 / best-practices 96 (qa/lighthouse.json)
+- [x] Docs: README (RU+EN), DESIGN, MODEL, DEMO, DECISIONS D-001…D-025; CI: deploy-pages.yml, refresh-data.yml; vercel.json
 
-## Exact next step
+## Exact next step (if work continues)
 
-Probe data sources in parallel (Overpass, OpenFreeMap, OSRM, Open-Meteo, allrivers, GBIF, iNat, Wikipedia, regulations), write research/SOURCES.md and FUNNEL.md.
+1. Add 1–5 more paid ponds once their water bodies are mapped in OSM (brief asks 6–10; we have 5).
+2. Snap зимовальные ямы polygons to the Irtysh centreline instead of straight-segment buffers.
+3. Per-cell weather for the map (Open-Meteo multi-location request) instead of one regional forecast.
+4. Manual read-through of all 28 species pages by a local angler; tune `activity_by_*` curves.
 
 ## Known problems
 
-- osmium / mapshaper / ogr2ogr / shapely not installed; geometry work must be done in Node (turf) or via npx mapshaper.
+- overpass-api.de refuses connections from this IP after the initial 504 storm; pipeline uses overpass.openstreetmap.fr (works). Cached responses in scripts/.cache.
+- No live hydrology for the Irtysh (allrivers last measured 2024-05-13; АИС ГМВО closed) — shown honestly with dates.
+- The in-app Browser pane sometimes captures the WebGL canvas blank; Playwright screenshots and DOM queries confirm rendering.
+- Lighthouse LCP is the verdict text at ~4 s on simulated 4G; further gains need a smaller React bundle or SSR of the verdict.
 
 ## Update 2026-09-22 14:20
 

@@ -77,6 +77,15 @@ Overpass pulls are tiled and cached in `scripts/.cache` (gitignored). The main o
 
 Daily data refresh: `.github/workflows/refresh-data.yml` (cron 02:20 UTC) runs `data:refresh` + `qa` and commits `public/data`.
 
+## QA status (2026-09-22)
+
+| Check | Result |
+|-------|--------|
+| `npm test` | 22 unit tests pass |
+| `npm run qa` | ok — 28 species, 56 spots, 29 zones, payload 2.62 MB |
+| `npm run e2e` | 14/14 (mobile + desktop, offline reload included); screenshots in `qa/screenshots/` |
+| `npm run lighthouse` (mobile, simulated 4G) | performance 86, accessibility 100, best practices 96 |
+
 ## Model
 
 See `docs/MODEL.md`. All weights live in `src/model/weights.ts`.

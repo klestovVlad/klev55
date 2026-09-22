@@ -40,3 +40,9 @@ Known: overpass-api.de blocks our IP; using overpass.openstreetmap.fr. No live h
 Done: spots batch 2 (26 files), pipeline build-spots verified (OSRM ok), KZ mask (SKO + Pavlodar), model recalibrated (base 38), perf split (maplibre chunk 1.05 MB, index 0.4 MB, lazy screens), README, DEMO.md, CI workflows, Playwright config (Chromium mobile/desktop), Lighthouse script.
 In progress: spots batch 1 agent (city/south/paid, ~30 files); e2e mobile run.
 Next: build-spots on the full set → qa → e2e both projects → lighthouse → fix findings → final PROGRESS/commit. Then manual content review pass (species texts) and screenshot pass 390/1440 light+dark.
+
+## Update 2026-09-22 17:10
+
+Done: 56 spots built (5 paid, 34 ice), QA passes (2.58 MB), e2e 14/14 (mobile + desktop, offline test included), custom bottom sheet, cluster labels fixed, Lighthouse mobile: perf 39 → 66 after lazy map + deferred water.json; a11y 100, best-practices 96.
+In progress: FCP/LCP work (static shell in index.html, data preloads) → target perf ≥ 85.
+Next: rerun lighthouse + e2e; screenshot pass (light/dark, 390/1440) → qa/screenshots; manual content review; final README/PROGRESS; commit.

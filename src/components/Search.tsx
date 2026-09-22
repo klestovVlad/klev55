@@ -10,7 +10,7 @@ export function Search({ open, onOpenChange }: { open: boolean; onOpenChange: (o
   const [q, setQ] = useState('');
   const species = useSpecies();
   const spots = useSpots();
-  const water = useWater();
+  const water = useWater(open); // 1.3 MB overlay: fetch only when the search opens
   const set = useStore((s) => s.set);
   const nav = useNavigate();
   const waters = useMemo(() => {

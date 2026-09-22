@@ -39,9 +39,14 @@ export function MapScreen() {
 
   return (
     <div className="mapscreen">
-      <Suspense fallback={<div className="map map--loading" aria-hidden="true" />}>
-        <MapView />
-      </Suspense>
+      {/* Verdict first: the map bundle is requested only once places and species are in. */}
+      {ready ? (
+        <Suspense fallback={<div className="map map--loading" aria-hidden="true" />}>
+          <MapView />
+        </Suspense>
+      ) : (
+        <div className="map map--loading" aria-hidden="true" />
+      )}
       <FilterBar />
       <Sheet snap={snap} onSnap={setSnap}>
         {spotId ? (

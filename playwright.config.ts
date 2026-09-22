@@ -5,7 +5,7 @@ export default defineConfig({
   timeout: 60_000,
   retries: 0,
   reporter: [['list']],
-  use: { baseURL: 'http://localhost:4173', trace: 'off', screenshot: 'off', launchOptions: { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] } },
+  use: { baseURL: 'http://localhost:4173', trace: 'off', screenshot: 'off', launchOptions: { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-webgl'] } },
   webServer: { command: 'npm run preview -- --port 4173 --strictPort', url: 'http://localhost:4173', reuseExistingServer: true, timeout: 60_000 },
   projects: [
     { name: 'mobile', use: { ...devices['Pixel 5'], viewport: { width: 390, height: 844 } } },

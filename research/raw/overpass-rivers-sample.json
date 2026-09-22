@@ -1,0 +1,246 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-09-22T08:45:51Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "way",
+  "id": 110205432,
+  "tags": {
+    "admin_level": "6",
+    "boat": "yes",
+    "boundary": "administrative",
+    "int_name": "Irtysh",
+    "name": "Иртыш",
+    "name:ar": "نهر إيرتيش",
+    "name:bxr": "Эршэтэ мүрэн",
+    "name:ce": "Иртыш",
+    "name:de": "Irtysch",
+    "name:en": "Irtysh River",
+    "name:fr": "Irtych",
+    "name:hy": "Իրտիշ",
+    "name:ja": "エルティシ川",
+    "name:kk": "Ертіс",
+    "name:mn": "Эрчис",
+    "name:nl": "Irtysj",
+    "name:pl": "Irtysz",
+    "name:ro": "Irtiș",
+    "name:ru": "Иртыш",
+    "name:tt": "Иртеш",
+    "name:uk": "Іртиш",
+    "name:zh": "额尔齐斯河",
+    "short_name:ar": "إيرتيش",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 110205433,
+  "tags": {
+    "boat": "yes",
+    "int_name": "Irtysh",
+    "name": "Иртыш",
+    "name:ar": "نهر إيرتيش",
+    "name:bxr": "Эршэтэ мүрэн",
+    "name:ce": "Иртыш",
+    "name:de": "Irtysch",
+    "name:en": "Irtysh River",
+    "name:fr": "Irtych",
+    "name:hy": "Իրտիշ",
+    "name:ja": "エルティシ川",
+    "name:kk": "Ертіс",
+    "name:mn": "Эрчис",
+    "name:nl": "Irtysj",
+    "name:pl": "Irtysz",
+    "name:ro": "Irtiș",
+    "name:ru": "Иртыш",
+    "name:tt": "Иртеш",
+    "name:uk": "Іртиш",
+    "name:zh": "额尔齐斯河",
+    "short_name:ar": "إيرتيش",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 110205436,
+  "tags": {
+    "boat": "no",
+    "int_name": "Om",
+    "name": "Омь",
+    "name:de": "Om",
+    "name:ja": "オミ川",
+    "name:pl": "Om",
+    "name:ru": "Омь",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 622301165,
+  "tags": {
+    "boat": "yes",
+    "int_name": "Irtysh",
+    "name": "Иртыш",
+    "name:ar": "نهر إيرتيش",
+    "name:bxr": "Эршэтэ мүрэн",
+    "name:ce": "Иртыш",
+    "name:de": "Irtysch",
+    "name:en": "Irtysh",
+    "name:fr": "Irtych",
+    "name:hy": "Իրտիշ",
+    "name:ja": "エルティシ川",
+    "name:kk": "Ертіс",
+    "name:mn": "Эрчис",
+    "name:nl": "Irtysj",
+    "name:pl": "Irtysz",
+    "name:ro": "Irtiș",
+    "name:ru": "Иртыш",
+    "name:tt": "Иртеш",
+    "name:uk": "Іртиш",
+    "name:zh": "额尔齐斯河",
+    "short_name:ar": "إيرتيش",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197748,
+  "tags": {
+    "name": "Замарайка",
+    "tidal": "no",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197749,
+  "tags": {
+    "name": "Замарайка",
+    "tidal": "no",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197750,
+  "tags": {
+    "name": "Замарайка",
+    "tidal": "no",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197751,
+  "tags": {
+    "name": "Замарайка",
+    "tidal": "no",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197752,
+  "tags": {
+    "name": "Замарайка",
+    "tidal": "no",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197753,
+  "tags": {
+    "name": "Замарайка",
+    "tidal": "no",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197754,
+  "tags": {
+    "name": "Замарайка",
+    "tidal": "no",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197755,
+  "tags": {
+    "name": "Замарайка",
+    "tidal": "no",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197756,
+  "tags": {
+    "name": "Замарайка",
+    "tidal": "no",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197758,
+  "tags": {
+    "layer": "-1",
+    "name": "Замарайка",
+    "tidal": "no",
+    "tunnel": "culvert",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197759,
+  "tags": {
+    "layer": "-1",
+    "name": "Замарайка",
+    "tidal": "no",
+    "tunnel": "culvert",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197761,
+  "tags": {
+    "layer": "-1",
+    "name": "Замарайка",
+    "tidal": "no",
+    "tunnel": "culvert",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197762,
+  "tags": {
+    "name": "Замарайка",
+    "tidal": "no",
+    "waterway": "river"
+  }
+},
+{
+  "type": "way",
+  "id": 1220197763,
+  "tags": {
+    "layer": "-1",
+    "name": "Замарайка",
+    "tidal": "no",
+    "tunnel": "culvert",
+    "waterway": "river"
+  }
+}
+
+  ]
+}

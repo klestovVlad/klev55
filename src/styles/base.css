@@ -1,3 +1,40 @@
-* { box-sizing: border-box; }
+@import '@fontsource/golos-text/cyrillic-400.css';
+@import '@fontsource/golos-text/cyrillic-500.css';
+@import '@fontsource/golos-text/cyrillic-600.css';
+@import '@fontsource/golos-text/latin-400.css';
+@import '@fontsource/golos-text/latin-500.css';
+@import '@fontsource/golos-text/latin-600.css';
+@import '@fontsource-variable/literata/opsz.css';
+
+*, *::before, *::after { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }
-body { background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, sans-serif; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: var(--t-body);
+  line-height: 1.45;
+  font-feature-settings: 'tnum' 1;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+h1, h2, h3 { margin: 0; font-weight: 600; line-height: 1.2; }
+h1 { font-family: var(--font-voice); font-size: var(--t-h1); font-weight: 600; }
+h2 { font-family: var(--font-voice); font-size: var(--t-h2); font-weight: 600; }
+h3 { font-size: var(--t-lead); }
+p { margin: 0 0 0.75em; }
+a { color: var(--river); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--river);
+  outline-offset: 2px;
+}
+input, select, textarea { font: inherit; color: inherit; }
+ul, ol { margin: 0; padding-left: 1.2em; }
+img { max-width: 100%; display: block; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+.muted { color: var(--muted); }
+.caption { font-size: var(--t-caption); color: var(--muted); }

@@ -1,5 +1,106 @@
-/* Placeholder tokens; replaced after docs/DESIGN.md is written. */
+/* Design tokens — see docs/DESIGN.md. Light theme on :root, dark via [data-theme] or media. */
 :root {
-  --bg: #f4f6f7;
-  --ink: #142129;
+  color-scheme: light;
+  --ink: #14232b;
+  --paper: #f2f5f6;
+  --surface: #ffffff;
+  --river: #2f5d75;
+  --river-ink: #ffffff;
+  --reed: #6e7f3a;
+  --amber: #d8821f;
+  --ban: #b0382c;
+  --ban-wash: #f6e4e1;
+  --muted: #55656e;
+  --line: #d7dee2;
+  --wash: #e6ecef;
+  --wash-strong: #d0dae0;
+  --shadow: 0 -2px 24px rgba(20, 35, 43, 0.14);
+  --shadow-pop: 0 6px 24px rgba(20, 35, 43, 0.18);
+
+  /* chance scale: grey-blue → river → reed → amber */
+  --chance-0: #a9b4ba;
+  --chance-40: #2f5d75;
+  --chance-65: #6e7f3a;
+  --chance-85: #d8821f;
+
+  --font-ui: 'Golos Text', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-voice: 'Literata Variable', Georgia, 'Times New Roman', serif;
+
+  --t-caption: 14px;
+  --t-body: 16px;
+  --t-lead: 18px;
+  --t-h2: 22px;
+  --t-h1: 28px;
+  --t-verdict: 44px;
+
+  --r-control: 12px;
+  --r-sheet: 18px;
+  --tap: 44px;
+  --gap: 12px;
+  --pad: 16px;
+  --dur: 160ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --tabbar-h: 60px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+@media (min-width: 900px) {
+  :root {
+    --t-caption: 13px;
+    --t-body: 15px;
+    --t-lead: 17px;
+    --t-h1: 32px;
+    --t-verdict: 52px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --ink: #e6ecef;
+    --paper: #0f1a20;
+    --surface: #182630;
+    --river: #7fb0cc;
+    --river-ink: #0f1a20;
+    --reed: #a9bd5e;
+    --amber: #f0a24a;
+    --ban: #e4685b;
+    --ban-wash: #3a2320;
+    --muted: #9fb0b9;
+    --line: #2b3b46;
+    --wash: #213139;
+    --wash-strong: #2c3f4a;
+    --shadow: 0 -2px 24px rgba(0, 0, 0, 0.5);
+    --shadow-pop: 0 6px 24px rgba(0, 0, 0, 0.5);
+    --chance-0: #6d7a82;
+    --chance-40: #5f93b0;
+    --chance-65: #98ad55;
+    --chance-85: #f0a24a;
+  }
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --ink: #e6ecef;
+  --paper: #0f1a20;
+  --surface: #182630;
+  --river: #7fb0cc;
+  --river-ink: #0f1a20;
+  --reed: #a9bd5e;
+  --amber: #f0a24a;
+  --ban: #e4685b;
+  --ban-wash: #3a2320;
+  --muted: #9fb0b9;
+  --line: #2b3b46;
+  --wash: #213139;
+  --wash-strong: #2c3f4a;
+  --shadow: 0 -2px 24px rgba(0, 0, 0, 0.5);
+  --shadow-pop: 0 6px 24px rgba(0, 0, 0, 0.5);
+  --chance-0: #6d7a82;
+  --chance-40: #5f93b0;
+  --chance-65: #98ad55;
+  --chance-85: #f0a24a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur: 0ms; }
 }

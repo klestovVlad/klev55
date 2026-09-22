@@ -2,6 +2,7 @@ import { useEffect, lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { TabBar } from '@/components/TabBar';
+import { UpdateToast } from '@/components/UpdateToast';
 import { MapScreen } from '@/screens/MapScreen';
 const PlanScreen = lazy(() => import('@/screens/PlanScreen').then((m) => ({ default: m.PlanScreen })));
 const SpeciesListScreen = lazy(() => import('@/screens/SpeciesScreen').then((m) => ({ default: m.SpeciesListScreen })));
@@ -36,6 +37,7 @@ export function App() {
             </Suspense>
           </main>
           <TabBar />
+          <UpdateToast />
         </div>
       </BrowserRouter>
     </QueryClientProvider>

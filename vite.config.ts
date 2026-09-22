@@ -11,7 +11,8 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
+      injectRegister: false, // registered from src/components/UpdateToast.tsx (update checks + «Обновить» toast)
       includeAssets: ['icons/*.png', 'favicon.png', 'og.jpg'],
       manifest: {
         name: 'Клёв 55 — карта и прогноз рыбалки',

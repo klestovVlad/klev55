@@ -7,6 +7,8 @@ import { useStore } from '@/app/store';
 import { useWater, useZones, useObservations, useAdmin } from '@/data/load';
 import { useSpotScores } from '@/model/useScores';
 import { activeZones } from '@/model/hydro';
+import { useWeatherGrid } from '@/data/weatherGrid';
+import { useWeatherLayer } from './useWeatherLayer';
 import { CHANCE_HEX } from '@/lib/format';
 import './map.css';
 
@@ -49,6 +51,8 @@ export function MapView() {
   const layers = useStore((s) => s.layers);
   const obs = useObservations(layers.observations);
   const { scores, date } = useSpotScores();
+  const grid = useWeatherGrid();
+  useWeatherLayer(mapRef.current, loaded, dark, grid.data, date, layers.weather);
   const set = useStore((s) => s.set);
   const spotId = useStore((s) => s.spotId);
 

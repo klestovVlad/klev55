@@ -54,7 +54,7 @@ Species traits (predator, winter_active, shallow_lake_sensitive, prefers_ice) li
 - `bestWindows(scores)` — contiguous runs of ≥2 h with score ≥ max(35, 0.8 × max), top 2.
 - `dailyOutlook(ctx, from, 7)` — per day: max over 04–22 h, best window, legal summary.
 
-Weather comes from Open-Meteo hourly with `past_days=3` so 24 h / 72 h pressure trends and the day-over-day temperature change can be computed client-side (`src/model/weather.ts`).
+Weather comes from the Open-Meteo forecast grid (`src/data/weatherGrid.ts`, nearest of ~33 points ≈ 60 km apart) with `past_days=3` so 24 h / 72 h pressure trends and the day-over-day temperature change can be computed client-side (`src/model/weather.ts`).
 
 ## Calibration
 

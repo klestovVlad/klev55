@@ -9,19 +9,21 @@ import { SpotList } from '@/components/SpotList';
 const SpotSheet = lazy(() => import('@/screens/SpotSheet').then((m) => ({ default: m.SpotSheet })));
 const WaterSheet = lazy(() => import('@/screens/WaterSheet').then((m) => ({ default: m.WaterSheet })));
 import { useStore } from '@/app/store';
-import { useSpotScores } from '@/model/useScores';
+import { useSpotScores, useAllData } from '@/model/useScores';
 import { useSpecies } from '@/data/load';
 import { chanceWord, dayLong, timeHM } from '@/lib/format';
 import { ConditionsStrip } from '@/components/ConditionsStrip';
+import { WeatherLegend } from '@/components/WeatherLegend';
 import './mapscreen.css';
 
 export function MapScreen() {
   const [snap, setSnap] = useState<SnapKey>('peek');
   const desktop = useDesktop();
   const peek = !desktop && snap === 'peek';
-  const { spotId, waterId, speciesId } = useStore();
+  const { spotId, waterId, speciesId, layers } = useStore();
   const set = useStore((s) => s.set);
   const { scores, date, ready, offline } = useSpotScores();
+  const grid = useAllData().weather;
   const species = useSpecies();
   const sp = species.data?.items.find((s) => s.id === speciesId);
 
@@ -48,6 +50,7 @@ export function MapScreen() {
         <div className="map map--loading" aria-hidden="true" />
       )}
       <FilterBar />
+      {layers.weather && !spotId && !waterId && <WeatherLegend fetchedAt={grid.data?.fetched_at} />}
       <Sheet snap={snap} onSnap={setSnap}>
         {spotId ? (
           <Suspense fallback={<div className="skeleton" style={{ width: '60%' }} />}>

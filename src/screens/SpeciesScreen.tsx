@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useStore, scrubberDate } from '@/app/store';
 import { useAllData } from '@/model/useScores';
 import { useSpeciesFull } from '@/data/load';
-import { useWeather, OMSK } from '@/data/weather';
+import { nearestSeries } from '@/data/weatherGrid';
 import { chance } from '@/model/bite';
 import { weatherAt } from '@/model/weather';
 import { hydroFor } from '@/model/hydro';
@@ -120,21 +120,19 @@ export function SpeciesScreen() {
   const nav = useNavigate();
   const set = useStore((s) => s.set);
   const hoursAhead = useStore((s) => s.hoursAhead);
-  const wq = useWeather(OMSK.lat, OMSK.lon);
   const s = full.data?.items.find((x) => x.id === id);
   const date = scrubberDate(hoursAhead);
   const spotsRanked = useMemo(() => {
     if (!s || !d.spots.data) return [];
-    const w = weatherAt(wq.data?.hourly ?? null, date);
     return d.spots.data.items
       .filter((sp) => sp.species.some((x) => x.id === s.id))
-      .map((sp) => ({ sp, r: chance({ spot: sp, species: s, date, weather: w, hydro: hydroFor(sp, d.gauges.data?.items, d.gauges.data?.ice, d.zones.data, date), rules: d.rules.data ?? null }), rank: sp.species.find((x) => x.id === s.id)!.rank }))
+      .map((sp) => ({ sp, r: chance({ spot: sp, species: s, date, weather: weatherAt(nearestSeries(d.weather.data, sp.coords[1], sp.coords[0]), date), hydro: hydroFor(sp, d.gauges.data?.items, d.gauges.data?.ice, d.zones.data, date), rules: d.rules.data ?? null }), rank: sp.species.find((x) => x.id === s.id)!.rank }))
       .sort((a, b) => b.r.score - a.r.score || b.rank - a.rank);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [s, d.spots.data, d.gauges.data, d.zones.data, d.rules.data, wq.data, Math.floor(date.getTime() / 3600000)]);
+  }, [s, d.spots.data, d.gauges.data, d.zones.data, d.rules.data, d.weather.data, Math.floor(date.getTime() / 3600000)]);
   if (!s) return <div className="screen"><div className="screen__inner"><p className="empty">{full.isPending ? 'Загружаем…' : 'Такой рыбы нет.'}</p></div></div>;
   const top = spotsRanked[0];
-  const ctx = top ? { spot: top.sp, species: s, series: wq.data?.hourly ?? null, hydro: hydroFor(top.sp, d.gauges.data?.items, d.gauges.data?.ice, d.zones.data, date), rules: d.rules.data ?? null } : null;
+  const ctx = top ? { spot: top.sp, species: s, series: nearestSeries(d.weather.data, top.sp.coords[1], top.sp.coords[0]), hydro: hydroFor(top.sp, d.gauges.data?.items, d.gauges.data?.ice, d.zones.data, date), rules: d.rules.data ?? null } : null;
   const day0 = startOfOmskDay(new Date());
   const hours = ctx ? hourly(ctx, day0, 24) : [];
   const rules = d.rules.data;
@@ -176,7 +174,7 @@ export function SpeciesScreen() {
           {ctx && top && !banned && (
             <>
               <h3>Сегодня, {dayShort(day0)} — на месте «{top.sp.name}»</h3>
-              <HourChart scores={hours} lat={top.sp.coords[1]} lon={top.sp.coords[0]} series={wq.data?.hourly} selected={date} />
+              <HourChart scores={hours} lat={top.sp.coords[1]} lon={top.sp.coords[0]} series={nearestSeries(d.weather.data, top.sp.coords[1], top.sp.coords[0])} selected={date} />
             </>
           )}
           <dl className="kv">

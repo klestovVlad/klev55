@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useStore, scrubberDate } from '@/app/store';
 import { useAllData } from '@/model/useScores';
 import { useSpeciesFull } from '@/data/load';
-import { useWeather } from '@/data/weather';
+import { nearestSeries } from '@/data/weatherGrid';
 import { chance } from '@/model/bite';
 import { weatherAt } from '@/model/weather';
 import { hydroFor } from '@/model/hydro';
@@ -25,16 +25,16 @@ export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => vo
   const { speciesId, hoursAhead } = useStore();
   const set = useStore((s) => s.set);
   const spot = d.spots.data?.items.find((s) => s.id === spotId);
-  const wq = useWeather(spot?.coords[1] ?? 54.99, spot?.coords[0] ?? 73.37, !!spot);
   const [pick, setPick] = useState<string | null>(null);
   const date = scrubberDate(hoursAhead);
 
   // Prefer full records (methods, lifehacks); fall back to the light index until they arrive.
   const byId = useMemo(() => new Map<string, Species>((((full.data?.items ?? d.species.data?.items) ?? []) as Species[]).map((s) => [s.id, s])), [full.data, d.species.data]);
   if (!spot) return <p className="empty">Место не найдено.</p>;
+  const series = nearestSeries(d.weather.data, spot.coords[1], spot.coords[0]);
 
   const hydro = hydroFor(spot, d.gauges.data?.items, d.gauges.data?.ice, d.zones.data, date);
-  const w = weatherAt(wq.data?.hourly ?? null, date);
+  const w = weatherAt(series, date);
   const listed = spot.species.map((s) => byId.get(s.id)).filter((x): x is NonNullable<typeof x> => !!x);
   const ranked = listed
     .map((sp) => ({ sp, r: chance({ spot, species: sp, date, weather: w, hydro, rules: d.rules.data ?? null }) }))
@@ -44,7 +44,7 @@ export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => vo
   const chosenR = chosen ? (ranked.find((x) => x.sp.id === chosen.id)?.r ?? chance({ spot, species: chosen, date, weather: w, hydro, rules: d.rules.data ?? null })) : null;
   const spotSp = chosen ? spot.species.find((s) => s.id === chosen.id) : undefined;
 
-  const ctx = chosen ? { spot, species: chosen, series: wq.data?.hourly ?? null, hydro, rules: d.rules.data ?? null } : null;
+  const ctx = chosen ? { spot, species: chosen, series, hydro, rules: d.rules.data ?? null } : null;
   const day0 = startOfOmskDay(date);
   const hours = ctx ? hourly(ctx, day0, 48) : [];
   const outlook = ctx ? dailyOutlook(ctx, new Date(), 7) : [];
@@ -86,7 +86,7 @@ export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => vo
           {chosen && ctx && (
             <>
               <h3>Когда клюёт {chosen.names.ru.toLowerCase()}: {dayShort(day0)} и {dayShort(addHours(day0, 24))}</h3>
-              <HourChart scores={hours} lat={spot.coords[1]} lon={spot.coords[0]} series={wq.data?.hourly} selected={date} onSelect={(dd) => set({ hoursAhead: Math.max(0, Math.round((dd.getTime() - Date.now()) / 3600000)) })} />
+              <HourChart scores={hours} lat={spot.coords[1]} lon={spot.coords[0]} series={series} selected={date} onSelect={(dd) => set({ hoursAhead: Math.max(0, Math.round((dd.getTime() - Date.now()) / 3600000)) })} />
               <ol className="outlook" aria-label="Прогноз на неделю">
                 {outlook.map((o) => (
                   <li key={o.date.toISOString()}>

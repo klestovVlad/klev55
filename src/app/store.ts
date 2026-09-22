@@ -16,7 +16,7 @@ interface State {
   spotId: string | null;
   /** Selected water osm_id (opens the water sheet). */
   waterId: number | null;
-  layers: { infra: boolean; observations: boolean; satellite: boolean; zones: boolean };
+  layers: { infra: boolean; observations: boolean; satellite: boolean; zones: boolean; weather: boolean };
   theme: Theme;
   set: (p: Partial<State>) => void;
   toggleLayer: (k: keyof State['layers']) => void;
@@ -39,7 +39,7 @@ export const useStore = create<State>((set) => ({
   hoursAhead: 0,
   spotId: null,
   waterId: null,
-  layers: { infra: false, observations: false, satellite: false, zones: true },
+  layers: { infra: false, observations: false, satellite: false, zones: true, weather: false },
   theme: savedTheme,
   set: (p) => set(p),
   toggleLayer: (k) => set((s) => ({ layers: { ...s.layers, [k]: !s.layers[k] } })),

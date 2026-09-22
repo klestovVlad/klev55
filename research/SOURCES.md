@@ -133,3 +133,9 @@ Legend: **live** = returns usable data; **degraded** = reachable but data stale/
 - **Live hydrology for Omsk is effectively unavailable**: ГМВО decommissioned, allrivers Omsk gauges frozen at 13.05.2024, УГМС prose only. The ice-thickness "generated" estimate from Open-Meteo degree-days becomes the primary winter signal; UI must say so.
 - Overpass needs a UA header (406 otherwise) and retry on 504.
 - GBIF fish need `orderKey` lists, not a class key.
+
+## RainViewer radar (probed 2026-09-22, evening)
+
+- https://api.rainviewer.com/public/weather-maps.json → 200, lists radar frames, `coverage: null`.
+- https://tilecache.rainviewer.com/v2/radar/<frame>/256/6/45/20/2/1_1.png (Omsk) → 404; same for Moscow 6/38/20 and 5/22/10.
+- Verdict: **dead** for our purpose — tile access is no longer public. No radar layer; precipitation comes from the Open-Meteo forecast grid instead.

@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import { useStore, scrubberDate } from '@/app/store';
 import { useGauges, useRules, useSpecies, useSpots, useZones } from '@/data/load';
-import { useWeather, OMSK } from '@/data/weather';
+import { useWeatherGrid, nearestSeries } from '@/data/weatherGrid';
 import { chance } from './bite';
 import { weatherAt } from './weather';
 import { hydroFor } from './hydro';
@@ -22,7 +22,7 @@ export function useAllData() {
   const rules = useRules();
   const gauges = useGauges();
   const zones = useZones();
-  const weather = useWeather(OMSK.lat, OMSK.lon);
+  const weather = useWeatherGrid();
   return { species, spots, rules, gauges, zones, weather, ready: !!species.data && !!spots.data };
 }
 
@@ -34,9 +34,9 @@ export function useSpotScores(opts: { date?: Date } = {}): { scores: SpotScore[]
   const scores = useMemo(() => {
     if (!d.species.data || !d.spots.data) return [];
     const byId = new Map(d.species.data.items.map((s) => [s.id, s]));
-    const w = weatherAt(d.weather.data?.hourly ?? null, date);
     const out: SpotScore[] = [];
     for (const spot of d.spots.data.items) {
+      const w = weatherAt(nearestSeries(d.weather.data, spot.coords[1], spot.coords[0]), date);
       if (maxKm != null && spot.distance_km > maxKm) continue;
       if (iceOnly && !spot.ice_spot) continue;
       if (freeOnly && spot.type === 'платник') continue;

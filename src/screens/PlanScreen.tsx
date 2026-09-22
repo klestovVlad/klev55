@@ -5,6 +5,7 @@ import { useAllData } from '@/model/useScores';
 import { useAdvice } from '@/data/load';
 import { chance } from '@/model/bite';
 import { weatherAt } from '@/model/weather';
+import { nearestSeries } from '@/data/weatherGrid';
 import { hydroFor } from '@/model/hydro';
 import { bestWindows } from '@/model/outlook';
 import { Chip } from '@/components/Chip';
@@ -78,9 +79,9 @@ export function PlanScreen() {
   const rows = useMemo<PlanRow[]>(() => {
     if (!d.spots.data || !species.length) return [];
     const byId = new Map(species.map((s) => [s.id, s]));
-    const series = d.weather.data?.hourly ?? null;
     const out: PlanRow[] = [];
     for (const spot of d.spots.data.items) {
+      const series = nearestSeries(d.weather.data, spot.coords[1], spot.coords[0]);
       if (spot.drive_min != null ? spot.drive_min > km * 1.1 : spot.distance_km > km) continue;
       if (boat && !spot.access.boat) continue;
       let cands = spot.species.filter((s) => byId.has(s.id));

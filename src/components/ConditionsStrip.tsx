@@ -1,4 +1,5 @@
-import { useWeather, OMSK } from '@/data/weather';
+import { OMSK } from '@/data/weather';
+import { useWeatherGrid, nearestSeries } from '@/data/weatherGrid';
 import { weatherAt } from '@/model/weather';
 import { solunarDay, moonPhaseName } from '@/model/solunar';
 import { timeHM, windDirText, weatherWord } from '@/lib/format';
@@ -7,10 +8,10 @@ import './conditions.css';
 
 /** One line of conditions for the selected time, plus a 72-h pressure sparkline. No tiles, no dashboard. */
 export function ConditionsStrip({ date, lat = OMSK.lat, lon = OMSK.lon }: { date: Date; lat?: number; lon?: number }) {
-  const wq = useWeather(lat, lon);
-  const w = weatherAt(wq.data?.hourly ?? null, date);
+  const wq = useWeatherGrid();
+  const series = nearestSeries(wq.data, lat, lon) ?? undefined;
+  const w = weatherAt(series ?? null, date);
   const sun = solunarDay(date, lat, lon);
-  const series = wq.data?.hourly;
   let spark: string | null = null;
   if (series && w) {
     const i = series.time.findIndex((t) => t * 1000 >= date.getTime() - 1800000);

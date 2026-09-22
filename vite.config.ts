@@ -60,6 +60,9 @@ export default defineConfig({
   ],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   server: { port: 5173 },
+  // MapLibre 6 resolves its worker via new URL('./maplibre-gl-worker.mjs', import.meta.url);
+  // pre-bundling breaks that path in dev, so serve it straight from node_modules.
+  optimizeDeps: { exclude: ['maplibre-gl'] },
   build: { target: 'es2022', sourcemap: false },
   test: { environment: 'node', include: ['src/**/*.test.ts', 'scripts/**/*.test.ts'] },
 });

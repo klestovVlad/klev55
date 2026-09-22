@@ -14,7 +14,7 @@ import { ConditionsStrip } from '@/components/ConditionsStrip';
 import './mapscreen.css';
 
 export function MapScreen() {
-  const [snap, setSnap] = useState<number | string | null>(0.22);
+  const [snap, setSnap] = useState<number | string | null>(0.3);
   const { spotId, waterId, speciesId } = useStore();
   const set = useStore((s) => s.set);
   const { scores, date, ready, offline } = useSpotScores();
@@ -22,7 +22,7 @@ export function MapScreen() {
   const sp = species.data?.items.find((s) => s.id === speciesId);
 
   useEffect(() => {
-    if (spotId || waterId) setSnap(0.55);
+    if (spotId || waterId) setSnap(0.6);
   }, [spotId, waterId]);
 
   const best = scores[0];
@@ -49,9 +49,9 @@ export function MapScreen() {
             <TimeScrubber />
             <ConditionsStrip date={date} />
             <h2 className="mapscreen__h2">Куда ехать</h2>
-            <SpotList scores={scores} limit={snap === 0.22 ? 3 : 40} />
-            {snap === 0.22 && scores.length > 3 && (
-              <button type="button" className="btn btn--ghost btn--small" onClick={() => setSnap(0.55)}>
+            <SpotList scores={scores} limit={snap === 0.3 ? 3 : 40} />
+            {snap === 0.3 && scores.length > 3 && (
+              <button type="button" className="btn btn--ghost btn--small" onClick={() => setSnap(0.6)}>
                 Показать все {scores.length}
               </button>
             )}

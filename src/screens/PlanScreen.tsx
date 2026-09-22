@@ -10,7 +10,7 @@ import { bestWindows } from '@/model/outlook';
 import { Chip } from '@/components/Chip';
 import { ConditionsStrip } from '@/components/ConditionsStrip';
 import { ProvenanceBadge } from '@/components/Provenance';
-import { chanceColor, chanceWord, dayLong, driveText, timeHM, plural } from '@/lib/format';
+import { chanceColor, chanceWord, dayLong, driveText, timeHM, plural, bySpeciesPriority } from '@/lib/format';
 import { addHours, omskParts, startOfOmskDay } from '@/lib/time';
 import type { MethodName, Season, Species, Spot } from '@/data/types';
 import './plan.css';
@@ -73,7 +73,7 @@ export function PlanScreen() {
   const day = whens.find((w) => w.key === when)?.day ?? whens[0].day;
   const season = seasonOf(day);
   const species = d.species.data?.items ?? [];
-  const pickable = species.filter((s) => s.status.legal !== 'banned' && s.presence !== 'rare');
+  const pickable = species.filter((s) => s.status.legal !== 'banned' && s.presence !== 'rare').sort(bySpeciesPriority);
 
   const rows = useMemo<PlanRow[]>(() => {
     if (!d.spots.data || !species.length) return [];

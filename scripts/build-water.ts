@@ -92,15 +92,16 @@ async function main() {
   console.log('6/6 admin boundaries: Омская область + Kazakh oblasts touching the circle');
   const admin = toGeo(
     await overpass(
-      `(relation["boundary"="administrative"]["admin_level"="4"]["name"~"^(Омская область|Северо-Казахстанская область|Павлодарская область)$"](${bbox}););out geom;`,
+      `(relation["boundary"="administrative"]["admin_level"="4"]["name"="Омская область"](${bbox});relation["boundary"="administrative"]["admin_level"="4"]["name:ru"~"^(Северо-Казахстанская|Павлодарская) область$"](${bbox}););out geom;`,
       'admin',
       600,
     ),
   );
-  console.log('   features:', admin.features.length, admin.features.map((f) => f.properties?.name));
+  for (const f of admin.features) if (!f.properties?.name && f.properties?.['name:ru']) f.properties!.name = f.properties['name:ru'];
+  console.log('   features:', admin.features.length, admin.features.map((f) => `${f.properties?.name}/${f.geometry?.type}`));
 
   // Kazakh polygons for jurisdiction tests.
-  const kz = admin.features.filter((f) => /Казахстан|Павлодар/.test(String(f.properties?.name)));
+  const kz = admin.features.filter((f) => /Казахстан|Павлодар/.test(String(f.properties?.name ?? f.properties?.['name:ru'])) && (f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon'));
   const omsk = admin.features.find((f) => f.properties?.name === 'Омская область');
   const inKz = (pt: [number, number]) => kz.some((f) => turf.booleanPointInPolygon(pt, f as any));
 

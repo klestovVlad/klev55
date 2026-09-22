@@ -9,7 +9,7 @@ interface Props {
   onSnap: (s: number | string | null) => void;
 }
 
-const SNAPS = [0.22, 0.55, 0.96];
+const SNAPS = [0.3, 0.6, 0.96];
 export const SHEET_SNAPS = SNAPS;
 
 /** Bottom sheet on mobile (vaul, non-modal so the map stays live), side panel on desktop. */

@@ -2,6 +2,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useSpecies } from '@/data/load';
 import { useStore } from '@/app/store';
 import { Chip } from './Chip';
+import { bySpeciesPriority } from '@/lib/format';
 import './dialog.css';
 
 const ORDER = ['common', 'local', 'stocked', 'rare'];
@@ -29,7 +30,7 @@ export function SpeciesPicker({ open, onOpenChange }: { open: boolean; onOpenCha
               <Chip selected={!speciesId} onClick={() => pick(null)}>Любая рыба</Chip>
             </div>
             {ORDER.map((g) => {
-              const items = (species.data?.items ?? []).filter((s) => s.presence === g && s.status.legal !== 'banned');
+              const items = (species.data?.items ?? []).filter((s) => s.presence === g && s.status.legal !== 'banned').sort(bySpeciesPriority);
               if (!items.length) return null;
               return (
                 <div key={g} className="section">

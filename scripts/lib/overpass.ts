@@ -1,4 +1,4 @@
-import { cachedFetch } from './cache';
+import { cachedFetch, isCached } from './cache';
 
 // lz4 mirror has been the reliable one; the main host answers 504 "too busy" under load.
 const ENDPOINTS = ['https://overpass.openstreetmap.fr/api/interpreter', 'https://lz4.overpass-api.de/api/interpreter', 'https://overpass-api.de/api/interpreter'];
@@ -16,8 +16,9 @@ export async function overpass(query: string, label = 'overpass', timeout = 180)
   let lastErr: unknown;
   for (const ep of ENDPOINTS) {
     try {
-      await pace();
-      const text = await cachedFetch(ep, { method: 'POST', body: 'data=' + encodeURIComponent(q), label, ttlHours: 24 * 30 });
+      const body = 'data=' + encodeURIComponent(q);
+      if (!isCached(ep, body, 24 * 30)) await pace();
+      const text = await cachedFetch(ep, { method: 'POST', body, label, ttlHours: 24 * 30 });
       const json = JSON.parse(text);
       if (json.remark && /runtime error/i.test(json.remark)) throw new Error(json.remark);
       return json;

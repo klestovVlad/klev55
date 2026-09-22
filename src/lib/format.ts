@@ -76,3 +76,12 @@ export function weatherWord(code: number): string {
   if (code <= 86) return 'снегопад';
   return 'гроза';
 }
+
+/** Angler-relevance order for species pickers (rest alphabetical after these). */
+export const SPECIES_PRIORITY = ['esox-lucius', 'sander-lucioperca', 'perca-fluviatilis', 'abramis-brama', 'leuciscus-idus', 'carassius-gibelio', 'rutilus-rutilus', 'cyprinus-carpio', 'lota-lota', 'leuciscus-leuciscus', 'tinca-tinca', 'coregonus-peled', 'gymnocephalus-cernua', 'perccottus-glenii', 'carassius-carassius', 'ctenopharyngodon-idella', 'hypophthalmichthys-molitrix', 'oncorhynchus-mykiss'];
+export function bySpeciesPriority<T extends { id: string; names: { ru: string } }>(a: T, b: T): number {
+  const ia = SPECIES_PRIORITY.indexOf(a.id);
+  const ib = SPECIES_PRIORITY.indexOf(b.id);
+  if (ia !== -1 || ib !== -1) return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  return a.names.ru.localeCompare(b.names.ru, 'ru');
+}

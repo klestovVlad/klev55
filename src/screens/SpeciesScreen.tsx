@@ -17,6 +17,7 @@ import type { Species } from '@/data/types';
 import './species.css';
 
 const PRESENCE: Record<string, string> = { common: 'обычна', local: 'местами', rare: 'редко', stocked: 'только зарыбление' };
+const BAIT = new Set(['leucaspius-delineatus', 'phoxinus-phoxinus', 'gobio-gobio', 'alburnus-alburnus', 'gymnocephalus-cernua', 'blicca-bjoerkna', 'scardinius-erythrophthalmus']);
 const RISK: Record<string, string> = { high: 'высокий', medium: 'средний', low: 'низкий', none: 'нет' };
 const GROUPS = [
   { key: 'predator', title: 'Хищник', ids: ['esox-lucius', 'sander-lucioperca', 'perca-fluviatilis', 'lota-lota', 'gymnocephalus-cernua', 'perccottus-glenii', 'oncorhynchus-mykiss'] },
@@ -42,7 +43,7 @@ export function SpeciesListScreen() {
   const peaks = useMemo(() => {
     return Array.from({ length: 12 }, (_, i) =>
       items
-        .filter((s) => s.status.legal !== 'banned')
+        .filter((s) => s.status.legal !== 'banned' && !BAIT.has(s.id) && s.presence !== 'rare' && s.presence !== 'stocked')
         .map((s) => ({ s, a: s.activity_by_month[i] }))
         .sort((a, b) => b.a - a.a)
         .slice(0, 4),

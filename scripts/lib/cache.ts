@@ -8,6 +8,11 @@ export function cacheKey(s: string): string {
   return createHash('sha1').update(s).digest('hex').slice(0, 16);
 }
 
+export function isCached(url: string, body = '', ttlHours = 24 * 7): boolean {
+  const file = join(DIR, cacheKey(url + '|' + body) + '.txt');
+  return existsSync(file) && Date.now() - statSync(file).mtimeMs < ttlHours * 3600 * 1000;
+}
+
 /** Fetch text with an on-disk cache (default TTL 7 days). Retries twice with backoff. */
 export async function cachedFetch(
   url: string,

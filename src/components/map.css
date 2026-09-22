@@ -2,7 +2,8 @@
 .map .maplibregl-ctrl-group { border-radius: var(--r-control); box-shadow: var(--shadow-pop); background: var(--surface); }
 .map .maplibregl-ctrl-group button { width: var(--tap); height: var(--tap); }
 .map .maplibregl-ctrl-top-right { top: calc(var(--map-top-offset, 108px)); right: 12px; }
-.map .maplibregl-ctrl-bottom-left { bottom: var(--map-bottom-offset, 220px); }
+.map .maplibregl-ctrl-bottom-left { bottom: var(--map-bottom-offset, 200px); }
+@media (min-width: 900px) { .map .maplibregl-ctrl-bottom-left { bottom: 8px; left: 448px; } }
 .map .maplibregl-ctrl-attrib { background: color-mix(in srgb, var(--surface) 85%, transparent); color: var(--muted); font-size: 11px; border-radius: 6px; }
 .map .maplibregl-ctrl-attrib a { color: var(--muted); }
 .map .maplibregl-popup-content { background: var(--surface); color: var(--ink); border-radius: var(--r-control); box-shadow: var(--shadow-pop); font-size: var(--t-caption); padding: 12px 28px 12px 12px; }

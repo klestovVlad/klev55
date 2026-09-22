@@ -67,7 +67,25 @@ export function MapView() {
     map.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: 'OpenFreeMap © OpenMapTiles, © OpenStreetMap contributors (ODbL)' }), 'bottom-left');
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
     map.addControl(new maplibregl.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: false }), 'top-right');
-    map.on('load', () => setLoaded(true));
+    const russianLabels = () => {
+      for (const l of map.getStyle().layers ?? []) {
+        if (l.type !== 'symbol' || !map.getLayoutProperty(l.id, 'text-field')) continue;
+        map.setLayoutProperty(l.id, 'text-field', ['coalesce', ['get', 'name:ru'], ['get', 'name']]);
+      }
+    };
+    map.on('load', () => {
+      russianLabels();
+      setLoaded(true);
+    });
+    map.on('styledata', () => {
+      try {
+        russianLabels();
+      } catch {
+        /* style not ready */
+      }
+    });
+    map.on('error', (e) => console.warn('map error', e.error?.message ?? e));
+    if (import.meta.env.DEV) (window as any).__map = map;
     mapRef.current = map;
     return () => {
       map.remove();
@@ -109,8 +127,9 @@ export function MapView() {
     if (water.data) {
       add('water', water.data, [
         { id: 'water-fill', type: 'fill', source: 'water', filter: ['any', ['==', ['geometry-type'], 'Polygon'], ['==', ['geometry-type'], 'MultiPolygon']], paint: { 'fill-color': ['case', ['==', ['get', 'jurisdiction'], 'kz'], dark ? '#3a4a55' : '#c9d1d6', dark ? '#3f7a99' : '#7fa8c0'], 'fill-opacity': 0.55 } },
-        { id: 'water-line', type: 'line', source: 'water', filter: ['any', ['==', ['geometry-type'], 'LineString'], ['==', ['geometry-type'], 'MultiLineString']], paint: { 'line-color': ['case', ['==', ['get', 'jurisdiction'], 'kz'], dark ? '#4a5a65' : '#b3bec5', dark ? '#5f93b0' : '#2f5d75'], 'line-width': ['interpolate', ['linear'], ['zoom'], 6, ['case', ['==', ['get', 'type'], 'river'], 1.2, 0.5], 11, ['case', ['==', ['get', 'type'], 'river'], 3, 1.2]], 'line-opacity': 0.8 } },
-        { id: 'water-label', type: 'symbol', source: 'water', minzoom: 8, filter: ['all', ['has', 'name'], ['!=', ['get', 'name'], '']], layout: { 'text-field': ['get', 'name'], 'text-size': 12, 'text-font': ['Noto Sans Italic'], 'symbol-placement': ['case', ['==', ['geometry-type'], 'Polygon'], 'point', 'line'], 'text-max-angle': 30 }, paint: { 'text-color': dark ? '#9fc3d6' : '#2f5d75', 'text-halo-color': dark ? '#0f1a20' : '#ffffff', 'text-halo-width': 1.2 } },
+        { id: 'water-line', type: 'line', source: 'water', filter: ['any', ['==', ['geometry-type'], 'LineString'], ['==', ['geometry-type'], 'MultiLineString']], paint: { 'line-color': ['case', ['==', ['get', 'jurisdiction'], 'kz'], dark ? '#4a5a65' : '#b3bec5', dark ? '#5f93b0' : '#2f5d75'], 'line-width': ['interpolate', ['linear'], ['zoom'], 6, ['case', ['==', ['get', 'type'], 'river'], 1.8, 0.6], 11, ['case', ['==', ['get', 'type'], 'river'], 3.5, 1.4]], 'line-opacity': 0.9 } },
+        { id: 'water-label-line', type: 'symbol', source: 'water', minzoom: 8, filter: ['all', ['has', 'name'], ['!=', ['get', 'name'], ''], ['any', ['==', ['geometry-type'], 'LineString'], ['==', ['geometry-type'], 'MultiLineString']]], layout: { 'text-field': ['get', 'name'], 'text-size': 12, 'text-font': ['Noto Sans Italic'], 'symbol-placement': 'line', 'text-max-angle': 30 }, paint: { 'text-color': dark ? '#9fc3d6' : '#2f5d75', 'text-halo-color': dark ? '#0f1a20' : '#ffffff', 'text-halo-width': 1.2 } },
+        { id: 'water-label-poly', type: 'symbol', source: 'water', minzoom: 9, filter: ['all', ['has', 'name'], ['!=', ['get', 'name'], ''], ['any', ['==', ['geometry-type'], 'Polygon'], ['==', ['geometry-type'], 'MultiPolygon']]], layout: { 'text-field': ['get', 'name'], 'text-size': 12, 'text-font': ['Noto Sans Italic'], 'symbol-placement': 'point' }, paint: { 'text-color': dark ? '#9fc3d6' : '#2f5d75', 'text-halo-color': dark ? '#0f1a20' : '#ffffff', 'text-halo-width': 1.2 } },
       ]);
     }
     if (zones.data) {
@@ -169,10 +188,25 @@ export function MapView() {
       m.on('click', 'obs', (e) => {
         const p = e.features?.[0]?.properties as any;
         if (!p) return;
-        new maplibregl.Popup({ closeButton: true, maxWidth: '260px' })
-          .setLngLat(e.lngLat)
-          .setHTML(`<strong>${p.species_ru ?? p.species ?? ''}</strong><br>${p.species ?? ''}<br><span class="caption">${p.src}, ${p.date ?? ''}, ${p.license ?? ''}</span><br><a href="${p.url}" target="_blank" rel="noopener">запись</a>`)
-          .addTo(m);
+        // Observation properties come from third-party APIs: build the popup with DOM APIs, never innerHTML.
+        const box = document.createElement('div');
+        const title = document.createElement('strong');
+        title.textContent = String(p.species_ru ?? p.species ?? '');
+        const lat = document.createElement('div');
+        lat.textContent = String(p.species ?? '');
+        const meta = document.createElement('span');
+        meta.className = 'caption';
+        meta.textContent = [p.src, p.date, p.license].filter(Boolean).join(', ');
+        box.append(title, lat, meta);
+        if (typeof p.url === 'string' && /^https:\/\/(www\.)?(gbif\.org|inaturalist\.org)\//.test(p.url)) {
+          const a = document.createElement('a');
+          a.href = p.url;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = 'запись';
+          box.append(document.createElement('br'), a);
+        }
+        new maplibregl.Popup({ closeButton: true, maxWidth: '260px' }).setLngLat(e.lngLat).setDOMContent(box).addTo(m);
       });
     }
     if (m.getLayer('obs')) m.setLayoutProperty('obs', 'visibility', layers.observations ? 'visible' : 'none');

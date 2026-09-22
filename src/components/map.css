@@ -13,3 +13,6 @@
 .map .maplibregl-ctrl-icon { filter: none; }
 :root[data-theme='dark'] .map .maplibregl-ctrl-icon, :root:not([data-theme='light']) .map .maplibregl-ctrl-icon { filter: invert(1) hue-rotate(180deg); }
 @media (prefers-color-scheme: light) { :root:not([data-theme='dark']) .map .maplibregl-ctrl-icon { filter: none; } }
+/* Attribution stays collapsed until the ⓘ is focused/hovered: keeps a 300px text block off the first paint (it was the LCP element). */
+.map details.maplibregl-ctrl-attrib:not(:focus-within):not(:hover) .maplibregl-ctrl-attrib-inner { display: none; }
+.map details.maplibregl-ctrl-attrib:not(:focus-within):not(:hover) { padding: 0; }

@@ -77,8 +77,13 @@ export function MapView() {
     };
     map.on('load', () => {
       russianLabels();
-      // Start with the attribution collapsed; the ⓘ button expands it.
-      ref.current?.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
+      // Start with the attribution collapsed (MapLibre opens its <details> on load); the ⓘ button expands it.
+      const collapse = () => {
+        const d = ref.current?.querySelector('details.maplibregl-ctrl-attrib') as HTMLDetailsElement | null;
+        if (d) d.open = false;
+      };
+      collapse();
+      map.once('idle', collapse);
       setLoaded(true);
     });
     map.on('styledata', () => {
@@ -139,6 +144,7 @@ export function MapView() {
     if (water.data) {
       add('water', water.data, [
         { id: 'water-fill', type: 'fill', source: 'water', filter: ['any', ['==', ['geometry-type'], 'Polygon'], ['==', ['geometry-type'], 'MultiPolygon']], paint: { 'fill-color': ['case', ['==', ['get', 'jurisdiction'], 'kz'], dark ? '#3a4a55' : '#c9d1d6', dark ? '#3f7a99' : '#7fa8c0'], 'fill-opacity': 0.55 } },
+        { id: 'water-hit', type: 'line', source: 'water', filter: ['any', ['==', ['geometry-type'], 'LineString'], ['==', ['geometry-type'], 'MultiLineString']], paint: { 'line-color': '#000', 'line-opacity': 0, 'line-width': 18 } },
         { id: 'water-line', type: 'line', source: 'water', filter: ['any', ['==', ['geometry-type'], 'LineString'], ['==', ['geometry-type'], 'MultiLineString']], paint: { 'line-color': ['case', ['==', ['get', 'jurisdiction'], 'kz'], dark ? '#4a5a65' : '#b3bec5', dark ? '#5f93b0' : '#2f5d75'], 'line-width': ['interpolate', ['linear'], ['zoom'], 6, ['case', ['==', ['get', 'type'], 'river'], 1.8, 0.6], 11, ['case', ['==', ['get', 'type'], 'river'], 3.5, 1.4]], 'line-opacity': 0.9 } },
         { id: 'water-label-line', type: 'symbol', source: 'water', minzoom: 8, filter: ['all', ['has', 'name'], ['!=', ['get', 'name'], ''], ['any', ['==', ['geometry-type'], 'LineString'], ['==', ['geometry-type'], 'MultiLineString']]], layout: { 'text-field': ['get', 'name'], 'text-size': 12, 'text-font': ['Noto Sans Italic'], 'symbol-placement': 'line', 'text-max-angle': 30 }, paint: { 'text-color': dark ? '#9fc3d6' : '#2f5d75', 'text-halo-color': dark ? '#0f1a20' : '#ffffff', 'text-halo-width': 1.2 } },
         { id: 'water-label-poly', type: 'symbol', source: 'water', minzoom: 9, filter: ['all', ['has', 'name'], ['!=', ['get', 'name'], ''], ['any', ['==', ['geometry-type'], 'Polygon'], ['==', ['geometry-type'], 'MultiPolygon']]], layout: { 'text-field': ['get', 'name'], 'text-size': 12, 'text-font': ['Noto Sans Italic'], 'symbol-placement': 'point' }, paint: { 'text-color': dark ? '#9fc3d6' : '#2f5d75', 'text-halo-color': dark ? '#0f1a20' : '#ffffff', 'text-halo-width': 1.2 } },
@@ -275,12 +281,12 @@ export function MapView() {
         const p = e.features?.[0]?.properties as any;
         if (p?.osm_id) set({ waterId: p.osm_id, spotId: null });
       });
-      m.on('click', 'water-line', (e) => {
+      m.on('click', 'water-hit', (e) => {
         if (m.queryRenderedFeatures(e.point, { layers: ['spots', 'clusters', 'water-fill'] }).length) return;
         const p = e.features?.[0]?.properties as any;
         if (p?.osm_id) set({ waterId: p.osm_id, spotId: null });
       });
-      for (const l of ['spots', 'clusters', 'water-fill', 'water-line']) {
+      for (const l of ['spots', 'clusters', 'water-fill', 'water-hit']) {
         m.on('mouseenter', l, () => (m.getCanvas().style.cursor = 'pointer'));
         m.on('mouseleave', l, () => (m.getCanvas().style.cursor = ''));
       }

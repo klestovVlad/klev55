@@ -22,7 +22,7 @@ export function WaterSheet({ waterId, onBack }: { waterId: number; onBack: () =>
       <div className="ss__meta">
         <span>{TYPE_RU[p.type] ?? p.type}</span>
         {p.area_km2 ? <span>{p.area_km2} км²</span> : null}
-        {p.length_km ? <span>{p.length_km} км</span> : null}
+        {p.length_km && !['river', 'riverbank'].includes(p.type) ? <span>{p.length_km} км</span> : null}
         {p.jurisdiction === 'kz' && <span style={{ color: 'var(--ban)' }}>другая юрисдикция — правила РК не включены</span>}
         {p.salt && <span>солёное, рыбы нет</span>}
       </div>

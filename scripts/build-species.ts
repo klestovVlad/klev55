@@ -138,7 +138,10 @@ async function main() {
       items,
     }),
   );
-  console.log(`species.json: ${items.length} species`);
+  const LITE_DROP = ['description', 'methods', 'lifehacks', 'edible', 'handling', 'weather_response', 'habitat', 'size'];
+  const lite = items.map((s) => Object.fromEntries(Object.entries(s).filter(([k]) => !LITE_DROP.includes(k))));
+  writeFileSync(`${OUT}/species-index.json`, JSON.stringify({ meta: { generated_at: new Date().toISOString(), sources: ['see species.json'], license: 'see species.json', notes: 'Light index for the map and model; full records in species.json' }, items: lite }));
+  console.log(`species.json: ${items.length} species; species-index.json written`);
 }
 
 main().catch((e) => {

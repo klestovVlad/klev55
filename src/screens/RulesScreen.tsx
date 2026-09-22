@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAdvice, useRules, useSpecies, useZones } from '@/data/load';
+import { useAdvice, useRules, useSpeciesFull as useSpecies, useZones } from '@/data/load';
 import { useStore, type Theme } from '@/app/store';
 import { Chip } from '@/components/Chip';
 import { ProvenanceBadge } from '@/components/Provenance';

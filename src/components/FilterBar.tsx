@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { useStore } from '@/app/store';
 import { useSpecies } from '@/data/load';
 import { Chip } from './Chip';
-import { SpeciesPicker } from './SpeciesPicker';
-import { Search } from './Search';
+const SpeciesPicker = lazy(() => import('./SpeciesPicker').then((m) => ({ default: m.SpeciesPicker })));
+const Search = lazy(() => import('./Search').then((m) => ({ default: m.Search })));
 import type { MethodName } from '@/data/types';
 import './filterbar.css';
 
@@ -53,8 +53,10 @@ export function FilterBar() {
           </div>
         </div>
       )}
-      <SpeciesPicker open={pick} onOpenChange={setPick} />
-      <Search open={search} onOpenChange={setSearch} />
+      <Suspense fallback={null}>
+        {pick && <SpeciesPicker open={pick} onOpenChange={setPick} />}
+        {search && <Search open={search} onOpenChange={setSearch} />}
+      </Suspense>
     </div>
   );
 }

@@ -16,7 +16,7 @@ const need = (c: boolean, m: string) => {
 };
 const load = (f: string) => JSON.parse(readFileSync(`${D}/${f}`, 'utf8'));
 
-for (const f of ['species.json', 'spots.json', 'rules.json', 'zones.geojson', 'gauges.json', 'water.json', 'advice.json', 'observations.geojson']) need(existsSync(`${D}/${f}`), `${f} missing`);
+for (const f of ['species.json', 'species-index.json', 'spots.json', 'rules.json', 'zones.geojson', 'gauges.json', 'water.json', 'advice.json', 'observations.geojson']) need(existsSync(`${D}/${f}`), `${f} missing`);
 if (problems.length) {
   console.error(problems.join('\n'));
   process.exit(1);

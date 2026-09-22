@@ -6,8 +6,8 @@ import { FilterBar } from '@/components/FilterBar';
 import { Sheet, type SnapKey } from '@/components/Sheet';
 import { TimeScrubber } from '@/components/TimeScrubber';
 import { SpotList } from '@/components/SpotList';
-import { SpotSheet } from '@/screens/SpotSheet';
-import { WaterSheet } from '@/screens/WaterSheet';
+const SpotSheet = lazy(() => import('@/screens/SpotSheet').then((m) => ({ default: m.SpotSheet })));
+const WaterSheet = lazy(() => import('@/screens/WaterSheet').then((m) => ({ default: m.WaterSheet })));
 import { useStore } from '@/app/store';
 import { useSpotScores } from '@/model/useScores';
 import { useSpecies } from '@/data/load';
@@ -50,9 +50,13 @@ export function MapScreen() {
       <FilterBar />
       <Sheet snap={snap} onSnap={setSnap}>
         {spotId ? (
-          <SpotSheet spotId={spotId} onBack={() => set({ spotId: null })} />
+          <Suspense fallback={<div className="skeleton" style={{ width: '60%' }} />}>
+            <SpotSheet spotId={spotId} onBack={() => set({ spotId: null })} />
+          </Suspense>
         ) : waterId ? (
-          <WaterSheet waterId={waterId} onBack={() => set({ waterId: null })} />
+          <Suspense fallback={<div className="skeleton" style={{ width: '60%' }} />}>
+            <WaterSheet waterId={waterId} onBack={() => set({ waterId: null })} />
+          </Suspense>
         ) : (
           <>
             <p className="mapscreen__verdict">{verdict}</p>

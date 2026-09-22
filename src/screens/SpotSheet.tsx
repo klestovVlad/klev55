@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
+import type { Species } from '@/data/types';
 import * as Tabs from '@radix-ui/react-tabs';
 import { Link } from 'react-router-dom';
 import { useStore, scrubberDate } from '@/app/store';
 import { useAllData } from '@/model/useScores';
+import { useSpeciesFull } from '@/data/load';
 import { useWeather } from '@/data/weather';
 import { chance } from '@/model/bite';
 import { weatherAt } from '@/model/weather';
@@ -19,6 +21,7 @@ import './spotsheet.css';
 
 export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => void }) {
   const d = useAllData();
+  const full = useSpeciesFull();
   const { speciesId, hoursAhead } = useStore();
   const set = useStore((s) => s.set);
   const spot = d.spots.data?.items.find((s) => s.id === spotId);
@@ -26,7 +29,8 @@ export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => vo
   const [pick, setPick] = useState<string | null>(null);
   const date = scrubberDate(hoursAhead);
 
-  const byId = useMemo(() => new Map((d.species.data?.items ?? []).map((s) => [s.id, s])), [d.species.data]);
+  // Prefer full records (methods, lifehacks); fall back to the light index until they arrive.
+  const byId = useMemo(() => new Map<string, Species>((((full.data?.items ?? d.species.data?.items) ?? []) as Species[]).map((s) => [s.id, s])), [full.data, d.species.data]);
   if (!spot) return <p className="empty">Место не найдено.</p>;
 
   const hydro = hydroFor(spot, d.gauges.data?.items, d.gauges.data?.ice, d.zones.data, date);
@@ -100,7 +104,7 @@ export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => vo
               <strong>{chosen?.names.ru} здесь:</strong> {spotSp.note} <span className="muted">Способы: {spotSp.methods.join(', ')}; сезоны: {spotSp.seasons.join(', ')}.</span>
             </p>
           )}
-          {chosen && chosen.methods.length > 0 && (
+          {chosen && (chosen.methods?.length ?? 0) > 0 && (
             <div className="section">
               <h3>Снасти и приманки</h3>
               {chosen.methods
@@ -141,7 +145,7 @@ export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => vo
           <ul>
             {spot.lifehacks.map((l) => <li key={l}>{l}</li>)}
           </ul>
-          {chosen && chosen.lifehacks.length > 0 && (
+          {chosen && (chosen.lifehacks?.length ?? 0) > 0 && (
             <>
               <h3>Про {chosen.names.ru.toLowerCase()} вообще</h3>
               <ul>{chosen.lifehacks.slice(0, 3).map((l) => <li key={l}>{l}</li>)}</ul>

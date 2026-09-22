@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useStore, scrubberDate } from '@/app/store';
 import { useAllData } from '@/model/useScores';
+import { useSpeciesFull } from '@/data/load';
 import { useWeather, OMSK } from '@/data/weather';
 import { chance } from '@/model/bite';
 import { weatherAt } from '@/model/weather';
@@ -34,10 +35,10 @@ function Photo({ s, small }: { s: Species; small?: boolean }) {
 }
 
 export function SpeciesListScreen() {
-  const d = useAllData();
+  const full = useSpeciesFull();
   const nav = useNavigate();
   const [month, setMonth] = useState<number | null>(null);
-  const items = d.species.data?.items ?? [];
+  const items = full.data?.items ?? [];
   const nowMonth = omskParts(new Date()).month;
   const byId = new Map(items.map((s) => [s.id, s]));
   const peaks = useMemo(() => {
@@ -115,11 +116,12 @@ export function SpeciesListScreen() {
 export function SpeciesScreen() {
   const { id } = useParams();
   const d = useAllData();
+  const full = useSpeciesFull();
   const nav = useNavigate();
   const set = useStore((s) => s.set);
   const hoursAhead = useStore((s) => s.hoursAhead);
   const wq = useWeather(OMSK.lat, OMSK.lon);
-  const s = d.species.data?.items.find((x) => x.id === id);
+  const s = full.data?.items.find((x) => x.id === id);
   const date = scrubberDate(hoursAhead);
   const spotsRanked = useMemo(() => {
     if (!s || !d.spots.data) return [];
@@ -130,7 +132,7 @@ export function SpeciesScreen() {
       .sort((a, b) => b.r.score - a.r.score || b.rank - a.rank);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s, d.spots.data, d.gauges.data, d.zones.data, d.rules.data, wq.data, Math.floor(date.getTime() / 3600000)]);
-  if (!s) return <div className="screen"><div className="screen__inner"><p className="empty">{d.species.isPending ? 'Загружаем…' : 'Такой рыбы нет.'}</p></div></div>;
+  if (!s) return <div className="screen"><div className="screen__inner"><p className="empty">{full.isPending ? 'Загружаем…' : 'Такой рыбы нет.'}</p></div></div>;
   const top = spotsRanked[0];
   const ctx = top ? { spot: top.sp, species: s, series: wq.data?.hourly ?? null, hydro: hydroFor(top.sp, d.gauges.data?.items, d.gauges.data?.ice, d.zones.data, date), rules: d.rules.data ?? null } : null;
   const day0 = startOfOmskDay(new Date());

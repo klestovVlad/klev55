@@ -1,4 +1,4 @@
-import type { Species, Spot, Rules } from '@/data/types';
+import type { SpeciesLite as Species, Spot, Rules } from '@/data/types';
 
 /** Weather at a single hour, already derived from the hourly series (see weatherAt). */
 export interface WeatherSnapshot {

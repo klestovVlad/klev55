@@ -1,6 +1,6 @@
 /** Static data loaders (TanStack Query). Files live in public/data and are precached by the service worker. */
 import { useQuery } from '@tanstack/react-query';
-import type { Advice, GaugesFile, Rules, SpeciesFile, SpotsFile } from './types';
+import type { Advice, GaugesFile, Rules, SpeciesFile, SpeciesIndexFile, SpotsFile } from './types';
 import type { FeatureCollection } from 'geojson';
 
 const base = import.meta.env.BASE_URL;
@@ -13,7 +13,10 @@ async function getJson<T>(name: string): Promise<T> {
 
 const staticOpts = { staleTime: Infinity, gcTime: Infinity, retry: 1 } as const;
 
-export const useSpecies = () => useQuery({ queryKey: ['species'], queryFn: () => getJson<SpeciesFile>('species.json'), ...staticOpts });
+/** Light index (names, status, curves, photo) — enough for the map, planner and model. */
+export const useSpecies = () => useQuery({ queryKey: ['species-index'], queryFn: () => getJson<SpeciesIndexFile>('species-index.json'), ...staticOpts });
+/** Full records with descriptions, methods, lifehacks, edibility — species pages and spot sheets. */
+export const useSpeciesFull = () => useQuery({ queryKey: ['species'], queryFn: () => getJson<SpeciesFile>('species.json'), ...staticOpts });
 export const useSpots = () => useQuery({ queryKey: ['spots'], queryFn: () => getJson<SpotsFile>('spots.json'), ...staticOpts });
 export const useRules = () => useQuery({ queryKey: ['rules'], queryFn: () => getJson<Rules>('rules.json'), ...staticOpts });
 export const useAdvice = () => useQuery({ queryKey: ['advice'], queryFn: () => getJson<Advice>('advice.json'), ...staticOpts });

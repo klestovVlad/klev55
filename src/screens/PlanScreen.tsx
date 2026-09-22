@@ -12,7 +12,7 @@ import { ConditionsStrip } from '@/components/ConditionsStrip';
 import { ProvenanceBadge } from '@/components/Provenance';
 import { chanceColor, chanceWord, dayLong, driveText, timeHM, plural, bySpeciesPriority, BAIT_SPECIES } from '@/lib/format';
 import { addHours, omskParts, startOfOmskDay } from '@/lib/time';
-import type { MethodName, Season, Species, Spot } from '@/data/types';
+import type { MethodName, Season, SpeciesLite as Species, Spot } from '@/data/types';
 import './plan.css';
 
 const METHODS: MethodName[] = ['спиннинг', 'фидер', 'поплавок', 'донка', 'жерлицы', 'мормышка', 'балансир'];

@@ -2,7 +2,7 @@
 import { chance } from './bite';
 import { weatherAt, type WeatherSeries } from './weather';
 import type { ChanceInput, HydroSnapshot } from './types';
-import type { Rules, Species, Spot } from '@/data/types';
+import type { Rules, SpeciesLite as Species, Spot } from '@/data/types';
 import { addHours, startOfOmskDay, omskParts } from '@/lib/time';
 
 export interface HourScore {

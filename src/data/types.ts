@@ -93,6 +93,9 @@ export interface Species {
   provenance: Record<string, Provenance>; // field → provenance
 }
 
+/** Fields the map, planner and model need; the full record is loaded on species pages. */
+export type SpeciesLite = Omit<Species, 'description' | 'methods' | 'lifehacks' | 'edible' | 'handling' | 'weather_response' | 'habitat' | 'size'>;
+
 /* ---------- Spots ---------- */
 
 export type SpotType = 'река' | 'протока' | 'старица' | 'озеро' | 'пруд' | 'водохранилище' | 'платник';
@@ -268,6 +271,10 @@ export interface Advice {
 export interface SpeciesFile {
   meta: Meta;
   items: Species[];
+}
+export interface SpeciesIndexFile {
+  meta: Meta;
+  items: SpeciesLite[];
 }
 export interface SpotsFile {
   meta: Meta;

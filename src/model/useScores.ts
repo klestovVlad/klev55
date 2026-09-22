@@ -7,7 +7,7 @@ import { chance } from './bite';
 import { weatherAt } from './weather';
 import { hydroFor } from './hydro';
 import type { ChanceResult } from './types';
-import type { Species, Spot } from '@/data/types';
+import type { SpeciesLite as Species, Spot } from '@/data/types';
 
 export interface SpotScore {
   spot: Spot;

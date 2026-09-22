@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDesktop } from '@/lib/useMedia';
 import { lazy, Suspense } from 'react';
 const MapView = lazy(() => import('@/components/MapView').then((m) => ({ default: m.MapView })));
@@ -20,7 +20,8 @@ export function MapScreen() {
   const [snap, setSnap] = useState<SnapKey>('peek');
   const desktop = useDesktop();
   const peek = !desktop && snap === 'peek';
-  const { spotId, waterId, speciesId, layers } = useStore();
+  const { spotId, waterId, speciesId, layers, panelOpen } = useStore();
+  const prevSnap = useRef<SnapKey | null>(null);
   const set = useStore((s) => s.set);
   const { scores, date, ready, offline } = useSpotScores();
   const grid = useAllData().weather;
@@ -30,6 +31,19 @@ export function MapScreen() {
   useEffect(() => {
     if (spotId || waterId) setSnap('half');
   }, [spotId, waterId]);
+
+  // One overlay at a time on a phone: the layers panel collapses the sheet, closing it restores the snap.
+  useEffect(() => {
+    if (desktop) return;
+    if (panelOpen) {
+      prevSnap.current = snap;
+      setSnap('min');
+    } else if (prevSnap.current) {
+      setSnap(prevSnap.current);
+      prevSnap.current = null;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [panelOpen, desktop]);
 
   const best = scores[0];
   const now = date.getTime() - Date.now() < 3600000;
@@ -50,8 +64,8 @@ export function MapScreen() {
         <div className="map map--loading" aria-hidden="true" />
       )}
       <FilterBar />
-      {layers.weather && !spotId && !waterId && <WeatherLegend fetchedAt={grid.data?.fetched_at} />}
-      <Sheet snap={snap} onSnap={setSnap}>
+      {layers.weather && !spotId && !waterId && !panelOpen && <WeatherLegend fetchedAt={grid.data?.fetched_at} />}
+      <Sheet snap={snap} onSnap={(k) => { if (panelOpen) { prevSnap.current = null; set({ panelOpen: false }); } setSnap(k); }}>
         {spotId ? (
           <Suspense fallback={<div className="skeleton" style={{ width: '60%' }} />}>
             <SpotSheet spotId={spotId} onBack={() => set({ spotId: null })} />

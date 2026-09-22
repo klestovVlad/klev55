@@ -1,0 +1,15 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const page = await (await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 })).newPage();
+await page.goto('http://localhost:5173/');
+await page.waitForSelector('.rows .row-btn', { timeout: 30000 });
+await page.waitForTimeout(5000);
+await page.getByRole('button', { name: 'Слои и фильтры' }).click();
+await page.waitForTimeout(500);
+const h1 = await page.evaluate(() => document.querySelector('.sheet').getBoundingClientRect().height);
+await page.screenshot({ path: 'qa/screenshots/panel-open-mobile.png' });
+await page.getByRole('button', { name: 'Закрыть панель слоёв' }).click();
+await page.waitForTimeout(500);
+const h2 = await page.evaluate(() => document.querySelector('.sheet').getBoundingClientRect().height);
+console.log(JSON.stringify({ sheetWithPanel: h1, sheetAfter: h2, panelGone: (await page.locator('.fbar__more').count()) === 0 }));
+await browser.close();

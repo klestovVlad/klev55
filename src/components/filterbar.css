@@ -8,7 +8,8 @@
 .fbar__icon { width: var(--tap); height: var(--tap); border-radius: var(--r-control); background: var(--surface); color: var(--ink); border: 1px solid var(--line); display: grid; place-items: center; }
 .fbar__icon--on { background: var(--river); color: var(--river-ink); }
 .fbar__chips .chip { border-color: var(--line); }
-.fbar__more { margin-top: 8px; padding: 10px 12px; background: var(--surface); border-radius: var(--r-control); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+.fbar__more { position: relative; margin-top: 8px; padding: 10px 12px; background: var(--surface); border-radius: var(--r-control); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; max-height: calc(100vh - 260px); overflow-y: auto; }
+.fbar__backdrop { position: fixed; inset: 0; background: transparent; cursor: default; }
 @media (min-width: 900px) {
   .fbar { left: 456px; right: 16px; max-width: 720px; }
 }

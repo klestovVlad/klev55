@@ -14,6 +14,8 @@ interface State {
   hoursAhead: number;
   /** Selected spot id (opens the sheet). */
   spotId: string | null;
+  /** Layers/filters panel on the map is open (mobile collapses the sheet meanwhile). */
+  panelOpen: boolean;
   /** Selected water osm_id (opens the water sheet). */
   waterId: number | null;
   layers: { infra: boolean; observations: boolean; satellite: boolean; zones: boolean; zonesAll: boolean; weather: boolean; heat: boolean; particles: boolean };
@@ -38,6 +40,7 @@ export const useStore = create<State>((set) => ({
   freeOnly: false,
   hoursAhead: 0,
   spotId: null,
+  panelOpen: false,
   waterId: null,
   layers: { infra: true, observations: false, satellite: false, zones: true, zonesAll: false, weather: true, heat: true, particles: false },
   theme: savedTheme,

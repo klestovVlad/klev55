@@ -14,8 +14,8 @@ const MIN_LABEL: Record<string, string> = { '30': 'до 30 мин', '60': 'до 
 export function FilterBar() {
   const [pick, setPick] = useState(false);
   const [search, setSearch] = useState(false);
-  const [more, setMore] = useState(false);
-  const { speciesId, method, maxMin, iceOnly, freeOnly, set, layers, toggleLayer } = useStore();
+  const { speciesId, method, maxMin, iceOnly, freeOnly, set, layers, toggleLayer, panelOpen: more } = useStore();
+  const setMore = (v: boolean | ((m: boolean) => boolean)) => set({ panelOpen: typeof v === 'function' ? v(more) : v });
   const species = useSpecies();
   const sp = species.data?.items.find((s) => s.id === speciesId);
   const minNext = () => set({ maxMin: MIN[(MIN.indexOf(maxMin as any) + 1) % MIN.length] });
@@ -40,8 +40,9 @@ export function FilterBar() {
         <Chip selected={iceOnly} onClick={() => set({ iceOnly: !iceOnly })}>Со льда</Chip>
         <Chip selected={freeOnly} onClick={() => set({ freeOnly: !freeOnly })}>Бесплатно</Chip>
       </div>
+      {more && <button type="button" className="fbar__backdrop" aria-label="Закрыть панель слоёв" onClick={() => setMore(false)} />}
       {more && (
-        <div className="fbar__more">
+        <div className="fbar__more" role="group" aria-label="Слои и фильтры">
           <div className="fbar__label">Способ ловли</div>
           <div className="chip-row">
             {METHODS.map((m) => (

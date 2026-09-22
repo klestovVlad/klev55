@@ -54,3 +54,5 @@ Next: rerun lighthouse + e2e; screenshot pass (light/dark, 390/1440) → qa/scre
 ## Update 2026-09-22, evening
 
 Added after v0.1: weather grid (D-026/027) with the map overlay on by default; infrastructure layer (D-028); drive-time filters (D-029); best window in rows (D-030); shadows removed from map controls; water always under spot bubbles; PWA install button. QA ok (payload 2.70 MB), e2e 14/14, Lighthouse perf 86.
+
+Deployed 2026-09-22 to GitHub Pages: https://klestovvlad.github.io/klev55/ (repo klestovVlad/klev55, workflow deploy-pages.yml; Pages site created via `gh api -X POST repos/.../pages -f build_type=workflow`). Live check: map loads, data and worker served, 404.html fallback for client routes.

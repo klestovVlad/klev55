@@ -8,16 +8,17 @@ import type { MethodName } from '@/data/types';
 import './filterbar.css';
 
 const METHODS: MethodName[] = ['спиннинг', 'фидер', 'поплавок', 'донка', 'жерлицы', 'мормышка', 'балансир'];
-const KM = [null, 30, 60, 120] as const;
+const MIN = [null, 30, 60, 120] as const;
+const MIN_LABEL: Record<string, string> = { '30': 'до 30 мин', '60': 'до часа', '120': 'до 2 ч' };
 
 export function FilterBar() {
   const [pick, setPick] = useState(false);
   const [search, setSearch] = useState(false);
   const [more, setMore] = useState(false);
-  const { speciesId, method, maxKm, iceOnly, freeOnly, set, layers, toggleLayer } = useStore();
+  const { speciesId, method, maxMin, iceOnly, freeOnly, set, layers, toggleLayer } = useStore();
   const species = useSpecies();
   const sp = species.data?.items.find((s) => s.id === speciesId);
-  const kmNext = () => set({ maxKm: KM[(KM.indexOf(maxKm as any) + 1) % KM.length] });
+  const minNext = () => set({ maxMin: MIN[(MIN.indexOf(maxMin as any) + 1) % MIN.length] });
   return (
     <div className="fbar">
       <div className="fbar__top">
@@ -33,8 +34,8 @@ export function FilterBar() {
         <Chip selected={!!speciesId} onClick={() => setPick(true)}>
           {sp ? sp.names.ru : 'Любая рыба'} <span aria-hidden="true">▾</span>
         </Chip>
-        <Chip selected={maxKm != null} onClick={kmNext} ariaLabel={`Расстояние: ${maxKm ? `до ${maxKm} км` : 'любое'}`}>
-          {maxKm ? `до ${maxKm} км` : 'Любая даль'}
+        <Chip selected={maxMin != null} onClick={minNext} ariaLabel={`Время в пути: ${maxMin ? MIN_LABEL[String(maxMin)] : 'любое'}`}>
+          {maxMin ? MIN_LABEL[String(maxMin)] : 'Любая даль'}
         </Chip>
         <Chip selected={iceOnly} onClick={() => set({ iceOnly: !iceOnly })}>Со льда</Chip>
         <Chip selected={freeOnly} onClick={() => set({ freeOnly: !freeOnly })}>Бесплатно</Chip>
@@ -49,6 +50,7 @@ export function FilterBar() {
           <div className="chip-row">
             <Chip small selected={layers.weather} onClick={() => toggleLayer('weather')}>Ветер и осадки</Chip>
             <Chip small selected={layers.zones} onClick={() => toggleLayer('zones')}>Запретные зоны</Chip>
+            <Chip small selected={layers.infra} onClick={() => toggleLayer('infra')}>Мосты, спуски, магазины</Chip>
             <Chip small selected={layers.satellite} onClick={() => toggleLayer('satellite')}>Спутник</Chip>
             <Chip small selected={layers.observations} onClick={() => toggleLayer('observations')}>Научные наблюдения</Chip>
           </div>

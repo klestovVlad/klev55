@@ -4,6 +4,7 @@ import { copyFileSync, existsSync, statSync, readdirSync } from 'node:fs';
 
 const steps: [string, string][] = [
   ['water & infra (OSM)', 'scripts/build-water.ts'],
+  ['infra (OSM)', 'scripts/build-infra.ts'],
   ['rules & zones', 'scripts/build-rules.ts'],
   ['hydro & ice', 'scripts/build-hydro.ts'],
   ['observations', 'scripts/build-observations.ts'],

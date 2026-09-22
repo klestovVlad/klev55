@@ -22,6 +22,7 @@ export const useRules = () => useQuery({ queryKey: ['rules'], queryFn: () => get
 export const useAdvice = () => useQuery({ queryKey: ['advice'], queryFn: () => getJson<Advice>('advice.json'), ...staticOpts });
 export const useGauges = () => useQuery({ queryKey: ['gauges'], queryFn: () => getJson<GaugesFile & { ice: IceEstimate[]; thresholds_cm: Record<string, number> }>('gauges.json'), ...staticOpts });
 export const useZones = () => useQuery({ queryKey: ['zones'], queryFn: () => getJson<FeatureCollection>('zones.geojson'), ...staticOpts });
+export const useInfra = (enabled = true) => useQuery({ queryKey: ['infra'], queryFn: () => getJson<FeatureCollection>('infra.geojson'), enabled, ...staticOpts });
 export const useAdmin = () => useQuery({ queryKey: ['admin'], queryFn: () => getJson<FeatureCollection>('admin.geojson'), ...staticOpts });
 /** 1.3 MB overlay: fetched only once the caller says the map is ready (keeps it off the first paint). */
 export const useWater = (enabled = true) => useQuery({ queryKey: ['water'], queryFn: () => getJson<FeatureCollection>('water.json'), enabled, ...staticOpts });

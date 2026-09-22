@@ -7,7 +7,7 @@ interface State {
   /** Selected species filter (id) or null = any. */
   speciesId: string | null;
   method: MethodName | null;
-  maxKm: number | null; // null = any
+  maxMin: number | null; // max drive time in minutes, null = any
   iceOnly: boolean;
   freeOnly: boolean;
   /** Hours from now on the scrubber (0 = now). Beyond 48 it steps by day. */
@@ -33,13 +33,13 @@ const savedTheme = ((): Theme => {
 export const useStore = create<State>((set) => ({
   speciesId: null,
   method: null,
-  maxKm: null,
+  maxMin: null,
   iceOnly: false,
   freeOnly: false,
   hoursAhead: 0,
   spotId: null,
   waterId: null,
-  layers: { infra: false, observations: false, satellite: false, zones: true, weather: true },
+  layers: { infra: true, observations: false, satellite: false, zones: true, weather: true },
   theme: savedTheme,
   set: (p) => set(p),
   toggleLayer: (k) => set((s) => ({ layers: { ...s.layers, [k]: !s.layers[k] } })),

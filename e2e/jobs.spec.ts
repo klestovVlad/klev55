@@ -46,7 +46,7 @@ test('4. species page has photo credit, month bar and edibility', async ({ page 
 });
 
 test('5. planner ranks spots for Saturday', async ({ page }) => {
-  await page.goto('/plan?fish=esox-lucius&when=sat&km=120');
+  await page.goto('/plan?fish=esox-lucius&when=sat&min=120');
   await expect(page.locator('.plan__list li').first()).toBeVisible({ timeout: 20_000 });
   await expect(page.locator('.plan__verdict')).toContainText(/щука/i);
   await shot(page, '05-plan');

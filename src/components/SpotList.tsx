@@ -1,6 +1,6 @@
 import { useStore } from '@/app/store';
 import type { SpotScore } from '@/model/useScores';
-import { chanceColor, driveText } from '@/lib/format';
+import { chanceColor, driveText, timeHM } from '@/lib/format';
 
 export function SpotRow({ s, onClick }: { s: SpotScore; onClick: () => void }) {
   const banned = s.result.legal === 'banned';
@@ -16,6 +16,7 @@ export function SpotRow({ s, onClick }: { s: SpotScore; onClick: () => void }) {
             <span>{s.spot.water_name}</span>
             {s.spot.drive_min != null && <span>{driveText(s.spot.drive_min)}</span>}
             <span>{s.species.names.ru.toLowerCase()}</span>
+            {s.window && !banned && <span>лучше {timeHM(s.window.from)}–{timeHM(s.window.to)}</span>}
             {s.spot.type === 'платник' && <span>платно</span>}
             {s.result.legal === 'restricted' && <span style={{ color: 'var(--amber)' }}>с берега, 1 удочка</span>}
           </span>

@@ -4,6 +4,8 @@ import { useStore, scrubberDate } from '@/app/store';
 import { useGauges, useRules, useSpecies, useSpots, useZones } from '@/data/load';
 import { useWeatherGrid, nearestSeries } from '@/data/weatherGrid';
 import { chance } from './bite';
+import { bestWindows, hourly } from './outlook';
+import { startOfOmskDay, addHours } from '@/lib/time';
 import { weatherAt } from './weather';
 import { hydroFor } from './hydro';
 import type { ChanceResult } from './types';
@@ -14,6 +16,7 @@ export interface SpotScore {
   species: Species; // the species the score is for
   result: ChanceResult;
   alternatives: { species: Species; result: ChanceResult }[]; // other species at the spot, sorted
+  window: { from: Date; to: Date } | null; // best hours on the scrubber's day for the top species
 }
 
 export function useAllData() {
@@ -27,7 +30,7 @@ export function useAllData() {
 }
 
 export function useSpotScores(opts: { date?: Date } = {}): { scores: SpotScore[]; date: Date; ready: boolean; offline: boolean } {
-  const { speciesId, method, maxKm, iceOnly, freeOnly, hoursAhead } = useStore();
+  const { speciesId, method, maxMin, iceOnly, freeOnly, hoursAhead } = useStore();
   const d = useAllData();
   const date = opts.date ?? scrubberDate(hoursAhead);
   const dateKey = Math.floor(date.getTime() / 3600000);
@@ -37,7 +40,7 @@ export function useSpotScores(opts: { date?: Date } = {}): { scores: SpotScore[]
     const out: SpotScore[] = [];
     for (const spot of d.spots.data.items) {
       const w = weatherAt(nearestSeries(d.weather.data, spot.coords[1], spot.coords[0]), date);
-      if (maxKm != null && spot.distance_km > maxKm) continue;
+      if (maxMin != null && (spot.drive_min ?? (spot.distance_km * 1.3) / 70 * 60) > maxMin) continue;
       if (iceOnly && !spot.ice_spot) continue;
       if (freeOnly && spot.type === 'платник') continue;
       const hydro = hydroFor(spot, d.gauges.data?.items, d.gauges.data?.ice, d.zones.data, date);
@@ -49,7 +52,7 @@ export function useSpotScores(opts: { date?: Date } = {}): { scores: SpotScore[]
           // species not listed here: still score it (fit factor says "не отмечен") so the map stays informative but muted
           const sp = byId.get(speciesId)!;
           const r = chance({ spot, species: sp, date, weather: w, hydro, rules: d.rules.data ?? null });
-          out.push({ spot, species: sp, result: r, alternatives: [] });
+          out.push({ spot, species: sp, result: r, alternatives: [], window: null });
         }
         continue;
       }
@@ -61,10 +64,14 @@ export function useSpotScores(opts: { date?: Date } = {}): { scores: SpotScore[]
           return { species: sp, result: chance({ spot, species: sp, date, weather: w, hydro, rules: d.rules.data ?? null }) };
         })
         .sort((a, b) => b.result.score - a.result.score);
-      out.push({ spot, species: ranked[0].species, result: ranked[0].result, alternatives: ranked });
+      // Best hours today (04–22) for the top species: cheap (19 evaluations) and worth a glance in the list.
+      const series = nearestSeries(d.weather.data, spot.coords[1], spot.coords[0]);
+      const hs = hourly({ spot, species: ranked[0].species, series, hydro, rules: d.rules.data ?? null }, addHours(startOfOmskDay(date), 4), 19);
+      const win = bestWindows(hs, 1)[0];
+      out.push({ spot, species: ranked[0].species, result: ranked[0].result, alternatives: ranked, window: win ? { from: win.from, to: addHours(win.to, 1) } : null });
     }
     return out.sort((a, b) => b.result.score - a.result.score || (a.spot.drive_min ?? 999) - (b.spot.drive_min ?? 999));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [d.species.data, d.spots.data, d.rules.data, d.gauges.data, d.zones.data, d.weather.data, speciesId, method, maxKm, iceOnly, freeOnly, dateKey]);
+  }, [d.species.data, d.spots.data, d.rules.data, d.gauges.data, d.zones.data, d.weather.data, speciesId, method, maxMin, iceOnly, freeOnly, dateKey]);
   return { scores, date, ready: d.ready, offline: d.weather.isError || (!d.weather.data && !d.weather.isPending) };
 }

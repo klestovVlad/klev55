@@ -50,3 +50,7 @@ Next: build-spots on the full set → qa → e2e both projects → lighthouse �
 Done: 56 spots built (5 paid, 34 ice), QA passes (2.58 MB), e2e 14/14 (mobile + desktop, offline test included), custom bottom sheet, cluster labels fixed, Lighthouse mobile: perf 39 → 66 after lazy map + deferred water.json; a11y 100, best-practices 96.
 In progress: FCP/LCP work (static shell in index.html, data preloads) → target perf ≥ 85.
 Next: rerun lighthouse + e2e; screenshot pass (light/dark, 390/1440) → qa/screenshots; manual content review; final README/PROGRESS; commit.
+
+## Update 2026-09-22, evening
+
+Added after v0.1: weather grid (D-026/027) with the map overlay on by default; infrastructure layer (D-028); drive-time filters (D-029); best window in rows (D-030); shadows removed from map controls; water always under spot bubbles; PWA install button. QA ok (payload 2.70 MB), e2e 14/14, Lighthouse perf 86.

@@ -4,7 +4,8 @@ import type { Map as MLMap } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { FeatureCollection } from 'geojson';
 import { useStore } from '@/app/store';
-import { useWater, useZones, useObservations, useAdmin } from '@/data/load';
+import { useWater, useZones, useObservations, useAdmin, useInfra } from '@/data/load';
+import { infraIcon, INFRA_LABEL } from './infraIcons';
 import { useSpotScores } from '@/model/useScores';
 import { activeZones } from '@/model/hydro';
 import { useWeatherGrid } from '@/data/weatherGrid';
@@ -48,6 +49,7 @@ export function MapView() {
   const water = useWater(loaded);
   const zones = useZones();
   const admin = useAdmin();
+  const infra = useInfra(loaded);
   const layers = useStore((s) => s.layers);
   const obs = useObservations(layers.observations);
   const { scores, date } = useSpotScores();
@@ -235,6 +237,53 @@ export function MapView() {
     }
     if (m.getLayer('obs')) m.setLayoutProperty('obs', 'visibility', layers.observations ? 'visible' : 'none');
   }, [loaded, obs.data, layers.observations, dark]);
+
+  // Infrastructure: bridges, dams, slipways, shops, fuel, camps — only when zoomed in (≥ 9.5), so the overview stays clean.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !loaded || !infra.data) return;
+    for (const k of Object.keys(INFRA_LABEL)) if (!m.hasImage(`infra-${k}`)) m.addImage(`infra-${k}`, infraIcon(k, dark), { pixelRatio: 2 });
+    if (!m.getSource('infra')) {
+      m.addSource('infra', { type: 'geojson', data: infra.data });
+      const before = m.getLayer('clusters') ? 'clusters' : undefined;
+      const layout = { 'icon-image': ['concat', 'infra-', ['get', 'kind']], 'icon-size': 1, 'icon-allow-overlap': false, 'icon-padding': 4 } as any;
+      // Water structures, launches, shops and camps from zoom 9.5; fuel (300 stations) only from 11 so the overview stays clean.
+      m.addLayer({ id: 'infra', type: 'symbol', source: 'infra', minzoom: 9.5, filter: ['!=', ['get', 'kind'], 'fuel'], layout }, before);
+      m.addLayer({ id: 'infra-fuel', type: 'symbol', source: 'infra', minzoom: 11, filter: ['==', ['get', 'kind'], 'fuel'], layout }, before);
+      const onInfra = (e: maplibregl.MapMouseEvent & { features?: any[] }) => {
+        if (m.queryRenderedFeatures(e.point, { layers: ['spots', 'clusters'] }).length) return;
+        const p = e.features?.[0]?.properties as any;
+        if (!p) return;
+        const box = document.createElement('div');
+        const t = document.createElement('strong');
+        t.textContent = INFRA_LABEL[p.kind] ?? p.kind;
+        box.append(t);
+        const sub = [p.name, p.brand, p.river ? `через ${p.river}` : null].filter(Boolean).join(', ');
+        if (sub) {
+          const d = document.createElement('div');
+          d.textContent = sub;
+          box.append(d);
+        }
+        if (p.kind === 'dam' || p.kind === 'weir' || p.kind === 'lock' || p.kind === 'bridge') {
+          const d = document.createElement('div');
+          d.className = 'caption';
+          d.textContent = 'У гидросооружений и мостов есть охранная зона: ловить вплотную нельзя.';
+          box.append(d);
+        }
+        const c = document.createElement('span');
+        c.className = 'caption';
+        c.textContent = 'OpenStreetMap';
+        box.append(c);
+        new maplibregl.Popup({ closeButton: true, maxWidth: '260px' }).setLngLat(e.lngLat).setDOMContent(box).addTo(m);
+      };
+      for (const id of ['infra', 'infra-fuel']) {
+        m.on('click', id, onInfra);
+        m.on('mouseenter', id, () => (m.getCanvas().style.cursor = 'pointer'));
+        m.on('mouseleave', id, () => (m.getCanvas().style.cursor = ''));
+      }
+    } else (m.getSource('infra') as maplibregl.GeoJSONSource).setData(infra.data);
+    for (const id of ['infra', 'infra-fuel']) m.setLayoutProperty(id, 'visibility', layers.infra ? 'visible' : 'none');
+  }, [loaded, infra.data, dark, layers.infra]);
 
   // Spots: recolored by chance on every score change.
   useEffect(() => {

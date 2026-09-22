@@ -70,6 +70,9 @@ async function osrmTable(coords: [number, number][]): Promise<(number | null)[]>
 
 async function main() {
   const water = loadWater();
+  const admin = JSON.parse(readFileSync(`${OUT}/admin.geojson`, 'utf8'));
+  const kzPolys = admin.features.filter((f: any) => f.properties?.kind === 'kz');
+  const inKz = (p: [number, number]) => kzPolys.some((f: any) => turf.booleanPointInPolygon(turf.point(p), f));
   const speciesIds = new Set(readdirSync('content/species').filter((f) => f.endsWith('.json')).map((f) => f.replace('.json', '')));
   const files = readdirSync('content/spots').filter((f) => f.endsWith('.json'));
   const spots: Spot[] = [];
@@ -81,10 +84,9 @@ async function main() {
     if (!insideCircle(s.coords)) problems.push(`${f}: outside the ${RADIUS_KM} km circle (${distanceKm(CENTER, s.coords).toFixed(0)} km)`);
     const nw = nearestWater(water, s.coords);
     if (!nw || nw.d > MAX_WATER_M) problems.push(`${f}: nearest water ${nw ? Math.round(nw.d) + ' m (' + (nw.f.properties.name || nw.f.properties.type) + ')' : 'none'} > ${MAX_WATER_M} m`);
-    else {
-      s.water_osm_id = nw.f.properties.osm_id;
-      if (nw.f.properties.jurisdiction === 'kz') problems.push(`${f}: water is in Kazakhstan`);
-    }
+    else s.water_osm_id = nw.f.properties.osm_id;
+    // Jurisdiction is decided by the spot itself, not by the (possibly border-crossing) water polygon.
+    if (inKz(s.coords)) problems.push(`${f}: point is inside Kazakhstan`);
     s.distance_km = Math.round(distanceKm(CENTER, s.coords));
     spots.push(s);
   }

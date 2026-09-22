@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAdvice, useRules, useSpeciesFull as useSpecies, useZones } from '@/data/load';
 import { useStore, type Theme } from '@/app/store';
 import { Chip } from '@/components/Chip';
+import { InstallButton } from '@/components/InstallButton';
 import { ProvenanceBadge } from '@/components/Provenance';
 import { mmddRu } from '@/lib/format';
 import { inWindow, omskParts } from '@/lib/time';
@@ -181,6 +182,10 @@ export function RulesScreen() {
                 ))}
               </div>
               <p className="caption">На солнце светлая тема читается лучше; ночью на берегу — тёмная.</p>
+            </div>
+            <div className="section">
+              <h2>Поставить на телефон</h2>
+              <InstallButton />
             </div>
             <div className="section">
               <h2>Откуда данные</h2>

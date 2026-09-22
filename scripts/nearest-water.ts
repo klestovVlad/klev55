@@ -12,7 +12,7 @@ if (!lonS || !latS) {
   process.exit(2);
 }
 const pt = turf.point([Number(lonS), Number(latS)]);
-const water = JSON.parse(readFileSync('public/data/water.geojson', 'utf8'));
+const water = JSON.parse(readFileSync('public/data/water.json', 'utf8'));
 
 export function nearest(p: [number, number], nameFilter?: string, limit = 5) {
   const P = turf.point(p);

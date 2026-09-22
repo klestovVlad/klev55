@@ -52,6 +52,7 @@ export const W = {
     midWinter: -6, // Jan–Feb, most species
     midWinterBurbot: 8,
   },
+  spotSeason: { inMonth: 4, offMonth: -3 }, // spot.best_months says this place works now / does not
   spawn: -12, // inside the spawning window (biology, not law)
   restricted: -10, // legal but restricted (e.g. one rod from shore)
   zoneNear: -5, // active prohibited zone within 1 km

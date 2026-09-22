@@ -5,7 +5,7 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 
 const url = process.argv[2] ?? 'http://localhost:4173/';
 const chrome = await launch({ chromeFlags: ['--headless=new', '--no-sandbox'] });
-const result = await lighthouse(url, { port: chrome.port, output: 'json', onlyCategories: ['performance', 'accessibility', 'best-practices', 'pwa'], formFactor: 'mobile', screenEmulation: { mobile: true, width: 390, height: 844, deviceScaleFactor: 2, disabled: false }, throttlingMethod: 'simulate' });
+const result = await lighthouse(url, { port: chrome.port, output: 'json', onlyCategories: ['performance', 'accessibility', 'best-practices'], formFactor: 'mobile', screenEmulation: { mobile: true, width: 390, height: 844, deviceScaleFactor: 2, disabled: false }, throttlingMethod: 'simulate' });
 await chrome.kill();
 mkdirSync('qa', { recursive: true });
 writeFileSync('qa/lighthouse.json', result.report);

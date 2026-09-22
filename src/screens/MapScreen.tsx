@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDesktop } from '@/lib/useMedia';
-import { MapView } from '@/components/MapView';
+import { lazy, Suspense } from 'react';
+const MapView = lazy(() => import('@/components/MapView').then((m) => ({ default: m.MapView })));
 import { FilterBar } from '@/components/FilterBar';
 import { Sheet, type SnapKey } from '@/components/Sheet';
 import { TimeScrubber } from '@/components/TimeScrubber';
@@ -38,7 +39,9 @@ export function MapScreen() {
 
   return (
     <div className="mapscreen">
-      <MapView />
+      <Suspense fallback={<div className="map map--loading" aria-hidden="true" />}>
+        <MapView />
+      </Suspense>
       <FilterBar />
       <Sheet snap={snap} onSnap={setSnap}>
         {spotId ? (

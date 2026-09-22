@@ -1,4 +1,5 @@
 .map { position: absolute; inset: 0; }
+.map--loading { background: var(--paper); }
 .map .maplibregl-ctrl-group { border-radius: var(--r-control); box-shadow: var(--shadow-pop); background: var(--surface); }
 .map .maplibregl-ctrl-group button { width: var(--tap); height: var(--tap); }
 .map .maplibregl-ctrl-top-right { top: calc(var(--map-top-offset, 108px)); right: 12px; }

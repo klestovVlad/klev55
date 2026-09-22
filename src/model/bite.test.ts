@@ -103,6 +103,13 @@ describe('chance()', () => {
     expect(factor(r, 'Перволёдье')?.effect).toBe(10);
   });
 
+  it('spot best_months gives a small in-season bonus', () => {
+    const on = chance({ spot: riverSpot, species: pike, date: sept, weather: weather(), hydro: hydro(), rules });
+    const off = chance({ spot: { ...riverSpot, best_months: [6] }, species: pike, date: sept, weather: weather(), hydro: hydro(), rules });
+    expect(factor(on, 'Место в сезоне')?.effect).toBe(4);
+    expect(factor(off, 'Место в сезоне')?.effect).toBe(-3);
+  });
+
   it('rising water is negative, falling water positive', () => {
     const up = chance({ spot: riverSpot, species: pike, date: sept, weather: weather(), hydro: hydro({ gauge_km: 10, level_trend_cm_24h: 20 }), rules });
     const down = chance({ spot: riverSpot, species: pike, date: sept, weather: weather(), hydro: hydro({ gauge_km: 10, level_trend_cm_24h: -8 }), rules });

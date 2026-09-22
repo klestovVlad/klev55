@@ -29,6 +29,7 @@ Legality is evaluated first and short-circuits:
 | Солунар | moon transit / underfoot ±1 h (major), moonrise / moonset ±30 min (minor) | +8 / +4 |
 | Сумерки | civil dawn / dusk ±45 min | +6 |
 | Место для вида | `spot.species[].rank` | 5:+10, 4:+5, 3:0, 2:−6, 1:−12, absent:−25 |
+| Место в сезоне | `spot.best_months` contains the month | +4 / −3 |
 | Нерест | date inside `species.spawning` | −12 (biology; law is handled above) |
 | Давление | Δ24 h msl | ≤3 stable +6; −8<Δ<−3 slow fall +4; ≤−8 fast fall −8; 3<Δ<8 slow rise −3; ≥8 fast rise −10; range 72 h >15 hPa −4; msl >1032 or <988 −4 |
 | Ветер | speed, gusts, direction, Δtemp | <2: 0; 2–6: +4; 6–10: −3 (lake −6); >10: −12 (lake −18); gusts >15: −5; N wind + cooling ≥4°: −6 |

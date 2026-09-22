@@ -43,7 +43,7 @@ export function MapView() {
   const mapRef = useRef<MLMap | null>(null);
   const [loaded, setLoaded] = useState(false);
   const dark = isDark();
-  const water = useWater();
+  const water = useWater(loaded);
   const zones = useZones();
   const admin = useAdmin();
   const layers = useStore((s) => s.layers);
@@ -70,7 +70,8 @@ export function MapView() {
     map.addControl(new maplibregl.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: false }), 'top-right');
     const russianLabels = () => {
       for (const l of map.getStyle().layers ?? []) {
-        if (l.type !== 'symbol' || !map.getLayoutProperty(l.id, 'text-field')) continue;
+        // Only the basemap's own labels; our layers (spots, clusters, water) keep their text-field.
+        if (l.type !== 'symbol' || (l as any).source !== 'openmaptiles' || !map.getLayoutProperty(l.id, 'text-field')) continue;
         map.setLayoutProperty(l.id, 'text-field', ['coalesce', ['get', 'name:ru'], ['get', 'name']]);
       }
     };
@@ -242,9 +243,9 @@ export function MapView() {
       m.setPaintProperty('spots', 'circle-color', colorExpr);
       m.setPaintProperty('spots-halo', 'circle-color', colorExpr);
     } else {
-      m.addSource('spots', { type: 'geojson', data: fc, cluster: true, clusterRadius: 34, clusterMaxZoom: 9, clusterProperties: { max: ['max', ['get', 'score']] } });
-      m.addLayer({ id: 'clusters', type: 'circle', source: 'spots', filter: ['has', 'point_count'], paint: { 'circle-color': ['step', ['get', 'max'], hex[0], 40, hex[1], 60, hex[2], 80, hex[3]], 'circle-radius': 16, 'circle-stroke-width': 2, 'circle-stroke-color': dark ? '#0f1a20' : '#ffffff' } });
-      m.addLayer({ id: 'cluster-count', type: 'symbol', source: 'spots', filter: ['has', 'point_count'], layout: { 'text-field': ['get', 'point_count'], 'text-size': 13, 'text-font': ['Noto Sans Regular'] }, paint: { 'text-color': '#ffffff' } });
+      m.addSource('spots', { type: 'geojson', data: fc, cluster: true, clusterRadius: 40, clusterMaxZoom: 8, clusterProperties: { max: ['max', ['get', 'score']] } });
+      m.addLayer({ id: 'clusters', type: 'circle', source: 'spots', filter: ['has', 'point_count'], paint: { 'circle-color': ['step', ['get', 'max'], hex[0], 40, hex[1], 60, hex[2], 80, hex[3]], 'circle-radius': 15, 'circle-stroke-width': 2, 'circle-stroke-color': dark ? '#0f1a20' : '#ffffff' } });
+      m.addLayer({ id: 'cluster-count', type: 'symbol', source: 'spots', filter: ['has', 'point_count'], layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-size': 13, 'text-font': ['Noto Sans Regular'], 'text-allow-overlap': true }, paint: { 'text-color': '#ffffff' } });
       m.addLayer({ id: 'spots-halo', type: 'circle', source: 'spots', filter: ['all', ['!', ['has', 'point_count']], ['==', ['get', 'selected'], 1]], paint: { 'circle-radius': 18, 'circle-color': colorExpr, 'circle-opacity': 0.25 } });
       m.addLayer({
         id: 'spots',

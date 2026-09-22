@@ -16,7 +16,7 @@ const need = (c: boolean, m: string) => {
 };
 const load = (f: string) => JSON.parse(readFileSync(`${D}/${f}`, 'utf8'));
 
-for (const f of ['species.json', 'spots.json', 'rules.json', 'zones.geojson', 'gauges.json', 'water.geojson', 'advice.json', 'observations.geojson']) need(existsSync(`${D}/${f}`), `${f} missing`);
+for (const f of ['species.json', 'spots.json', 'rules.json', 'zones.geojson', 'gauges.json', 'water.json', 'advice.json', 'observations.geojson']) need(existsSync(`${D}/${f}`), `${f} missing`);
 if (problems.length) {
   console.error(problems.join('\n'));
   process.exit(1);
@@ -27,7 +27,7 @@ const spots = load('spots.json');
 const rules = load('rules.json');
 const zones = load('zones.geojson');
 const gauges = load('gauges.json');
-const water = load('water.geojson');
+const water = load('water.json');
 const advice = load('advice.json');
 
 // meta blocks

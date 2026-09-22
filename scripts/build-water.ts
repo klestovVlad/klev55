@@ -1,6 +1,6 @@
 /**
  * Pull water bodies, waterways, infrastructure and admin boundaries from OSM
- * (Overpass) for the 200 km circle, simplify, and write public/data/water.geojson
+ * (Overpass) for the 200 km circle, simplify, and write public/data/water.json
  * and public/data/infra.geojson. See DECISIONS D-005.
  */
 import { writeFileSync, mkdirSync } from 'node:fs';
@@ -172,8 +172,8 @@ async function main() {
     },
     features: rounded.features,
   };
-  writeFileSync(`${OUT}/water.geojson`, JSON.stringify(water));
-  console.log('water.geojson features:', out.length, 'bytes:', JSON.stringify(water).length);
+  writeFileSync(`${OUT}/water.json`, JSON.stringify(water));
+  console.log('water.json features:', out.length, 'bytes:', JSON.stringify(water).length);
 
   // Admin outline for the map (Omsk oblast + KZ mask), heavily simplified.
   const adminOut = {

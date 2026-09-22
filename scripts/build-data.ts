@@ -13,8 +13,8 @@ const steps: [string, string][] = [
 const only = process.argv.slice(2);
 for (const [name, script] of steps) {
   if (only.length && !only.some((o) => script.includes(o))) continue;
-  if (script.includes('build-water') && existsSync('public/data/water.geojson') && !only.length) {
-    console.log(`▸ ${name}: water.geojson exists, skipping (pass "water" to force)`);
+  if (script.includes('build-water') && existsSync('public/data/water.json') && !only.length) {
+    console.log(`▸ ${name}: water.json exists, skipping (pass "water" to force)`);
     continue;
   }
   console.log(`▸ ${name}`);

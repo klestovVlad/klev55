@@ -123,7 +123,7 @@ export interface Spot {
   id: string;
   name: string;
   coords: [number, number]; // [lon, lat]
-  water_osm_id: number | null; // resolved against water.geojson at build time
+  water_osm_id: number | null; // resolved against water.json at build time
   water_name: string;
   type: SpotType;
   district: string;

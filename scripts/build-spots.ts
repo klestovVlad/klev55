@@ -14,7 +14,7 @@ const OUT = 'public/data';
 const MAX_WATER_M = 300;
 
 function loadWater() {
-  return JSON.parse(readFileSync(`${OUT}/water.geojson`, 'utf8'));
+  return JSON.parse(readFileSync(`${OUT}/water.json`, 'utf8'));
 }
 
 function nearestWater(water: any, p: [number, number]): { d: number; f: any } | null {

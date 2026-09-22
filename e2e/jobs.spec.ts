@@ -40,7 +40,7 @@ test('4. species page has photo credit, month bar and edibility', async ({ page 
   await page.goto('/species/esox-lucius');
   await expect(page.locator('h1')).toContainText('Щука');
   await expect(page.locator('.mb__bars')).toBeVisible();
-  await expect(page.getByText(/Описторхоз/)).toBeVisible();
+  await expect(page.getByText(/Описторхоз/).first()).toBeVisible();
   await expect(page.getByText(/Фото:/)).toBeVisible();
   await shot(page, '04-species');
 });

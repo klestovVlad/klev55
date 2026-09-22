@@ -118,6 +118,12 @@ export function chance(input: ChanceInput): ChanceResult {
     reason: fit ? `здесь ${species.names.ru.toLowerCase()} — цель ${fit.rank} из 5` : 'на этом месте вид не отмечен',
   });
 
+  /* ---- Spot in season (author's best_months). ---- */
+  if (spot.best_months.length) {
+    const on = spot.best_months.includes(p.month);
+    factors.push({ name: 'Место в сезоне', effect: on ? W.spotSeason.inMonth : W.spotSeason.offMonth, reason: on ? 'этот месяц — из лучших для места' : 'не лучший месяц для этого места' });
+  }
+
   /* ---- Biology: spawning. ---- */
   if (inWindow(p, species.spawning.from, species.spawning.to)) {
     factors.push({ name: 'Нерест', effect: W.spawn, reason: 'рыба занята нерестом, кормится слабо' });

@@ -67,9 +67,9 @@ export function MapScreen() {
             <TimeScrubber />
             <ConditionsStrip date={date} />
             <h2 className="mapscreen__h2">Куда ехать</h2>
-            <SpotList scores={scores} limit={peek ? 3 : 80} />
+            <SpotList scores={scores} limit={peek || snap === 'min' ? 3 : 80} />
             {peek && scores.length > 3 && (
-              <button type="button" className="btn btn--ghost btn--small" onClick={() => setSnap('half')}>
+              <button type="button" className="btn btn--ghost btn--small mapscreen__more" onClick={() => setSnap('half')}>
                 Показать все {scores.length}
               </button>
             )}

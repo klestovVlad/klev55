@@ -4,7 +4,7 @@
 .map .maplibregl-ctrl-group:not(:empty) { box-shadow: none; }
 .map .maplibregl-ctrl-group button { width: var(--tap); height: var(--tap); }
 .map .maplibregl-ctrl-top-right { top: calc(var(--map-top-offset, 108px)); right: 12px; }
-.map .maplibregl-ctrl-bottom-left { bottom: var(--map-bottom-offset, 200px); }
+.map .maplibregl-ctrl-bottom-left { bottom: calc(var(--sheet-h, 200px) + 6px); transition: bottom 220ms var(--ease); }
 @media (min-width: 900px) { .map .maplibregl-ctrl-bottom-left { bottom: 8px; left: 448px; } }
 .map .maplibregl-ctrl-attrib { background: color-mix(in srgb, var(--surface) 85%, transparent); color: var(--muted); font-size: 11px; border-radius: 6px; }
 .map .maplibregl-ctrl-attrib a { color: var(--muted); }

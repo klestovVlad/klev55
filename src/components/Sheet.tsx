@@ -2,9 +2,10 @@ import { useEffect, useRef, useState, type ReactNode, type PointerEvent as RPoin
 import { useDesktop } from '@/lib/useMedia';
 import './sheet.css';
 
-export type SnapKey = 'peek' | 'half' | 'full';
-/** Visible height of the sheet as a fraction of the viewport (the tab bar sits below). */
-export const SNAPS: Record<SnapKey, number> = { peek: 0.34, half: 0.62, full: 0.96 };
+export type SnapKey = 'min' | 'peek' | 'half' | 'full';
+/** Visible height as a fraction of the map area; `min` is a fixed strip (grip + verdict line) so the map is fully usable. */
+export const SNAPS: Record<SnapKey, number> = { min: 0, peek: 0.34, half: 0.62, full: 0.96 };
+const MIN_PX = 84;
 
 interface Props {
   children: ReactNode;
@@ -35,9 +36,15 @@ export function Sheet({ children, snap, onSnap }: Props) {
     return () => ro.disconnect();
   }, [desktop]);
 
+  useEffect(() => {
+    const parent = ref.current?.parentElement;
+    if (!parent || desktop) return;
+    parent.style.setProperty('--sheet-h', `${Math.min(dragY ?? (snap === 'full' ? vh - 8 : snap === 'min' ? MIN_PX : Math.round(vh * SNAPS[snap])), vh)}px`);
+  });
+
   if (desktop) return <aside className="panel">{children}</aside>;
 
-  const visible = (k: SnapKey) => (k === 'full' ? vh - 8 : Math.round(vh * SNAPS[k]));
+  const visible = (k: SnapKey) => (k === 'full' ? vh - 8 : k === 'min' ? MIN_PX : Math.round(vh * SNAPS[k]));
   const current = dragY ?? visible(snap);
   const onDown = (e: RPointerEvent) => {
     start.current = { y: e.clientY, t: Date.now(), base: visible(snap) };
@@ -45,7 +52,7 @@ export function Sheet({ children, snap, onSnap }: Props) {
   };
   const onMove = (e: RPointerEvent) => {
     if (!start.current) return;
-    const next = Math.max(visible('peek') * 0.6, Math.min(visible('full'), start.current.base - (e.clientY - start.current.y)));
+    const next = Math.max(MIN_PX, Math.min(visible('full'), start.current.base - (e.clientY - start.current.y)));
     setDragY(next);
   };
   const onUp = (e: RPointerEvent) => {
@@ -56,25 +63,25 @@ export function Sheet({ children, snap, onSnap }: Props) {
     const end = start.current.base + dy;
     start.current = null;
     setDragY(null);
-    const keys: SnapKey[] = ['peek', 'half', 'full'];
+    const keys: SnapKey[] = ['min', 'peek', 'half', 'full'];
     if (Math.abs(dy) < 6) {
-      // tap on the handle: cycle
-      onSnap(keys[(keys.indexOf(snap) + 1) % keys.length]);
+      // tap on the grip: open up step by step, from full collapse to the strip
+      onSnap(snap === 'full' ? 'min' : keys[keys.indexOf(snap) + 1]);
       return;
     }
     if (Math.abs(v) > 0.6) {
       const i = keys.indexOf(snap);
-      onSnap(keys[Math.max(0, Math.min(2, i + (v > 0 ? 1 : -1)))]);
+      onSnap(keys[Math.max(0, Math.min(3, i + (v > 0 ? 1 : -1)))]);
       return;
     }
-    let best: SnapKey = 'peek';
+    let best: SnapKey = 'min';
     for (const k of keys) if (Math.abs(visible(k) - end) < Math.abs(visible(best) - end)) best = k;
     onSnap(best);
   };
 
   return (
     <section ref={ref} className={`sheet${dragY != null ? ' sheet--dragging' : ''}`} style={{ height: `${Math.min(current, vh)}px` }} aria-label="Панель мест">
-      <div className="sheet__grip" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} role="button" tabIndex={0} aria-label={snap === 'full' ? 'Свернуть панель' : 'Развернуть панель'} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSnap(snap === 'full' ? 'peek' : snap === 'peek' ? 'half' : 'full'); } }}>
+      <div className="sheet__grip" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} role="button" tabIndex={0} aria-label={snap === 'full' ? 'Свернуть панель' : 'Развернуть панель'} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSnap(snap === 'full' ? 'min' : snap === 'min' ? 'peek' : snap === 'peek' ? 'half' : 'full'); } }}>
         <span className="sheet__handle" />
       </div>
       <div className="sheet__body">{children}</div>

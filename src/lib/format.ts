@@ -23,16 +23,16 @@ export const MONTHS_SHORT = ['янв', 'фев', 'мар', 'апр', 'май', '
 export const MONTHS_NOM = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 
 export function chanceWord(score: number): string {
-  if (score >= 75) return 'отлично';
-  if (score >= 55) return 'хорошо';
-  if (score >= 35) return 'так себе';
+  if (score >= 80) return 'отлично';
+  if (score >= 60) return 'хорошо';
+  if (score >= 40) return 'так себе';
   return 'плохо';
 }
 
 /** Chance colour on the grey-blue → river → reed → amber scale (docs/DESIGN.md). */
 export function chanceColor(score: number): string {
-  if (score >= 85) return 'var(--chance-85)';
-  if (score >= 65) return 'var(--chance-65)';
+  if (score >= 80) return 'var(--chance-85)';
+  if (score >= 60) return 'var(--chance-65)';
   if (score >= 40) return 'var(--chance-40)';
   return 'var(--chance-0)';
 }

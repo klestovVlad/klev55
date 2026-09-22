@@ -7,7 +7,7 @@ Every number on screen traces to one row of the weight table in `src/model/weigh
 ## Shape
 
 ```
-score = clamp(50 + Σ factor.effect, 0, 100)
+score = clamp(38 + Σ factor.effect, 0, 100)
 factor.effect ∈ [−30, +30], sorted by |effect| desc so the UI can show "top 3 reasons"
 ```
 
@@ -24,8 +24,8 @@ Legality is evaluated first and short-circuits:
 
 | Factor | Input | Effect |
 |--------|-------|--------|
-| Сезон | `activity_by_month`, interpolated by day of month | (a − 5) × 5 → −25..+25 |
-| Время суток | `activity_by_hour[openwater|ice][hour]` | (a − 5) × 4 → −20..+20 |
+| Сезон | `activity_by_month`, interpolated by day of month | (a − 5) × 4 → −20..+20 |
+| Время суток | `activity_by_hour[openwater|ice][hour]` | (a − 5) × 5 → −25..+25 |
 | Солунар | moon transit / underfoot ±1 h (major), moonrise / moonset ±30 min (minor) | +8 / +4 |
 | Сумерки | civil dawn / dusk ±45 min | +6 |
 | Место для вида | `spot.species[].rank` | 5:+10, 4:+5, 3:0, 2:−6, 1:−12, absent:−25 |
@@ -54,6 +54,10 @@ Species traits (predator, winter_active, shallow_lake_sensitive, prefers_ice) li
 - `dailyOutlook(ctx, from, 7)` — per day: max over 04–22 h, best window, legal summary.
 
 Weather comes from Open-Meteo hourly with `past_days=3` so 24 h / 72 h pressure trends and the day-over-day temperature change can be computed client-side (`src/model/weather.ts`).
+
+## Calibration
+
+Base 38 so that a top spot (+10), peak month (+16), dawn hour (+15) and stable pressure (+6) land at ≈85 «отлично»; the same spot at midday ≈65 «хорошо»; at night ≈50 «так себе»; a rank-3 spot at midday ≈55. Words and colours share thresholds 40/60/80.
 
 ## Known limits
 

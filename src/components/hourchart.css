@@ -2,7 +2,7 @@
 .hc__readout { font-size: var(--t-caption); min-height: 22px; margin-bottom: 4px; }
 .hc__svg { width: 100%; height: 140px; display: block; touch-action: pan-y; }
 .hc__night { fill: var(--ink); opacity: 0.06; }
-.hc__major { fill: var(--amber); opacity: 0.16; }
+.hc__major { fill: var(--river); opacity: 0.14; }
 .hc__ruler { stroke: var(--ink); stroke-width: 0.25; vector-effect: non-scaling-stroke; }
 .hc__tick { font-size: 3.2px; fill: var(--muted); font-family: var(--font-ui); }
 .hc__sun { stroke: var(--amber); stroke-width: 0.35; stroke-dasharray: 1 0.8; vector-effect: non-scaling-stroke; }
@@ -10,7 +10,7 @@
 .hc__legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); margin-top: 4px; }
 .hc__key { display: inline-block; width: 12px; height: 8px; vertical-align: middle; margin-right: 4px; border-radius: 2px; }
 .hc__key--night { background: var(--ink); opacity: 0.12; }
-.hc__key--major { background: var(--amber); opacity: 0.3; }
+.hc__key--major { background: var(--river); opacity: 0.3; }
 .hc__key--sun { border-top: 2px dashed var(--amber); height: 0; }
 .hc__key--p { border-top: 2px solid var(--ink); opacity: 0.55; height: 0; }
 @media (min-width: 900px) { .hc__svg { height: 160px; } }

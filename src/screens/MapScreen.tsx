@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useDesktop } from '@/lib/useMedia';
 import { MapView } from '@/components/MapView';
 import { FilterBar } from '@/components/FilterBar';
 import { Sheet } from '@/components/Sheet';
@@ -14,7 +15,9 @@ import { ConditionsStrip } from '@/components/ConditionsStrip';
 import './mapscreen.css';
 
 export function MapScreen() {
-  const [snap, setSnap] = useState<number | string | null>(0.3);
+  const [snap, setSnap] = useState<number | string | null>(0.34);
+  const desktop = useDesktop();
+  const peek = !desktop && snap === 0.34;
   const { spotId, waterId, speciesId } = useStore();
   const set = useStore((s) => s.set);
   const { scores, date, ready, offline } = useSpotScores();
@@ -22,7 +25,7 @@ export function MapScreen() {
   const sp = species.data?.items.find((s) => s.id === speciesId);
 
   useEffect(() => {
-    if (spotId || waterId) setSnap(0.6);
+    if (spotId || waterId) setSnap(0.62);
   }, [spotId, waterId]);
 
   const best = scores[0];
@@ -49,9 +52,9 @@ export function MapScreen() {
             <TimeScrubber />
             <ConditionsStrip date={date} />
             <h2 className="mapscreen__h2">Куда ехать</h2>
-            <SpotList scores={scores} limit={snap === 0.3 ? 3 : 40} />
-            {snap === 0.3 && scores.length > 3 && (
-              <button type="button" className="btn btn--ghost btn--small" onClick={() => setSnap(0.6)}>
+            <SpotList scores={scores} limit={peek ? 3 : 80} />
+            {peek && scores.length > 3 && (
+              <button type="button" className="btn btn--ghost btn--small" onClick={() => setSnap(0.62)}>
                 Показать все {scores.length}
               </button>
             )}

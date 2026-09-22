@@ -4,11 +4,11 @@
  * on a 0–100 scale; the neutral base is 50.
  */
 export const W = {
-  base: 50,
-  /** Season: (activity_by_month − 5) × seasonScale → −25..+25 */
-  seasonScale: 5,
-  /** Hour: (activity_by_hour − 5) × hourScale → −20..+20 */
-  hourScale: 4,
+  base: 38,
+  /** Season: (activity_by_month − 5) × seasonScale → −20..+20 */
+  seasonScale: 4,
+  /** Hour: (activity_by_hour − 5) × hourScale → −25..+25; the hour matters more than the month on the day */
+  hourScale: 5,
   solunar: { major: 8, minor: 4, twilight: 6 },
   spotRank: { 5: 10, 4: 5, 3: 0, 2: -6, 1: -12, absent: -25 } as Record<string, number>,
   pressure: {

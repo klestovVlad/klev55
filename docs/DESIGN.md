@@ -18,7 +18,7 @@ A field guide you keep in the car door, opened on the bank. Not a dashboard, not
 
 Neutrals derived from Иртыш: `--muted` (text at 4.6:1 for secondary lines), `--line` (hairlines), `--wash` (chip backgrounds).
 
-Chance scale (the memorable thing): 0 → ice grey `#A9B4BA`, 40 → river `#2F5D75`, 65 → reed `#6E7F3A`, 85+ → amber `#D8821F`. Grey-blue → green → amber is readable for deuteranopia (no red/green pair), and it reads as "cold water → warm bite". The same scale colors map dots, the hourly bars, the planner rows and the verdict number. Nothing else on screen is amber.
+Chance scale (the memorable thing): <40 ice grey `#A9B4BA` «плохо», 40–59 river `#2F5D75` «так себе», 60–79 reed `#6E7F3A` «хорошо», 80+ amber `#D8821F` «отлично». Words and colours share the same thresholds. Grey-blue → green → amber is readable for deuteranopia (no red/green pair), and it reads as "cold water → warm bite". The same scale colors map dots, the hourly bars, the planner rows and the verdict number. Nothing else on screen is amber.
 
 ## Type
 

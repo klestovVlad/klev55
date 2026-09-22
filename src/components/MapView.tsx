@@ -4,7 +4,7 @@ import type { Map as MLMap } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { FeatureCollection } from 'geojson';
 import { useStore } from '@/app/store';
-import { useWater, useZones, useObservations } from '@/data/load';
+import { useWater, useZones, useObservations, useAdmin } from '@/data/load';
 import { useSpotScores } from '@/model/useScores';
 import { activeZones } from '@/model/hydro';
 import { CHANCE_HEX } from '@/lib/format';
@@ -45,6 +45,7 @@ export function MapView() {
   const dark = isDark();
   const water = useWater();
   const zones = useZones();
+  const admin = useAdmin();
   const layers = useStore((s) => s.layers);
   const obs = useObservations(layers.observations);
   const { scores, date } = useSpotScores();
@@ -75,6 +76,8 @@ export function MapView() {
     };
     map.on('load', () => {
       russianLabels();
+      // Start with the attribution collapsed; the ⓘ button expands it.
+      ref.current?.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
       setLoaded(true);
     });
     map.on('styledata', () => {
@@ -123,6 +126,14 @@ export function MapView() {
       const first = m.getStyle().layers?.find((l) => l.type === 'symbol')?.id;
       m.addLayer({ id: 'esri', type: 'raster', source: 'esri', layout: { visibility: 'none' } }, first);
     }
+    if (admin.data) {
+      const kz = { type: 'FeatureCollection', features: admin.data.features.filter((f) => f.properties?.kind === 'kz') } as FeatureCollection;
+      add('kz', kz, [
+        { id: 'kz-fill', type: 'fill', source: 'kz', paint: { 'fill-color': dark ? '#000000' : '#8a949a', 'fill-opacity': 0.22 } },
+        { id: 'kz-line', type: 'line', source: 'kz', paint: { 'line-color': dark ? '#9fb0b9' : '#55656e', 'line-width': 1.2, 'line-dasharray': [3, 3] } },
+        { id: 'kz-label', type: 'symbol', source: 'kz', minzoom: 6, layout: { 'text-field': 'Казахстан — другая юрисдикция, правила РК не включены', 'text-size': 12, 'text-font': ['Noto Sans Regular'], 'symbol-placement': 'point', 'text-max-width': 14 }, paint: { 'text-color': dark ? '#9fb0b9' : '#55656e', 'text-halo-color': dark ? '#0f1a20' : '#ffffff', 'text-halo-width': 1.2 } },
+      ]);
+    }
     add('circle', CIRCLE, [{ id: 'circle', type: 'line', source: 'circle', paint: { 'line-color': dark ? '#7fb0cc' : '#2f5d75', 'line-width': 1, 'line-dasharray': [4, 4], 'line-opacity': 0.6 } }]);
     if (water.data) {
       add('water', water.data, [
@@ -144,7 +155,7 @@ export function MapView() {
       ]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded, water.data, zones.data, Math.floor(date.getTime() / 86400000), dark]);
+  }, [loaded, water.data, zones.data, admin.data, Math.floor(date.getTime() / 86400000), dark]);
 
   // Hatch pattern for active zones.
   useEffect(() => {
@@ -225,15 +236,15 @@ export function MapView() {
         properties: { id: s.spot.id, name: s.spot.name, score: s.result.score, legal: s.result.legal, conf: s.spot.confidence, paid: s.spot.type === 'платник' ? 1 : 0, lake: ['озеро', 'пруд', 'водохранилище', 'платник'].includes(s.spot.type) ? 1 : 0, selected: s.spot.id === spotId ? 1 : 0 },
       })),
     };
-    const colorExpr: any = ['case', ['==', ['get', 'legal'], 'banned'], dark ? '#4a5a65' : '#c9d1d6', ['step', ['get', 'score'], hex[0], 40, hex[1], 65, hex[2], 85, hex[3]]];
+    const colorExpr: any = ['case', ['==', ['get', 'legal'], 'banned'], dark ? '#4a5a65' : '#c9d1d6', ['step', ['get', 'score'], hex[0], 40, hex[1], 60, hex[2], 80, hex[3]]];
     if (m.getSource('spots')) {
       (m.getSource('spots') as maplibregl.GeoJSONSource).setData(fc);
       m.setPaintProperty('spots', 'circle-color', colorExpr);
       m.setPaintProperty('spots-halo', 'circle-color', colorExpr);
     } else {
       m.addSource('spots', { type: 'geojson', data: fc, cluster: true, clusterRadius: 34, clusterMaxZoom: 9, clusterProperties: { max: ['max', ['get', 'score']] } });
-      m.addLayer({ id: 'clusters', type: 'circle', source: 'spots', filter: ['has', 'point_count'], paint: { 'circle-color': ['step', ['get', 'max'], hex[0], 40, hex[1], 65, hex[2], 85, hex[3]], 'circle-radius': 16, 'circle-stroke-width': 2, 'circle-stroke-color': dark ? '#0f1a20' : '#ffffff' } });
-      m.addLayer({ id: 'cluster-count', type: 'symbol', source: 'spots', filter: ['has', 'point_count'], layout: { 'text-field': ['get', 'point_count'], 'text-size': 13, 'text-font': ['Noto Sans Bold'] }, paint: { 'text-color': '#ffffff' } });
+      m.addLayer({ id: 'clusters', type: 'circle', source: 'spots', filter: ['has', 'point_count'], paint: { 'circle-color': ['step', ['get', 'max'], hex[0], 40, hex[1], 60, hex[2], 80, hex[3]], 'circle-radius': 16, 'circle-stroke-width': 2, 'circle-stroke-color': dark ? '#0f1a20' : '#ffffff' } });
+      m.addLayer({ id: 'cluster-count', type: 'symbol', source: 'spots', filter: ['has', 'point_count'], layout: { 'text-field': ['get', 'point_count'], 'text-size': 13, 'text-font': ['Noto Sans Regular'] }, paint: { 'text-color': '#ffffff' } });
       m.addLayer({ id: 'spots-halo', type: 'circle', source: 'spots', filter: ['all', ['!', ['has', 'point_count']], ['==', ['get', 'selected'], 1]], paint: { 'circle-radius': 18, 'circle-color': colorExpr, 'circle-opacity': 0.25 } });
       m.addLayer({
         id: 'spots',

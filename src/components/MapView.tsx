@@ -103,7 +103,7 @@ export function MapView() {
       }
     });
     map.on('error', (e) => console.warn('map error', e.error?.message ?? e));
-    if (import.meta.env.DEV) (window as any).__map = map;
+    (window as any).__map = map; // exposed for e2e and debugging
     mapRef.current = map;
     return () => {
       map.remove();

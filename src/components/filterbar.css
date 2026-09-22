@@ -1,0 +1,14 @@
+.fbar { position: absolute; top: 0; left: 0; right: 0; z-index: 20; padding: 10px 12px 6px; pointer-events: none; }
+.fbar > * { pointer-events: auto; }
+.fbar__top { display: flex; gap: 8px; margin-bottom: 8px; }
+.fbar__search {
+  flex: 1; display: flex; align-items: center; gap: 10px; min-height: var(--tap); padding: 0 14px;
+  border-radius: var(--r-control); background: var(--surface); color: var(--muted); box-shadow: var(--shadow-pop); font-size: var(--t-body);
+}
+.fbar__icon { width: var(--tap); height: var(--tap); border-radius: var(--r-control); background: var(--surface); color: var(--ink); box-shadow: var(--shadow-pop); display: grid; place-items: center; }
+.fbar__icon--on { background: var(--river); color: var(--river-ink); }
+.fbar__chips .chip { box-shadow: var(--shadow-pop); border-color: transparent; }
+.fbar__more { margin-top: 8px; padding: 10px 12px; background: var(--surface); border-radius: var(--r-control); box-shadow: var(--shadow-pop); display: flex; flex-direction: column; gap: 8px; }
+@media (min-width: 900px) {
+  .fbar { left: 456px; right: 16px; max-width: 720px; }
+}

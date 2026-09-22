@@ -12,6 +12,9 @@ import type { Species, SpeciesPhoto } from '../src/data/types';
 const OUT = 'public/data';
 const IMG = 'public/img/species';
 const PERMISSIVE = /^(CC0|CC BY|CC BY-SA|CC BY-NC|CC BY-NC-SA|Public domain|PD)/i;
+// Alternative scientific names for Wikidata lookup when the primary name has no usable image.
+const ALT_NAMES: Record<string, string[]> = { 'stenodus-leucichthys': ['Stenodus nelma', 'Stenodus leucichthys nelma'], 'carassius-gibelio': ['Carassius auratus gibelio'] };
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function stripHtml(s: string): string {
   return s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -98,8 +101,12 @@ async function main() {
     if (!s.photo) {
       let photo: SpeciesPhoto | null = null;
       try {
-        const qid = await wikidataQid(s.names.lat);
-        if (qid) photo = await commonsPhoto(qid);
+        for (const name of [s.names.lat, ...(ALT_NAMES[s.id] ?? [])]) {
+          await sleep(1200); // Wikidata rate limit
+          const qid = await wikidataQid(name);
+          if (qid) photo = await commonsPhoto(qid);
+          if (photo) break;
+        }
         if (!photo) photo = await inatPhoto(s.names.lat);
       } catch (e) {
         console.warn(`  photo lookup failed for ${s.id}: ${(e as Error).message}`);

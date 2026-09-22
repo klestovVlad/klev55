@@ -1,0 +1,5 @@
+.scrubber { padding: 6px 0 2px; }
+.scrubber__label { display: flex; justify-content: space-between; font-size: var(--t-caption); color: var(--muted); margin-bottom: 2px; }
+.scrubber__label strong { color: var(--ink); font-weight: 600; }
+.scrubber input[type='range'] { width: 100%; height: var(--tap); margin: 0; accent-color: var(--river); cursor: pointer; }
+.scrubber__ticks { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }

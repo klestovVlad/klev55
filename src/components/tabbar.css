@@ -1,0 +1,14 @@
+.tabbar {
+  display: flex; height: calc(var(--tabbar-h) + var(--safe-b)); padding-bottom: var(--safe-b);
+  background: var(--surface); border-top: 1px solid var(--line); z-index: 40; flex-shrink: 0;
+}
+.tabbar__item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  color: var(--muted); text-decoration: none; font-size: 12px; font-weight: 500; min-height: var(--tap);
+}
+.tabbar__item--on { color: var(--river); }
+@media (min-width: 900px) {
+  .tabbar { flex-direction: column; width: 84px; height: 100%; border-top: 0; border-right: 1px solid var(--line); padding: 12px 0; gap: 4px; }
+  .tabbar__item { flex: 0 0 64px; border-radius: var(--r-control); margin: 0 8px; }
+  .tabbar__item--on { background: var(--wash); }
+}

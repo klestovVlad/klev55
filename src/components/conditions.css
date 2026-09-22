@@ -1,0 +1,6 @@
+.cond { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 8px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 4px 0 8px; }
+.cond__line { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: var(--t-caption); flex: 1; min-width: 200px; }
+.cond__spark { display: flex; align-items: center; gap: 8px; }
+.cond__spark svg { width: 90px; height: 22px; }
+.cond__spark polyline { fill: none; stroke: var(--ink); stroke-width: 1.2; opacity: 0.6; vector-effect: non-scaling-stroke; }
+.cond__prov { margin-left: auto; }

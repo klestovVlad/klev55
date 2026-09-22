@@ -1,0 +1,20 @@
+.sp__head { display: flex; gap: 16px; align-items: flex-start; margin-top: 4px; }
+.sp__head > div { flex: 1; min-width: 0; }
+.sp-photo { width: 132px; height: 99px; object-fit: cover; border-radius: var(--r-control); background: var(--wash); flex-shrink: 0; }
+.sp-photo--small { width: 64px; height: 48px; border-radius: 8px; }
+.sp-photo--empty { display: block; }
+.sp__desc { font-size: var(--t-lead); line-height: 1.5; }
+.sp-ban { color: var(--ban); font-weight: 500; font-size: var(--t-caption); }
+.cal { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin: 8px 0; }
+@media (min-width: 600px) { .cal { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 900px) { .cal { grid-template-columns: repeat(4, 1fr); } }
+.cal__m { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 64px; padding: 8px 10px; text-align: left; border: 1px solid var(--line); border-radius: var(--r-control); background: var(--surface); }
+.cal__m--on { border-color: var(--river); background: var(--wash); }
+.cal__m--now .cal__name::after { content: ' • сейчас'; color: var(--river); font-size: 11px; }
+.cal__name { font-weight: 600; }
+.cal__peaks { font-size: 12px; color: var(--muted); line-height: 1.3; }
+.cal__flags { display: flex; gap: 4px; margin-top: 2px; }
+.cal__flag { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+.cal__flag--ban { background: color-mix(in srgb, var(--ban) 60%, transparent); }
+.cal__flag--ice { background: color-mix(in srgb, var(--ink) 18%, transparent); }
+@media (min-width: 900px) { .sp-photo { width: 220px; height: 165px; } }

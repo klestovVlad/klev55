@@ -1,0 +1,31 @@
+.prov {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--wash);
+  border: 1px solid transparent;
+  vertical-align: middle;
+}
+.prov--generated { border-style: dashed; border-color: var(--wash-strong); background: transparent; }
+.prov--official { color: var(--river); background: color-mix(in srgb, var(--river) 10%, transparent); }
+.prov--measured { color: var(--reed); background: color-mix(in srgb, var(--reed) 12%, transparent); }
+.prov-pop {
+  max-width: 300px;
+  padding: 12px 14px;
+  border-radius: var(--r-control);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-pop);
+  border: 1px solid var(--line);
+  font-size: var(--t-caption);
+  z-index: 60;
+}
+.prov-pop p { margin: 0; }
+.prov-pop p + p { margin-top: 6px; }
+.prov-pop__arrow { fill: var(--surface); }

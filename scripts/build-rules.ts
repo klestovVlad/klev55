@@ -12,7 +12,6 @@ const OUT = 'public/data';
 const now = new Date().toISOString();
 
 const LEGALACTS = 'https://legalacts.ru/doc/prikaz-minselkhoza-rossii-ot-30102020-n-646-ob-utverzhdenii/';
-const FISHGOV_PDF = 'https://fish.gov.ru/wp-content/uploads/2024/11/pravila_rybolovstva_dlya_zapadno_sibirskogo_rybohozyajstvennogo_bassejna.pdf';
 const TAKSY = 'https://www.consultant.ru/document/cons_doc_LAW_310688/f40eb421ff742953e61208d2b6c08971f7ae6c01/';
 const KOAP = 'https://www.consultant.ru/document/cons_doc_LAW_34661/4b14d721c3cbb09fa0afe38ce8280c1a9b3be4a7/';
 
@@ -27,6 +26,7 @@ export const rules: Rules = {
   basin: 'Западно-Сибирский рыбохозяйственный бассейн, Обь-Иртышский рыбохозяйственный район',
   source_title: 'Приказ Минсельхоза России от 30.10.2020 № 646 «Об утверждении правил рыболовства для Западно-Сибирского рыбохозяйственного бассейна»',
   source_url: LEGALACTS,
+  // Official PDF host (ред. 25.06.2024): https://fish.gov.ru/wp-content/uploads/2024/11/pravila_rybolovstva_dlya_zapadno_sibirskogo_rybohozyajstvennogo_bassejna.pdf
   edition_date: '2026-06-08',
   edition_note: 'Редакция от 08.06.2026 (приказ № 395). Нормы для Омской области в ней те же, что в редакции 25.06.2024. Правила действуют до 01.09.2027. Перед выездом сверьтесь с первоисточником: изменения выходят несколько раз в год.',
   spawning_bans: [

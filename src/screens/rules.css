@@ -1,0 +1,10 @@
+.rules__digest li { margin-bottom: 8px; }
+.tbl { width: 100%; border-collapse: collapse; font-size: var(--t-caption); }
+.tbl th { text-align: left; color: var(--muted); font-weight: 500; padding: 6px 8px 6px 0; border-bottom: 1px solid var(--line); }
+.tbl td { padding: 8px 8px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tbl__now td { background: color-mix(in srgb, var(--amber) 10%, transparent); }
+.rules__gallery { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 10px; }
+.rules__gallery li { display: flex; gap: 12px; align-items: center; }
+.rules__gallery img { width: 88px; height: 66px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.rules__pits { columns: 2; column-gap: 20px; font-size: var(--t-caption); padding-left: 1.1em; }
+@media (min-width: 900px) { .rules__gallery { grid-template-columns: 1fr 1fr; } }

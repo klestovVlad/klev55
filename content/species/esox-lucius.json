@@ -99,6 +99,7 @@
     "methods": "generated",
     "lifehacks": "generated",
     "edible": "generated",
+    "edible.safe_preparation": "official",
     "handling": "generated",
     "presence": "generated"
   }

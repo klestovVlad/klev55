@@ -1,0 +1,6 @@
+.plan__q h3 { margin: 12px 0 6px; font-size: var(--t-caption); color: var(--muted); font-weight: 500; }
+.plan__wrap { flex-wrap: wrap; }
+.plan__verdict { font-family: var(--font-voice); font-size: var(--t-h2); line-height: 1.25; margin: 4px 0 10px; }
+.plan__list { list-style: none; padding: 0; margin: 8px 0; display: flex; flex-direction: column; gap: 8px; }
+.plan__row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 72px; padding: 10px 12px; text-align: left; border: 1px solid var(--line); border-radius: var(--r-control); background: var(--surface); }
+.plan__main { flex: 1; min-width: 0; }

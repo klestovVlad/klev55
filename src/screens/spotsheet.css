@@ -1,0 +1,25 @@
+.ss__back { color: var(--river); min-height: 36px; font-size: var(--t-caption); }
+.ss__title { margin: 2px 0 4px; }
+.ss__meta { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: var(--t-caption); margin-bottom: 6px; }
+.ss__species { margin: 4px 0 10px; }
+.ss__sp { display: flex; flex-direction: column; align-items: center; min-width: 76px; min-height: var(--tap); padding: 6px 10px; border-radius: var(--r-control); border: 1px solid var(--line); background: var(--surface); }
+.ss__sp--on { border-color: var(--river); background: var(--wash); }
+.ss__sp-name { font-size: var(--t-caption); }
+.ss__sp-score { font-weight: 600; font-variant-numeric: tabular-nums; }
+.tabs__list { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.tabs__list::-webkit-scrollbar { display: none; }
+.tabs__tab { min-height: var(--tap); padding: 0 10px; white-space: nowrap; color: var(--muted); font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs__tab[data-state='active'] { color: var(--ink); border-bottom-color: var(--river); }
+.tabs__panel { padding: 12px 0; outline: none; }
+.tabs__panel h3 { margin: 10px 0 6px; font-size: var(--t-body); }
+.outlook { list-style: none; padding: 0; margin: 6px 0 12px; display: grid; grid-template-columns: max-content 1fr max-content max-content; gap: 6px 10px; align-items: center; font-size: var(--t-caption); }
+.outlook li { display: contents; }
+.outlook__bar { height: 8px; background: var(--wash); border-radius: 4px; overflow: hidden; }
+.outlook__bar i { display: block; height: 100%; }
+.outlook__val { font-weight: 600; font-variant-numeric: tabular-nums; min-width: 2.4em; text-align: right; }
+.outlook__win { min-width: 6.5em; }
+.method { border-top: 1px solid var(--line); padding: 8px 0; }
+.method summary { cursor: pointer; min-height: 32px; display: flex; align-items: center; gap: 8px; list-style: none; }
+.method summary::before { content: '›'; color: var(--muted); transition: transform var(--dur) var(--ease); }
+.method[open] summary::before { transform: rotate(90deg); }
+.method p { margin: 8px 0; }

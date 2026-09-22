@@ -39,7 +39,7 @@ export const useStore = create<State>((set) => ({
   hoursAhead: 0,
   spotId: null,
   waterId: null,
-  layers: { infra: false, observations: false, satellite: false, zones: true, weather: false },
+  layers: { infra: false, observations: false, satellite: false, zones: true, weather: true },
   theme: savedTheme,
   set: (p) => set(p),
   toggleLayer: (k) => set((s) => ({ layers: { ...s.layers, [k]: !s.layers[k] } })),

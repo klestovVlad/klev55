@@ -73,3 +73,18 @@ test('7. offline: app still opens with cached data', async ({ page, context }) =
   await context.setOffline(false);
   await shot(page, '07-offline');
 });
+
+test('8. search finds a spot and a fish', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Поиск мест, водоёмов и рыб' }).click();
+  const input = page.locator('.search__input');
+  await expect(input).toBeVisible();
+  // Dialog styles must be present even when the search is the first dialog opened.
+  const pos = await page.locator('.dlg.search').evaluate((el) => getComputedStyle(el).position);
+  expect(pos).toBe('fixed');
+  await input.fill('лампоч');
+  await expect(page.locator('[cmdk-item]').first()).toContainText('Лампочка');
+  await input.fill('щук');
+  await expect(page.locator('[cmdk-item]', { hasText: 'Щука' }).first()).toBeVisible();
+  await shot(page, '08-search');
+});

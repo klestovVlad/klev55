@@ -1,0 +1,12 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch();
+const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'dark' });
+const page = await ctx.newPage();
+await page.goto('http://localhost:5173/');
+await page.waitForSelector('.rows .row-btn', { timeout: 30000 });
+await page.getByRole('button', { name: 'Поиск мест, водоёмов и рыб' }).click();
+await page.waitForSelector('.search__input');
+await page.locator('.search__input').fill('ирт');
+await page.waitForTimeout(1500);
+await page.screenshot({ path: 'qa/screenshots/search-desktop-dark.png' });
+await browser.close();

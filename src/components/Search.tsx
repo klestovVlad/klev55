@@ -4,6 +4,7 @@ import { Command } from 'cmdk';
 import { useNavigate } from 'react-router-dom';
 import { useSpecies, useSpots, useWater } from '@/data/load';
 import { useStore } from '@/app/store';
+import './dialog.css';
 import './search.css';
 
 export function Search({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {

@@ -266,25 +266,25 @@ export function MapView() {
         const p = e.features?.[0]?.properties as any;
         if (!p) return;
         const box = document.createElement('div');
-        const t = document.createElement('strong');
-        t.textContent = INFRA_LABEL[p.kind] ?? p.kind;
+        const t = document.createElement('div');
+        t.style.fontWeight = '600';
+        const label = INFRA_LABEL[p.kind] ?? p.kind;
+        t.textContent = p.name ? `${p.name}` : label.charAt(0).toUpperCase() + label.slice(1);
         box.append(t);
-        const sub = [p.name, p.brand, p.river ? `через ${p.river}` : null].filter(Boolean).join(', ');
+        const sub = [p.name ? label : null, p.brand, p.river ? `через ${p.river}` : null].filter(Boolean).join(', ');
         if (sub) {
           const d = document.createElement('div');
+          d.className = 'muted';
           d.textContent = sub;
           box.append(d);
         }
         if (p.kind === 'dam' || p.kind === 'weir' || p.kind === 'lock' || p.kind === 'bridge') {
           const d = document.createElement('div');
           d.className = 'caption';
-          d.textContent = 'У гидросооружений и мостов есть охранная зона: ловить вплотную нельзя.';
+          d.style.marginTop = '4px';
+          d.textContent = 'Охранная зона: ловить вплотную к сооружению нельзя.';
           box.append(d);
         }
-        const c = document.createElement('span');
-        c.className = 'caption';
-        c.textContent = 'OpenStreetMap';
-        box.append(c);
         new maplibregl.Popup({ closeButton: true, maxWidth: '260px' }).setLngLat(e.lngLat).setDOMContent(box).addTo(m);
       };
       for (const id of ['infra', 'infra-fuel']) {

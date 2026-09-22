@@ -2,9 +2,9 @@
 .ss__title { margin: 2px 0 4px; }
 .ss__meta { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: var(--t-caption); margin-bottom: 6px; }
 .ss__species { margin: 4px 0 10px; }
-.ss__sp { display: flex; flex-direction: column; align-items: center; min-width: 76px; min-height: var(--tap); padding: 6px 10px; border-radius: var(--r-control); border: 1px solid var(--line); background: var(--surface); }
+.ss__sp { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 76px; max-width: 150px; min-height: var(--tap); padding: 6px 12px; border-radius: var(--r-control); border: 1px solid var(--line); background: var(--surface); }
 .ss__sp--on { border-color: var(--river); background: var(--wash); }
-.ss__sp-name { font-size: var(--t-caption); }
+.ss__sp-name { font-size: var(--t-caption); line-height: 1.15; text-align: center; text-wrap: balance; }
 .ss__sp-score { font-weight: 600; font-variant-numeric: tabular-nums; }
 .tabs__list { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
 .tabs__list::-webkit-scrollbar { display: none; }

@@ -92,7 +92,7 @@ async function main() {
   console.log('6/6 admin boundaries: Омская область + Kazakh oblasts touching the circle');
   const admin = toGeo(
     await overpass(
-      `(relation["boundary"="administrative"]["admin_level"="4"]["name"="Омская область"](${bbox});relation["boundary"="administrative"]["admin_level"="4"]["name:ru"~"^(Северо-Казахстанская|Павлодарская) область$"](${bbox}););out geom;`,
+      `(relation(id:140292,215760);relation["boundary"="administrative"]["admin_level"="4"]["name:ru"="Павлодарская область"](${bbox}););out geom;`,
       'admin',
       600,
     ),
@@ -101,7 +101,8 @@ async function main() {
   console.log('   features:', admin.features.length, admin.features.map((f) => `${f.properties?.name}/${f.geometry?.type}`));
 
   // Kazakh polygons for jurisdiction tests.
-  const kz = admin.features.filter((f) => /Казахстан|Павлодар/.test(String(f.properties?.name ?? f.properties?.['name:ru'])) && (f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon'));
+  // Kazakh relations carry Kazakh `name` (Қазақстан ≠ Казахстан): match on name:ru.
+  const kz = admin.features.filter((f) => /Казахстан|Павлодар/.test(String(f.properties?.['name:ru'] ?? f.properties?.name)) && (f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon'));
   const omsk = admin.features.find((f) => f.properties?.name === 'Омская область');
   const inKz = (pt: [number, number]) => kz.some((f) => turf.booleanPointInPolygon(pt, f as any));
 
@@ -180,7 +181,7 @@ async function main() {
     meta: { generated_at: new Date().toISOString(), sources: ['OpenStreetMap via Overpass API'], license: 'ODbL 1.0 — © OpenStreetMap contributors' },
     features: [
       ...(omsk ? [{ ...simplify(omsk as any, 0.003), properties: { name: 'Омская область', kind: 'oblast' } }] : []),
-      ...kz.map((f) => ({ ...simplify(f as any, 0.003), properties: { name: f.properties?.name, kind: 'kz' } })),
+      ...kz.map((f) => ({ ...simplify(f as any, 0.003), properties: { name: f.properties?.['name:ru'] ?? f.properties?.name, kind: 'kz' } })),
     ],
   };
   writeFileSync(`${OUT}/admin.geojson`, JSON.stringify(turf.truncate(adminOut as any, { precision: 4, mutate: true })));

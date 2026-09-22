@@ -77,7 +77,10 @@ export function MapView() {
     const russianLabels = () => {
       for (const l of map.getStyle().layers ?? []) {
         // Only the basemap's own labels; our layers (spots, clusters, water) keep their text-field.
-        if (l.type !== 'symbol' || (l as any).source !== 'openmaptiles' || !map.getLayoutProperty(l.id, 'text-field')) continue;
+        if (l.type !== 'symbol' || (l as any).source !== 'openmaptiles') continue;
+        const tf = map.getLayoutProperty(l.id, 'text-field');
+        // Only name labels; road shields use `ref` and must keep it (otherwise empty white boxes).
+        if (!tf || !JSON.stringify(tf).includes('name')) continue;
         map.setLayoutProperty(l.id, 'text-field', ['coalesce', ['get', 'name:ru'], ['get', 'name']]);
       }
     };
@@ -161,8 +164,11 @@ export function MapView() {
     if (zones.data) {
       const active = { type: 'FeatureCollection', features: activeZones(zones.data, date) } as FeatureCollection;
       const all = zones.data;
+      // Out-of-season view: every pit in muted grey with its dates, so a place can be judged before winter.
       add('zones-all', all, [
-        { id: 'zones-all-line', type: 'line', source: 'zones-all', paint: { 'line-color': dark ? '#e4685b' : '#b0382c', 'line-width': 1, 'line-dasharray': [2, 2], 'line-opacity': 0.5 } },
+        { id: 'zones-all-fill', type: 'fill', source: 'zones-all', paint: { 'fill-color': dark ? '#9fb0b9' : '#55656e', 'fill-opacity': 0.18 } },
+        { id: 'zones-all-line', type: 'line', source: 'zones-all', paint: { 'line-color': dark ? '#9fb0b9' : '#55656e', 'line-width': 1.2, 'line-dasharray': [2, 2] } },
+        { id: 'zones-all-label', type: 'symbol', source: 'zones-all', minzoom: 9, layout: { 'text-field': ['concat', ['get', 'name'], '\n15.11–20.04'], 'text-size': 11, 'text-font': ['Noto Sans Regular'], 'text-anchor': 'top', 'text-offset': [0, 0.6] }, paint: { 'text-color': dark ? '#9fb0b9' : '#55656e', 'text-halo-color': dark ? '#0f1a20' : '#ffffff', 'text-halo-width': 1.2 } },
       ]);
       add('zones', active, [
         { id: 'zones-fill', type: 'fill', source: 'zones', paint: { 'fill-pattern': 'hatch' as any, 'fill-opacity': 0.9 } },
@@ -201,7 +207,9 @@ export function MapView() {
     vis('esri', layers.satellite);
     vis('zones-fill', layers.zones);
     vis('zones-line', layers.zones);
-    vis('zones-all-line', layers.zones);
+    vis('zones-all-fill', layers.zonesAll);
+    vis('zones-all-line', layers.zonesAll);
+    vis('zones-all-label', layers.zonesAll);
   }, [loaded, layers]);
 
   // Observations (optional layer).
@@ -341,6 +349,26 @@ export function MapView() {
         const p = e.features?.[0]?.properties as any;
         if (p?.osm_id) set({ waterId: p.osm_id, spotId: null });
       });
+      const onZone = (e: maplibregl.MapMouseEvent & { features?: any[] }) => {
+        if (m.queryRenderedFeatures(e.point, { layers: ['spots', 'clusters'] }).length) return;
+        const p = e.features?.[0]?.properties as any;
+        if (!p) return;
+        const box = document.createElement('div');
+        const t = document.createElement('strong');
+        t.textContent = p.name;
+        const d = document.createElement('div');
+        d.textContent = `Зимовальная яма, ловля запрещена с ${String(p.active_from).split('-').reverse().join('.')} по ${String(p.active_to).split('-').reverse().join('.')}. ${p.landmark ?? ''}`;
+        const c = document.createElement('span');
+        c.className = 'caption';
+        c.textContent = 'Приказ Минсельхоза № 646, Приложение № 1. Граница приблизительная.';
+        box.append(t, d, c);
+        new maplibregl.Popup({ closeButton: true, maxWidth: '280px' }).setLngLat(e.lngLat).setDOMContent(box).addTo(m);
+      };
+      for (const id of ['zones-fill', 'zones-all-fill']) {
+        m.on('click', id, onZone);
+        m.on('mouseenter', id, () => (m.getCanvas().style.cursor = 'pointer'));
+        m.on('mouseleave', id, () => (m.getCanvas().style.cursor = ''));
+      }
       for (const l of ['spots', 'clusters', 'water-fill', 'water-hit']) {
         m.on('mouseenter', l, () => (m.getCanvas().style.cursor = 'pointer'));
         m.on('mouseleave', l, () => (m.getCanvas().style.cursor = ''));

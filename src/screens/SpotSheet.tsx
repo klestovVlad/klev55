@@ -18,6 +18,7 @@ import { ProvenanceBadge } from '@/components/Provenance';
 import { chanceColor, dayShort, driveText, MONTHS_SHORT, timeHM } from '@/lib/format';
 import { startOfOmskDay, addHours } from '@/lib/time';
 import './spotsheet.css';
+import { GearText, GearList } from '@/components/GearText';
 
 export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => void }) {
   const d = useAllData();
@@ -101,7 +102,7 @@ export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => vo
           )}
           {spotSp && (
             <p>
-              <strong>{chosen?.names.ru} здесь:</strong> {spotSp.note} <span className="muted">Способы: {spotSp.methods.join(', ')}; сезоны: {spotSp.seasons.join(', ')}.</span>
+              <strong>{chosen?.names.ru} здесь:</strong> <GearText text={spotSp.note} /> <span className="muted">Способы: {spotSp.methods.join(', ')}; сезоны: {spotSp.seasons.join(', ')}.</span>
             </p>
           )}
           {chosen && (chosen.methods?.length ?? 0) > 0 && (
@@ -115,12 +116,12 @@ export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => vo
                     <summary>
                       <strong>{m.name}</strong> <span className="muted">{m.seasons.join(', ')}</span>
                     </summary>
-                    <p>{m.technique}</p>
+                    <p><GearText text={m.technique} /></p>
                     <dl className="kv">
-                      {m.baits.length > 0 && (<><dt>Наживка</dt><dd>{m.baits.join(', ')}</dd></>)}
-                      {m.lures.length > 0 && (<><dt>Приманки</dt><dd>{m.lures.join(', ')}</dd></>)}
-                      <dt>Оснастка</dt><dd>{m.rig}</dd>
-                      <dt>Снасть</dt><dd>{m.gear}</dd>
+                      {m.baits.length > 0 && (<><dt>Наживка</dt><dd><GearList items={m.baits} /></dd></>)}
+                      {m.lures.length > 0 && (<><dt>Приманки</dt><dd><GearList items={m.lures} /></dd></>)}
+                      <dt>Оснастка</dt><dd><GearText text={m.rig} /></dd>
+                      <dt>Снасть</dt><dd><GearText text={m.gear} /></dd>
                     </dl>
                   </details>
                 ))}
@@ -143,12 +144,12 @@ export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => vo
           )}
           <h3>Лайфхаки</h3>
           <ul>
-            {spot.lifehacks.map((l) => <li key={l}>{l}</li>)}
+            {spot.lifehacks.map((l) => <li key={l}><GearText text={l} /></li>)}
           </ul>
           {chosen && (chosen.lifehacks?.length ?? 0) > 0 && (
             <>
               <h3>Про {chosen.names.ru.toLowerCase()} вообще</h3>
-              <ul>{chosen.lifehacks.slice(0, 3).map((l) => <li key={l}>{l}</li>)}</ul>
+              <ul>{chosen.lifehacks.slice(0, 3).map((l) => <li key={l}><GearText text={l} /></li>)}</ul>
             </>
           )}
           <p className="caption">

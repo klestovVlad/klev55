@@ -10,6 +10,7 @@ const steps: [string, string][] = [
   ['observations', 'scripts/build-observations.ts'],
   ['species (+photos)', 'scripts/build-species.ts'],
   ['spots', 'scripts/build-spots.ts'],
+  ['gear glossary (+photos)', 'scripts/build-gear.ts'],
 ];
 const only = process.argv.slice(2);
 for (const [name, script] of steps) {

@@ -241,6 +241,31 @@ export interface InfraProps {
   name: string | null;
 }
 
+/* ---------- Gear glossary ---------- */
+
+export type GearKind = 'приманка' | 'наживка' | 'оснастка' | 'снасть';
+
+export interface GearItem {
+  id: string; // slug: "koleblyalka"
+  name: string; // "Колебалка"
+  kind: GearKind;
+  aliases: string[]; // words to highlight in texts: ["колебалка", "колеблющаяся блесна", "колебло"]
+  summary: string; // 1–2 sentences: what it is
+  here: string; // 1–2 sentences: when and for whom it works in our waters
+  sizes: string; // typical sizes/weights for our waters
+  species: string[]; // species ids where it is relevant
+  methods: MethodName[];
+  photo: SpeciesPhoto | null;
+  illustration?: string; // our own line drawing, e.g. "img/gear-svg/dzhig.svg" (every card has one)
+  commons_search?: string; // search term for Wikimedia Commons (build-time)
+  provenance: 'generated';
+}
+
+export interface GearFile {
+  meta: Meta;
+  items: GearItem[];
+}
+
 /* ---------- Advice ---------- */
 
 export interface Checklist {

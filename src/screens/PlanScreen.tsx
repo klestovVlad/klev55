@@ -15,6 +15,7 @@ import { chanceColor, chanceWord, dayLong, driveText, timeHM, plural, bySpeciesP
 import { addHours, omskParts, startOfOmskDay } from '@/lib/time';
 import type { MethodName, Season, SpeciesLite as Species, Spot } from '@/data/types';
 import './plan.css';
+import { GearText } from '@/components/GearText';
 
 const METHODS: MethodName[] = ['спиннинг', 'фидер', 'поплавок', 'донка', 'жерлицы', 'мормышка', 'балансир'];
 const MINS = [30, 60, 120, 240];
@@ -199,7 +200,7 @@ export function PlanScreen() {
             {checklists.map((c) => (
               <details key={c.id} className="method">
                 <summary><strong>{c.title}</strong></summary>
-                <ul>{c.items.map((it) => <li key={it}>{it}</li>)}</ul>
+                <ul>{c.items.map((it) => <li key={it}><GearText text={it} /></li>)}</ul>
               </details>
             ))}
           </div>

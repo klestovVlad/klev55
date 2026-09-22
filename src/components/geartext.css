@@ -1,0 +1,9 @@
+.gterm { color: inherit; text-decoration: underline dotted; text-decoration-color: var(--river); text-underline-offset: 3px; text-decoration-thickness: 1.5px; border-radius: 3px; }
+.gterm:hover, .gterm:focus-visible { background: color-mix(in srgb, var(--river) 12%, transparent); }
+.gpop { width: 280px; max-width: calc(100vw - 24px); overflow: hidden; border-radius: var(--r-control); background: var(--surface); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow-pop); z-index: 60; font-size: var(--t-caption); }
+.gpop__img { width: 100%; height: 150px; object-fit: cover; display: block; }
+.gpop__scheme { object-fit: contain; padding: 8px; background: var(--wash); }
+.gpop__body { padding: 10px 12px 12px; }
+.gpop__body p { margin: 4px 0; }
+.gpop__body a { display: inline-block; margin-top: 4px; }
+.gpop__arrow { fill: var(--surface); }

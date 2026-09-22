@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import './tabbar.css';
 
 const TABS = [
@@ -9,10 +9,11 @@ const TABS = [
 ];
 
 export function TabBar() {
+  const { pathname } = useLocation();
   return (
     <nav className="tabbar" aria-label="Разделы">
       {TABS.map((t) => (
-        <NavLink key={t.to} to={t.to} end={t.to === '/'} className={({ isActive }) => `tabbar__item${isActive ? ' tabbar__item--on' : ''}`}>
+        <NavLink key={t.to} to={t.to} end={t.to === '/'} className={({ isActive }) => `tabbar__item${isActive || (t.to === '/species' && pathname.startsWith('/gear')) ? ' tabbar__item--on' : ''}`}>
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             {t.icon}
           </svg>

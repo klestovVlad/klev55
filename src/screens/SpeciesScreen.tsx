@@ -16,6 +16,8 @@ import { chanceColor, MONTHS_NOM, mmddRu, dayShort, driveText, BAIT_SPECIES } fr
 import { omskParts, startOfOmskDay } from '@/lib/time';
 import type { Species } from '@/data/types';
 import './species.css';
+import './gear.css';
+import { GearText, GearList } from '@/components/GearText';
 
 const PRESENCE: Record<string, string> = { common: 'обычна', local: 'местами', rare: 'редко', stocked: 'только зарыбление' };
 const BAIT = new Set([...BAIT_SPECIES, 'gymnocephalus-cernua', 'blicca-bjoerkna', 'scardinius-erythrophthalmus']);
@@ -53,6 +55,10 @@ export function SpeciesListScreen() {
   return (
     <div className="screen">
       <div className="screen__inner">
+        <div className="seg" role="tablist" aria-label="Справочник">
+          <Link to="/species" role="tab" aria-selected className="seg__item seg__item--on">Рыбы</Link>
+          <Link to="/gear" role="tab" aria-selected={false} className="seg__item">Снасти</Link>
+        </div>
         <h1 className="screen__title">Рыбы Иртыша и озёр</h1>
         <p className="screen__lead">{items.length} видов, которые здесь реально ловят или встречают. Что за рыба, когда берёт, на что, можно ли есть.</p>
 
@@ -198,12 +204,12 @@ export function SpeciesScreen() {
             {s.methods.map((m) => (
               <details key={m.name} className="method" open={s.methods.length <= 2}>
                 <summary><strong>{m.name}</strong> <span className="muted">{m.seasons.join(', ')}</span></summary>
-                <p>{m.technique}</p>
+                <p><GearText text={m.technique} /></p>
                 <dl className="kv">
-                  {m.baits.length > 0 && (<><dt>Наживка</dt><dd>{m.baits.join(', ')}</dd></>)}
-                  {m.lures.length > 0 && (<><dt>Приманки</dt><dd>{m.lures.join(', ')}</dd></>)}
-                  <dt>Оснастка</dt><dd>{m.rig}</dd>
-                  <dt>Снасть</dt><dd>{m.gear}</dd>
+                  {m.baits.length > 0 && (<><dt>Наживка</dt><dd><GearList items={m.baits} /></dd></>)}
+                  {m.lures.length > 0 && (<><dt>Приманки</dt><dd><GearList items={m.lures} /></dd></>)}
+                  <dt>Оснастка</dt><dd><GearText text={m.rig} /></dd>
+                  <dt>Снасть</dt><dd><GearText text={m.gear} /></dd>
                 </dl>
               </details>
             ))}
@@ -218,7 +224,7 @@ export function SpeciesScreen() {
 
         <div className="section">
           <h2>Лайфхаки</h2>
-          <ul>{s.lifehacks.map((l) => <li key={l}>{l}</li>)}</ul>
+          <ul>{s.lifehacks.map((l) => <li key={l}><GearText text={l} /></li>)}</ul>
         </div>
 
         <div className="section">

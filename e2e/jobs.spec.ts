@@ -105,3 +105,19 @@ test('9. tapping a cluster bubble zooms in to split it', async ({ page }) => {
   const zoom = await page.evaluate(() => (window as any).__map.getZoom());
   expect(zoom).toBeGreaterThan(target!.zoom + 0.8);
 });
+
+test('10. gear glossary: list, card, and a linked term on a species page', async ({ page }) => {
+  await page.goto('/gear');
+  await expect(page.locator('.gear-card').first()).toBeVisible({ timeout: 20_000 });
+  await page.locator('.gear-card').first().click();
+  await expect(page.locator('h1')).toBeVisible();
+  await expect(page.getByText(/Размеры/)).toBeVisible();
+  await page.goto('/species/esox-lucius');
+  await expect(page.locator('h1')).toContainText('Щука');
+  const term = page.locator('.gterm').first();
+  await expect(term).toBeVisible({ timeout: 20_000 });
+  await term.click();
+  await expect(page.locator('.gpop')).toBeVisible();
+  await expect(page.locator('.gpop').getByText(/Подробнее в словаре/)).toBeVisible();
+  await shot(page, '10-gear');
+});

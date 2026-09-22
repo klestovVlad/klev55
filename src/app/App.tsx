@@ -6,6 +6,8 @@ import { MapScreen } from '@/screens/MapScreen';
 const PlanScreen = lazy(() => import('@/screens/PlanScreen').then((m) => ({ default: m.PlanScreen })));
 const SpeciesListScreen = lazy(() => import('@/screens/SpeciesScreen').then((m) => ({ default: m.SpeciesListScreen })));
 const SpeciesScreen = lazy(() => import('@/screens/SpeciesScreen').then((m) => ({ default: m.SpeciesScreen })));
+const GearListScreen = lazy(() => import('@/screens/GearScreen').then((m) => ({ default: m.GearListScreen })));
+const GearScreen = lazy(() => import('@/screens/GearScreen').then((m) => ({ default: m.GearScreen })));
 const RulesScreen = lazy(() => import('@/screens/RulesScreen').then((m) => ({ default: m.RulesScreen })));
 import { applyTheme, useStore } from './store';
 import './layout.css';
@@ -26,6 +28,8 @@ export function App() {
                 <Route path="/plan" element={<PlanScreen />} />
                 <Route path="/species" element={<SpeciesListScreen />} />
                 <Route path="/species/:id" element={<SpeciesScreen />} />
+                <Route path="/gear" element={<GearListScreen />} />
+                <Route path="/gear/:id" element={<GearScreen />} />
                 <Route path="/rules" element={<RulesScreen />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>

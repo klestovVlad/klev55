@@ -7,6 +7,7 @@ import { ProvenanceBadge } from '@/components/Provenance';
 import { mmddRu } from '@/lib/format';
 import { inWindow, omskParts } from '@/lib/time';
 import './rules.css';
+import { GearText } from '@/components/GearText';
 
 export function RulesScreen() {
   const rules = useRules();
@@ -165,7 +166,7 @@ export function RulesScreen() {
               {advice.data.checklists.map((c) => (
                 <details key={c.id} className="method">
                   <summary><strong>{c.title}</strong> <span className="muted">{c.method}, {c.season}</span></summary>
-                  <ul>{c.items.map((it) => <li key={it}>{it}</li>)}</ul>
+                  <ul>{c.items.map((it) => <li key={it}><GearText text={it} /></li>)}</ul>
                 </details>
               ))}
             </div>

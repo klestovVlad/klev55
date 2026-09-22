@@ -1,0 +1,17 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch();
+const page = await (await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 })).newPage();
+await page.goto('http://localhost:5173/gear');
+await page.waitForSelector('.gear-card', { timeout: 30000 });
+await page.waitForTimeout(1500);
+await page.screenshot({ path: 'qa/screenshots/gear-list-mobile.png' });
+await page.goto('http://localhost:5173/species/esox-lucius');
+await page.waitForSelector('.gterm', { timeout: 30000 });
+await page.evaluate(() => { const el = document.querySelector('.method'); el && el.setAttribute('open', ''); });
+const term = page.locator('.method .gterm').first();
+await term.scrollIntoViewIfNeeded();
+await term.click();
+await page.waitForSelector('.gpop');
+await page.waitForTimeout(600);
+await page.screenshot({ path: 'qa/screenshots/gear-popover-mobile.png' });
+await browser.close();

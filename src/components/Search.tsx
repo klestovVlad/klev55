@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Command } from 'cmdk';
 import { useNavigate } from 'react-router-dom';
-import { useSpecies, useSpots, useWater } from '@/data/load';
+import { useSpecies, useSpots, useWater, useGear } from '@/data/load';
 import { useStore } from '@/app/store';
 import './dialog.css';
 import './search.css';
@@ -12,6 +12,7 @@ export function Search({ open, onOpenChange }: { open: boolean; onOpenChange: (o
   const species = useSpecies();
   const spots = useSpots();
   const water = useWater(open); // 1.3 MB overlay: fetch only when the search opens
+  const gear = useGear();
   const set = useStore((s) => s.set);
   const nav = useNavigate();
   const waters = useMemo(() => {
@@ -59,6 +60,19 @@ export function Search({ open, onOpenChange }: { open: boolean; onOpenChange: (o
                     </Command.Item>
                   ))}
               </Command.Group>
+              {ql && (
+                <Command.Group heading="Снасти и приманки">
+                  {(gear.data?.items ?? [])
+                    .filter((g) => filt(g.name) || g.aliases.some(filt))
+                    .slice(0, 6)
+                    .map((g) => (
+                      <Command.Item key={g.id} value={`gear ${g.id}`} onSelect={() => { nav(`/gear/${g.id}`); onOpenChange(false); }}>
+                        <span>{g.name}</span>
+                        <span className="muted">{g.kind}</span>
+                      </Command.Item>
+                    ))}
+                </Command.Group>
+              )}
               {ql && (
                 <Command.Group heading="Водоёмы">
                   {waters

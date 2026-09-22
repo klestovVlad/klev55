@@ -1,6 +1,6 @@
 /** Static data loaders (TanStack Query). Files live in public/data and are precached by the service worker. */
 import { useQuery } from '@tanstack/react-query';
-import type { Advice, GaugesFile, Rules, SpeciesFile, SpeciesIndexFile, SpotsFile } from './types';
+import type { Advice, GaugesFile, GearFile, Rules, SpeciesFile, SpeciesIndexFile, SpotsFile } from './types';
 import type { FeatureCollection } from 'geojson';
 
 const base = import.meta.env.BASE_URL;
@@ -19,6 +19,7 @@ export const useSpecies = () => useQuery({ queryKey: ['species-index'], queryFn:
 export const useSpeciesFull = () => useQuery({ queryKey: ['species'], queryFn: () => getJson<SpeciesFile>('species.json'), ...staticOpts });
 export const useSpots = () => useQuery({ queryKey: ['spots'], queryFn: () => getJson<SpotsFile>('spots.json'), ...staticOpts });
 export const useRules = () => useQuery({ queryKey: ['rules'], queryFn: () => getJson<Rules>('rules.json'), ...staticOpts });
+export const useGear = () => useQuery({ queryKey: ['gear'], queryFn: () => getJson<GearFile>('gear.json'), ...staticOpts });
 export const useAdvice = () => useQuery({ queryKey: ['advice'], queryFn: () => getJson<Advice>('advice.json'), ...staticOpts });
 export const useGauges = () => useQuery({ queryKey: ['gauges'], queryFn: () => getJson<GaugesFile & { ice: IceEstimate[]; thresholds_cm: Record<string, number> }>('gauges.json'), ...staticOpts });
 export const useZones = () => useQuery({ queryKey: ['zones'], queryFn: () => getJson<FeatureCollection>('zones.geojson'), ...staticOpts });

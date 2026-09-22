@@ -42,11 +42,13 @@ export function FilterBar() {
       </div>
       {more && (
         <div className="fbar__more">
+          <div className="fbar__label">Способ ловли</div>
           <div className="chip-row">
             {METHODS.map((m) => (
               <Chip key={m} small selected={method === m} onClick={() => set({ method: method === m ? null : m })}>{m}</Chip>
             ))}
           </div>
+          <div className="fbar__label">Слои карты</div>
           <div className="chip-row">
             <Chip small selected={layers.weather} onClick={() => toggleLayer('weather')}>Ветер и осадки</Chip>
             <Chip small selected={layers.particles} onClick={() => toggleLayer('particles')}>Ветер частицами</Chip>

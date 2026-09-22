@@ -5,11 +5,21 @@
 .gadv__method { font-size: var(--t-body); margin-bottom: 4px; }
 .gadv__items { display: flex; flex-wrap: wrap; gap: 6px; }
 .gadv__it {
-  display: inline-flex; align-items: center; gap: 4px; min-height: 32px; padding: 0 10px;
+  display: inline-flex; align-items: stretch; min-height: 36px;
   border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
-  font-size: var(--t-caption); text-decoration: underline dotted; text-decoration-color: var(--river); text-underline-offset: 3px;
+  font-size: var(--t-caption); overflow: hidden;
 }
-.gadv__it--plain { text-decoration: none; color: var(--muted); }
+.gadv__it--plain { align-items: center; padding: 0 10px; color: var(--muted); }
 .gadv__it--have { border-color: color-mix(in srgb, var(--reed) 60%, transparent); background: color-mix(in srgb, var(--reed) 10%, var(--surface)); }
-.gadv__tick { color: var(--reed); font-weight: 600; }
+.gadv__tick { min-width: 36px; display: grid; place-items: center; color: var(--muted); border-right: 1px solid var(--line); font-size: 15px; }
+.gadv__it--have .gadv__tick { color: var(--reed); font-weight: 600; }
+.gadv__name { padding: 0 10px 0 8px; display: inline-flex; align-items: center; color: inherit; text-decoration: underline dotted; text-decoration-color: var(--river); text-underline-offset: 3px; }
 .gadv__foot { margin-top: 8px; }
+
+/* «С вашим ящиком» */
+.boxcatch { margin: 6px 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-control); background: var(--surface); }
+.boxcatch h3 { margin: 0 0 6px; font-size: var(--t-body); }
+.boxcatch ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.boxcatch li { display: flex; gap: 10px; align-items: baseline; }
+.boxcatch__score { font-weight: 600; font-variant-numeric: tabular-nums; min-width: 2.6em; }
+.boxcatch__missing { color: var(--muted); font-size: var(--t-caption); margin: 6px 0 0; }

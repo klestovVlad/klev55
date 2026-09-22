@@ -20,6 +20,7 @@ import { startOfOmskDay, addHours } from '@/lib/time';
 import './spotsheet.css';
 import { GearText, GearList } from '@/components/GearText';
 import { GearAdvice } from '@/components/GearAdvice';
+import { BoxCatch } from '@/components/BoxCatch';
 
 export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => void }) {
   const d = useAllData();
@@ -85,6 +86,12 @@ export function SpotSheet({ spotId, onBack }: { spotId: string; onBack: () => vo
         </Tabs.List>
 
         <Tabs.Content value="how" className="tabs__panel">
+          <BoxCatch
+            date={date}
+            ice={hydro.ice_on}
+            onPick={setPick}
+            entries={ranked.map(({ sp, r }) => ({ species: sp, score: r.score, scoreText: String(r.score), banned: r.legal === 'banned', spotMethods: spot.species.find((x) => x.id === sp.id)?.methods }))}
+          />
           {chosen && <GearAdvice species={chosen} date={date} ice={hydro.ice_on} spotMethods={spotSp?.methods} />}
           {chosen && ctx && (
             <>

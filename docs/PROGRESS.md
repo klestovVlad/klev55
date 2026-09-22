@@ -62,3 +62,7 @@ Deployed 2026-09-22 to GitHub Pages: https://klestovvlad.github.io/klev55/ (repo
 Added: point estimate for any coordinate (long press / right click / tap on water; D-037), «Мои места» (D-038), «Взять с собой» on spot sheets, point sheet and planner + «мой ящик» (D-039), marking decoder and determination key on the gear screen (D-040). New modules: `src/model/here.ts`, `useHere.ts`, `gearAdvice.ts`, `src/lib/marking.ts`, `gearIndex.ts`, `src/data/{box,pins,gearKey}.ts`, components `GearAdvice`, `MarkingDecoder`, `GearKey`, `PinList`; `WaterSheet` rewritten. Unit tests 41; e2e 12 jobs × 2 projects.
 Known: the in-app Browser pane does not bring up WebGL on the desktop viewport (map verified on mobile viewport and via Playwright). Photo recognition of tackle deferred (needs a backend).
 Next candidates: OSRM live drive time for pins (public demo server, cached), «где я стою» GPS warning, countdown to the best window.
+
+## Update 2026-09-22, night — ящик как фильтр, поппер
+
+Added: ticks inside «Взять с собой», «С вашим ящиком» block on spot/point sheets (`src/model/coverage.ts`, `BoxCatch`), planner filter `?box=1`; popper card (41 gear cards) with scheme and key branch; decoder reads lure packs (Floating / 0 m / 8 cm) and treats «XH-V» as a model code. Pins chosen from list/search centre the map; pins searchable. Unit tests 44, e2e 24/24.

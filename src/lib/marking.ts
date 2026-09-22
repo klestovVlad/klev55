@@ -116,6 +116,31 @@ const RULES: Rule[] = [
       return { token: m[0], kind: 'удилище', label: `длина ${ft}′${inch ? inch + '″' : ''}`, detail: `Длина ${ft} футов${inch ? ' ' + inch + ' дюймов' : ''} — примерно ${feetToCm(ft, inch)} см.` };
     },
   },
+  // Lure length: 8 cm, 80 mm (lure context only; a rod is never 8 cm)
+  {
+    kind: 'приманка',
+    re: /(?<![\d.,])(\d{1,2}(?:[.,]\d)?)\s?(cm|см)(?![\wа-яё])|(?<![\d.,])(\d{2,3})\s?(mm|мм)(?![\wа-яё])/giu,
+    make: (m, ctx) => {
+      if (!ctx.lure) return null;
+      const L = m[1] ? Math.round(num(m[1]) * 10) : +m[3];
+      if (L < 20 || L > 250) return null;
+      const who = L <= 50 ? 'окунь, язь, елец, форель на платнике' : L <= 90 ? 'щука, судак, крупный окунь' : 'щука и судак, троллинг по русловым бровкам';
+      return { token: m[0], kind: 'приманка', label: `длина ${L} мм`, detail: `Длина приманки ${L} мм: ${who}.` };
+    },
+  },
+  // Running depth on the pack: 0 m, 1–2 m, 3 м
+  {
+    kind: 'приманка',
+    re: /(?<![\d.,])(\d(?:[.,]\d)?)(?:\s?[-–]\s?(\d(?:[.,]\d)?))?\s?(m|м|meter|метр\w*)(?![\wа-яё])/giu,
+    make: (m, ctx) => {
+      if (!ctx.lure) return null;
+      const a = num(m[1]);
+      const b = m[2] ? num(m[2]) : a;
+      if (b > 12) return null;
+      const txt = b === 0 ? 'поверхностная: идёт по самой поверхности, над травой и мелью' : b <= 1 ? 'мелководная: затоны, старицы, прогретые мели' : b <= 2.5 ? 'средняя: бровки, кромка травы' : 'глубоководная: ямы и русло Иртыша, троллинг';
+      return { token: m[0], kind: 'приманка', label: `глубина ${m[2] ? `${fmt(a)}–${fmt(b)}` : fmt(a)} м`, detail: `Заглубление ${m[2] ? `${fmt(a)}–${fmt(b)}` : fmt(a)} м, ${txt}.` };
+    },
+  },
   // Rod length in cm or m
   {
     kind: 'удилище',
@@ -173,9 +198,10 @@ const RULES: Rule[] = [
     re: /(?<![\wа-яё])(floating|suspending|suspend|sinking|SSR|SDR|XDR|XDD|MDR|SR|MR|DR|DD)(?![\wа-яё])/giu,
     make: (m) => {
       const t = m[1].toUpperCase();
-      const w: Record<string, string> = { FLOATING: BUOY.F, SUSPENDING: BUOY.SP, SUSPEND: BUOY.SP, SINKING: BUOY.S };
-      const d = w[t] ?? DEPTH[t];
-      return d ? { token: m[0], kind: 'приманка', label: `воблер ${t.length <= 3 ? t : t.toLowerCase()}`, detail: `Воблер: ${d}.` } : null;
+      const code: Record<string, string> = { FLOATING: 'F', SUSPENDING: 'SP', SUSPEND: 'SP', SINKING: 'S' };
+      const c = code[t] ?? t;
+      const d = BUOY[c] ?? DEPTH[c];
+      return d ? { token: m[0], kind: 'приманка', label: `воблер ${c}`, detail: `Воблер: ${d}.` } : null;
     },
   },
   // Big hooks 1/0..10/0
@@ -266,7 +292,8 @@ const RULES: Rule[] = [
   {
     kind: 'удилище',
     re: /(?<![\wа-яё])(UL|ML|MH|XXXH|XXH|XH|L|M|H)(?![\wа-яё])/gu,
-    make: (m) => {
+    make: (m, ctx) => {
+      if (ctx.lure && !ctx.rod) return null; // «XH-V» on a lure pack is a model code, not a rod power
       const p = POWER[m[1]];
       return { token: m[0], kind: 'удилище', label: `мощность ${m[1]}`, detail: `Мощность бланка ${p.ru}, ${p.test}.` };
     },
@@ -331,8 +358,9 @@ const RULES: Rule[] = [
 ];
 
 function ctxOf(text: string): Ctx {
-  const rod = /(?<![\d.,])[SCB]?\d{3}-?(UL|ML|MH|XXH|XH|L|M|H)|\d\s?[-–—]\s?\d+\s?(g|г|oz)|\d{1,2}\s?(?:'|′|ft)|(?<![\wа-яё])(UL|ML|MH|XH|XXH)(?![\wа-яё])|rod|удил|spinning|casting|feeder|фидер|спиннинг/iu.test(text);
-  const lure = /\d{2,3}\s?(mm|мм)?\s?[-/]?\s?(SSR|SDR|XDR|MDR|DD|SR|MR|DR|SP|SU|SS|FS)\b|floating|suspend|sinking|вобл|lure|minnow|crank|shad/iu.test(text);
+  const lure = /\d{2,3}\s?(mm|мм)?\s?[-/]?\s?(SSR|SDR|XDR|MDR|DD|SR|MR|DR|SP|SU|SS|FS)\b|floating|suspend|sinking|вобл|lure|minnow|crank|shad|popper|поппер|topwater/iu.test(text);
+  const rodStrong = /(?<![\d.,])[SCB]?\d{3}-?(UL|ML|MH|XXH|XH|L|M|H)|\d\s?[-–—]\s?\d+\s?(g|г|oz)|\d{1,2}\s?(?:'|′|ft)|rod|удил|spinning|casting|feeder|фидер|спиннинг/iu.test(text);
+  const rod = rodStrong || (!lure && /(?<![\wа-яё])(UL|ML|MH|XH|XXH)(?![\wа-яё])/u.test(text));
   const feeder = /feeder|фидер|picker|пикер|кормуш/iu.test(text);
   return { rod, lure, feeder };
 }
@@ -382,9 +410,9 @@ export function decodeMarking(input: string): Decoded {
       else if (pw) add(['esox-lucius', 'sander-lucioperca']);
     }
   }
-  const lure = parts.find((p) => p.kind === 'приманка' && p.label.startsWith('воблер') && /\d/.test(p.label));
+  const lure = parts.find((p) => p.kind === 'приманка' && (p.label.startsWith('воблер') || p.label.startsWith('длина')) && /\d/.test(p.label));
   if (lure || parts.some((p) => p.kind === 'приманка')) {
-    gear.add('vobler');
+    gear.add(parts.some((p) => p.label === 'глубина 0 м') ? 'popper' : 'vobler');
     const L = lure ? parseInt(lure.label.replace(/\D+/g, ' ').trim().split(' ')[0], 10) : 0;
     if (L && L <= 50) add(['perca-fluviatilis', 'leuciscus-idus', 'leuciscus-leuciscus']);
     else if (L && L <= 90) add(['esox-lucius', 'sander-lucioperca', 'perca-fluviatilis']);

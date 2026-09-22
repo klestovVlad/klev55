@@ -54,6 +54,15 @@ describe('decodeMarking()', () => {
     expect(e.parts[0].label).toBe('воблер 56 мм F');
   });
 
+  it('reads a lure pack: F-Floating, 0 m, 8 cm; the model code stays unknown and is not a rod power', () => {
+    const d = decodeMarking('F-FLOATING 0 m XH-V 8cm');
+    expect(d.parts.map((p) => p.label)).toEqual(['воблер F', 'глубина 0 м', 'длина 80 мм']);
+    expect(d.parts.every((p) => p.kind === 'приманка')).toBe(true);
+    expect(d.unknown).toEqual(['XH-V']);
+    expect(d.gear).toEqual(['popper']);
+    expect(d.species).toContain('esox-lucius');
+  });
+
   it('knows XXH', () => {
     const d = decodeMarking('XXH');
     expect(d.parts[0].detail).toMatch(/сверхтяжёлое/);

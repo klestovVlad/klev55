@@ -17,6 +17,11 @@ import type { MethodName, Season, SpeciesLite as Species, Spot } from '@/data/ty
 import './plan.css';
 import { GearText } from '@/components/GearText';
 import { GearAdvice } from '@/components/GearAdvice';
+import { useBox } from '@/data/box';
+import { useGear } from '@/data/load';
+import { buildGearIndex } from '@/lib/gearIndex';
+import { speciesCoverage } from '@/model/coverage';
+import type { Species as SpeciesFull } from '@/data/types';
 
 const METHODS: MethodName[] = ['спиннинг', 'фидер', 'поплавок', 'донка', 'жерлицы', 'мормышка', 'балансир'];
 const MINS = [30, 60, 120, 240];
@@ -57,6 +62,8 @@ export function PlanScreen() {
   const d = useAllData();
   const advice = useAdvice();
   const full = useSpeciesFull();
+  const gear = useGear();
+  const boxIds = useBox((s) => s.ids);
   const nav = useNavigate();
   const set = useStore((s) => s.set);
   const [params, setParams] = useSearchParams();
@@ -67,6 +74,7 @@ export function PlanScreen() {
   const method = (params.get('method') as MethodName | null) ?? null;
   const when = params.get('when') ?? 'today';
   const boat = params.get('boat') === '1';
+  const onlyBox = params.get('box') === '1' && boxIds.length > 0;
   const maxMin = Number(params.get('min') ?? 120);
   const update = (p: Record<string, string | null>) => {
     const n = new URLSearchParams(params);
@@ -83,6 +91,22 @@ export function PlanScreen() {
   const rows = useMemo<PlanRow[]>(() => {
     if (!d.spots.data || !species.length) return [];
     const byId = new Map(species.map((s) => [s.id, s]));
+    // «Только с моим ящиком»: a species counts only when one of its methods is fully covered by the box (class level).
+    const box = new Set(boxIds);
+    const index = onlyBox && gear.data ? buildGearIndex(gear.data.items) : null;
+    const fullById = new Map<string, SpeciesFull>(((full.data?.items ?? []) as SpeciesFull[]).map((s) => [s.id, s]));
+    const covered = new Map<string, boolean>();
+    const coveredHere = (id: string, spotMethods: MethodName[], ice: boolean): boolean => {
+      if (!index) return true;
+      const key = `${id}|${spotMethods.join(',')}|${ice}`;
+      let v = covered.get(key);
+      if (v == null) {
+        const sp = fullById.get(id);
+        v = sp ? speciesCoverage(sp, box, { season, ice, spotMethods, glossary: gear.data!.items, index }).best?.level === 'full' : false;
+        covered.set(key, v);
+      }
+      return v;
+    };
     const out: PlanRow[] = [];
     for (const spot of d.spots.data.items) {
       const series = nearestSeries(d.weather.data, spot.coords[1], spot.coords[0]);
@@ -93,6 +117,8 @@ export function PlanScreen() {
       if (method) cands = cands.filter((s) => s.methods.includes(method));
       if (!cands.length) continue;
       const hydro = hydroFor(spot, d.gauges.data?.items, d.gauges.data?.ice, d.zones.data, day);
+      if (onlyBox) cands = cands.filter((s) => coveredHere(s.id, s.methods, hydro.ice_on));
+      if (!cands.length) continue;
       let best: PlanRow | null = null;
       for (const c of cands.slice(0, 4)) {
         const sp = byId.get(c.id)!;
@@ -111,7 +137,7 @@ export function PlanScreen() {
     }
     return out.sort((a, b) => b.score - a.score || (a.spot.drive_min ?? 999) - (b.spot.drive_min ?? 999));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [d.spots.data, species, d.weather.data, d.gauges.data, d.zones.data, d.rules.data, sel.join(','), method, day.getTime(), boat, maxMin]);
+  }, [d.spots.data, species, d.weather.data, d.gauges.data, d.zones.data, d.rules.data, sel.join(','), method, day.getTime(), boat, maxMin, onlyBox, boxIds.join(','), gear.data, full.data, season]);
 
   const top = rows[0];
   const topFull = top ? full.data?.items.find((s) => s.id === top.species.id) : undefined;
@@ -161,7 +187,9 @@ export function PlanScreen() {
               <Chip key={k} selected={maxMin === k} onClick={() => update({ min: String(k) })}>{MIN_LABEL[k]}</Chip>
             ))}
             <Chip selected={boat} onClick={() => update({ boat: boat ? null : '1' })}>С лодки</Chip>
+            {boxIds.length > 0 && <Chip selected={onlyBox} onClick={() => update({ box: onlyBox ? null : '1' })}>Только с моим ящиком</Chip>}
           </div>
+          {onlyBox && <p className="caption">Показаны места, где хотя бы одна рыба ловится полным комплектом из вашего ящика: снасть, оснастка и что-то на крючок. Классы, не размеры.</p>}
         </div>
 
         <div className="section">
@@ -169,7 +197,7 @@ export function PlanScreen() {
             {top
               ? `${dayLong(day)}: ${top.species.names.ru.toLowerCase()} — ${chanceWord(top.score)} (${top.score}), ${top.spot.name}${top.window ? `, лучше ${timeHM(top.window.from)}–${timeHM(top.window.to)}` : ''}.`
               : d.ready
-                ? 'Под эти условия мест нет. Уберите способ или дайте больше времени на дорогу.'
+                ? onlyBox ? 'С вашим ящиком под эти условия мест нет. Отметьте больше снастей в словаре или снимите фильтр.' : 'Под эти условия мест нет. Уберите способ или дайте больше времени на дорогу.'
                 : 'Загружаем…'}
           </p>
           <ConditionsStrip date={addHours(day, 9)} />

@@ -34,10 +34,11 @@ export interface GearAdviceOptions {
   ice: boolean;
   spotMethods?: MethodName[]; // how this particular place is fished (first = most common)
   glossary: GearItem[];
+  index?: GearIndex; // prebuilt alias index (planner scores many species; building the regex each time is the cost)
   max?: number;
 }
 
-function pickItems(index: GearIndex, m: SpeciesMethod): GearPickItem[] {
+export function pickItems(index: GearIndex, m: SpeciesMethod): GearPickItem[] {
   const out: GearPickItem[] = [];
   const seen = new Set<string>();
   const push = (label: string, role: GearPickItem['role'], id: string | null) => {
@@ -63,7 +64,7 @@ function pickItems(index: GearIndex, m: SpeciesMethod): GearPickItem[] {
 export function gearAdvice(species: Pick<Species, 'methods'>, opts: GearAdviceOptions): GearPick[] {
   const methods = species.methods ?? [];
   if (!methods.length) return [];
-  const index = buildGearIndex(opts.glossary);
+  const index = opts.index ?? buildGearIndex(opts.glossary);
   const byMode = methods.filter((m) => (opts.ice ? ICE_METHODS.has(m.name) : !ICE_METHODS.has(m.name)));
   const pool = byMode.length ? byMode : methods;
   const spotOrder = opts.spotMethods ?? [];

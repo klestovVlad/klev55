@@ -13,6 +13,7 @@ import { useWater } from '@/data/load';
 import { useHere } from '@/model/useHere';
 import { usePins, pinAt } from '@/data/pins';
 import { GearAdvice } from '@/components/GearAdvice';
+import { BoxCatch } from '@/components/BoxCatch';
 import { RulesToday } from '@/components/RulesToday';
 import { ConditionsStrip } from '@/components/ConditionsStrip';
 import { ProvenanceBadge } from '@/components/Provenance';
@@ -116,6 +117,12 @@ export function WaterSheet({ waterId, pin, onBack }: { waterId: number | null; p
           </Tabs.List>
 
           <Tabs.Content value="take" className="tabs__panel">
+            <BoxCatch
+              date={date}
+              ice={here.hydro.ice_on}
+              onPick={setPick}
+              entries={species.map((s) => ({ species: s.species, score: s.range ? Math.round((s.range.lo + s.range.hi) / 2) : null, scoreText: s.range ? `≈${s.range.lo}–${s.range.hi}` : '·', banned: s.species.status.legal === 'banned' || s.range?.result.legal === 'banned', spotMethods: spot.species.find((x) => x.id === s.species.id)?.methods }))}
+            />
             {chosen ? (
               <>
                 {chosen.range && chosen.range.result.legal !== 'banned' && (

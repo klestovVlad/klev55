@@ -11,13 +11,13 @@ import { MonthBar } from '@/components/MonthBar';
 import { HourChart } from '@/components/HourChart';
 import { ProvenanceBadge } from '@/components/Provenance';
 import { Chip } from '@/components/Chip';
-import { chanceColor, MONTHS_NOM, mmddRu, dayShort, driveText } from '@/lib/format';
+import { chanceColor, MONTHS_NOM, mmddRu, dayShort, driveText, BAIT_SPECIES } from '@/lib/format';
 import { omskParts, startOfOmskDay } from '@/lib/time';
 import type { Species } from '@/data/types';
 import './species.css';
 
 const PRESENCE: Record<string, string> = { common: 'обычна', local: 'местами', rare: 'редко', stocked: 'только зарыбление' };
-const BAIT = new Set(['leucaspius-delineatus', 'phoxinus-phoxinus', 'gobio-gobio', 'alburnus-alburnus', 'gymnocephalus-cernua', 'blicca-bjoerkna', 'scardinius-erythrophthalmus']);
+const BAIT = new Set([...BAIT_SPECIES, 'gymnocephalus-cernua', 'blicca-bjoerkna', 'scardinius-erythrophthalmus']);
 const RISK: Record<string, string> = { high: 'высокий', medium: 'средний', low: 'низкий', none: 'нет' };
 const GROUPS = [
   { key: 'predator', title: 'Хищник', ids: ['esox-lucius', 'sander-lucioperca', 'perca-fluviatilis', 'lota-lota', 'gymnocephalus-cernua', 'perccottus-glenii', 'oncorhynchus-mykiss'] },

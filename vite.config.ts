@@ -30,6 +30,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,webp,json,geojson,woff2}'],
+        globIgnores: ['**/*-greek*', '**/*-vietnamese*', '**/*-latin-ext*'],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         runtimeCaching: [
           {
@@ -63,6 +64,11 @@ export default defineConfig({
   // MapLibre 6 resolves its worker via new URL('./maplibre-gl-worker.mjs', import.meta.url);
   // pre-bundling breaks that path in dev, so serve it straight from node_modules.
   optimizeDeps: { exclude: ['maplibre-gl'] },
-  build: { target: 'es2022', sourcemap: false },
+  build: {
+    target: 'es2022',
+    sourcemap: false,
+    chunkSizeWarningLimit: 900,
+    rollupOptions: { output: { manualChunks: (id: string) => (id.includes('maplibre-gl') ? 'maplibre' : undefined) } },
+  },
   test: { environment: 'node', include: ['src/**/*.test.ts', 'scripts/**/*.test.ts'] },
 });

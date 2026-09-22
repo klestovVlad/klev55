@@ -85,3 +85,6 @@ export function bySpeciesPriority<T extends { id: string; names: { ru: string } 
   if (ia !== -1 || ib !== -1) return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
   return a.names.ru.localeCompare(b.names.ru, 'ru');
 }
+
+/** Bait-sized species: shown in the reference list, hidden from target pickers. */
+export const BAIT_SPECIES = new Set(['leucaspius-delineatus', 'phoxinus-phoxinus', 'gobio-gobio', 'alburnus-alburnus']);

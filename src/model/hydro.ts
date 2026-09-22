@@ -1,5 +1,10 @@
 /** Build a HydroSnapshot for a spot from gauges.json (ice estimate + stale gauges) and zones.geojson. */
-import * as turf from '@turf/turf';
+import distance from '@turf/distance';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import polygonToLine from '@turf/polygon-to-line';
+import nearestPointOnLine from '@turf/nearest-point-on-line';
+import flatten from '@turf/flatten';
+import { point } from '@turf/helpers';
 import type { Feature, FeatureCollection, Polygon, MultiPolygon } from 'geojson';
 import type { Spot, Gauge, ZoneProps } from '@/data/types';
 import type { IceEstimate } from '@/data/load';
@@ -17,16 +22,16 @@ export function activeZones(zones: FeatureCollection | undefined, date: Date): F
 export function zoneNear(spot: Spot, zones: FeatureCollection | undefined, date: Date): HydroSnapshot['zone'] {
   const active = activeZones(zones, date);
   if (!active.length) return null;
-  const pt = turf.point(spot.coords);
+  const pt = point(spot.coords);
   let best: HydroSnapshot['zone'] = null;
   for (const z of active) {
-    const inside = turf.booleanPointInPolygon(pt, z);
+    const inside = booleanPointInPolygon(pt, z);
     let dist = 0;
     if (!inside) {
-      const line = turf.polygonToLine(z as any);
+      const line = polygonToLine(z as any);
       const feats = line.type === 'FeatureCollection' ? line.features : [line];
       dist = Infinity;
-      for (const l of feats) for (const one of turf.flatten(l as any).features) dist = Math.min(dist, turf.nearestPointOnLine(one as any, pt, { units: 'meters' }).properties.dist ?? Infinity);
+      for (const l of feats) for (const one of flatten(l as any).features) dist = Math.min(dist, nearestPointOnLine(one as any, pt, { units: 'meters' }).properties.dist ?? Infinity);
     }
     if (!best || dist < best.distance_m) best = { name: z.properties.name, inside, distance_m: Math.round(dist) };
   }
@@ -51,7 +56,7 @@ export function hydroFor(spot: Spot, gauges: Gauge[] | undefined, ice: IceEstima
   let gaugeKm: number | null = null;
   if (gauges?.length && !lake) {
     for (const g of gauges) {
-      const d = turf.distance(spot.coords, g.coords, { units: 'kilometers' });
+      const d = distance(spot.coords, g.coords, { units: 'kilometers' });
       if (gaugeKm == null || d < gaugeKm) {
         gaugeKm = d;
         gauge = g;

@@ -2,7 +2,7 @@
 .dlg {
   position: fixed; z-index: 51; left: 50%; transform: translateX(-50%); bottom: 0; width: 100%; max-width: 640px; max-height: 88vh;
   display: flex; flex-direction: column; background: var(--surface); color: var(--ink);
-  border-radius: var(--r-sheet) var(--r-sheet) 0 0; box-shadow: var(--shadow); outline: none;
+  border-radius: var(--r-sheet) var(--r-sheet) 0 0; box-shadow: var(--shadow); border: 1px solid var(--line); outline: none;
 }
 .dlg__head { display: flex; align-items: center; justify-content: space-between; padding: 14px var(--pad) 8px; }
 .dlg__head h2 { font-size: var(--t-h2); }

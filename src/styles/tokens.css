@@ -14,8 +14,9 @@
   --line: #d7dee2;
   --wash: #e6ecef;
   --wash-strong: #d0dae0;
-  --shadow: 0 -2px 24px rgba(20, 35, 43, 0.14);
-  --shadow-pop: 0 6px 24px rgba(20, 35, 43, 0.18);
+  /* Two elevations only: --shadow for the sheet and dialogs, --shadow-pop for popovers and map popups. Controls use borders. */
+  --shadow: 0 -4px 24px rgba(20, 35, 43, 0.12);
+  --shadow-pop: 0 4px 16px rgba(20, 35, 43, 0.16);
 
   /* chance scale: grey-blue → river → reed → amber */
   --chance-0: #a9b4ba;

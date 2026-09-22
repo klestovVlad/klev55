@@ -120,11 +120,13 @@ export function MapView() {
   useEffect(() => {
     const m = mapRef.current;
     if (!m || !loaded) return;
+    // Overlays (water, zones, KZ mask) must stay under the spot dots and cluster bubbles whatever their load order.
+    const below = () => (m.getLayer('clusters') ? 'clusters' : undefined);
     const add = (id: string, data: any, layersDef: any[]) => {
       if (m.getSource(id)) (m.getSource(id) as maplibregl.GeoJSONSource).setData(data);
       else {
         m.addSource(id, { type: 'geojson', data });
-        for (const l of layersDef) if (!m.getLayer(l.id)) m.addLayer(l);
+        for (const l of layersDef) if (!m.getLayer(l.id)) m.addLayer(l, below());
       }
     };
     if (!m.getSource('esri')) {

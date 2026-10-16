@@ -1,6 +1,6 @@
 {
  "meta": {
-  "generated_at": "2026-10-15T07:28:08.938Z",
+  "generated_at": "2026-10-16T07:11:47.892Z",
   "sources": [
    "Open-Meteo archive + forecast (CC BY 4.0) — расчёт льда",
    "allrivers.info — последние опубликованные измерения гидропостов"
@@ -25,11 +25,11 @@
    "station": "krutinka",
    "kind": "lake",
    "state": "none",
-   "ice_on": null,
+   "ice_on": "2026-10-30",
    "thickness_cm": null,
    "fdd": 0,
    "days_since_ice_on": null,
-   "est_ice_off": null,
+   "est_ice_off": "2026-10-31",
    "note": "Льда нет: устойчивых морозов в этом сезоне ещё не было.",
    "provenance": "generated"
   },

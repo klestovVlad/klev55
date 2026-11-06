@@ -1,6 +1,6 @@
 {
  "meta": {
-  "generated_at": "2026-11-05T09:30:23.673Z",
+  "generated_at": "2026-11-06T09:26:32.992Z",
   "sources": [
    "Open-Meteo archive + forecast (CC BY 4.0) — расчёт льда",
    "allrivers.info — последние опубликованные измерения гидропостов"
@@ -25,7 +25,7 @@
    "station": "krutinka",
    "kind": "lake",
    "state": "none",
-   "ice_on": "2026-11-18",
+   "ice_on": "2026-11-20",
    "thickness_cm": null,
    "fdd": 0,
    "days_since_ice_on": null,
@@ -37,7 +37,7 @@
    "station": "cherlak",
    "kind": "river",
    "state": "none",
-   "ice_on": "2026-11-18",
+   "ice_on": null,
    "thickness_cm": null,
    "fdd": 0,
    "days_since_ice_on": null,

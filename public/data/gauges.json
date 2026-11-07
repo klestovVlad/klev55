@@ -1,6 +1,6 @@
 {
  "meta": {
-  "generated_at": "2026-11-06T09:26:32.992Z",
+  "generated_at": "2026-11-07T08:48:58.904Z",
   "sources": [
    "Open-Meteo archive + forecast (CC BY 4.0) — расчёт льда",
    "allrivers.info — последние опубликованные измерения гидропостов"
@@ -13,7 +13,7 @@
    "station": "omsk",
    "kind": "river",
    "state": "none",
-   "ice_on": null,
+   "ice_on": "2026-11-22",
    "thickness_cm": null,
    "fdd": 0,
    "days_since_ice_on": null,
@@ -25,7 +25,7 @@
    "station": "krutinka",
    "kind": "lake",
    "state": "none",
-   "ice_on": "2026-11-20",
+   "ice_on": "2026-11-21",
    "thickness_cm": null,
    "fdd": 0,
    "days_since_ice_on": null,

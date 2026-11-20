@@ -1,6 +1,6 @@
 {
  "meta": {
-  "generated_at": "2026-11-19T10:22:37.825Z",
+  "generated_at": "2026-11-20T10:03:02.698Z",
   "sources": [
    "Open-Meteo archive + forecast (CC BY 4.0) — расчёт льда",
    "allrivers.info — последние опубликованные измерения гидропостов"
@@ -13,7 +13,7 @@
    "station": "omsk",
    "kind": "river",
    "state": "none",
-   "ice_on": "2026-12-02",
+   "ice_on": "2026-12-01",
    "thickness_cm": null,
    "fdd": 0,
    "days_since_ice_on": null,
@@ -37,11 +37,11 @@
    "station": "cherlak",
    "kind": "river",
    "state": "none",
-   "ice_on": "2026-12-02",
+   "ice_on": "2026-11-21",
    "thickness_cm": null,
    "fdd": 0,
    "days_since_ice_on": null,
-   "est_ice_off": null,
+   "est_ice_off": "2026-11-22",
    "note": "Льда нет: устойчивых морозов в этом сезоне ещё не было.",
    "provenance": "generated"
   }

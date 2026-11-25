@@ -1,6 +1,6 @@
 {
  "meta": {
-  "generated_at": "2026-11-23T10:48:09.301Z",
+  "generated_at": "2026-11-25T11:19:15.665Z",
   "sources": [
    "Open-Meteo archive + forecast (CC BY 4.0) — расчёт льда",
    "allrivers.info — последние опубликованные измерения гидропостов"
@@ -27,8 +27,8 @@
    "state": "forming",
    "ice_on": "2026-11-21",
    "thickness_cm": 5,
-   "fdd": 5,
-   "days_since_ice_on": 2,
+   "fdd": 6,
+   "days_since_ice_on": 4,
    "est_ice_off": null,
    "note": "Ориентировочно ~5 см по сумме морозов с 2026-11-21. Это расчёт, не измерение: у берега, на течении и у родников лёд тоньше.",
    "provenance": "generated"
@@ -57,11 +57,11 @@
    ],
    "source": "allrivers.info (Центр регистра и кадастра)",
    "source_url": "https://allrivers.info/gauge/irtysh-omsk",
-   "level_cm": 211,
-   "level_trend_cm_24h": 0,
+   "level_cm": null,
+   "level_trend_cm_24h": null,
    "water_temp_c": null,
    "ice": null,
-   "measured_at": "2024-05-13T00:00:00+06:00",
+   "measured_at": null,
    "history": [],
    "provenance": "measured"
   },
@@ -75,11 +75,11 @@
    ],
    "source": "allrivers.info (Центр регистра и кадастра)",
    "source_url": "https://allrivers.info/gauge/irtyish-rp-cherlak",
-   "level_cm": 538,
-   "level_trend_cm_24h": 0,
+   "level_cm": null,
+   "level_trend_cm_24h": null,
    "water_temp_c": null,
    "ice": null,
-   "measured_at": "2024-05-13T00:00:00+06:00",
+   "measured_at": null,
    "history": [],
    "provenance": "measured"
   },
@@ -93,11 +93,11 @@
    ],
    "source": "allrivers.info (Центр регистра и кадастра)",
    "source_url": "https://allrivers.info/gauge/irtyish-tara",
-   "level_cm": 496,
-   "level_trend_cm_24h": 0,
+   "level_cm": null,
+   "level_trend_cm_24h": null,
    "water_temp_c": null,
    "ice": null,
-   "measured_at": "2024-05-13T00:00:00+06:00",
+   "measured_at": null,
    "history": [],
    "provenance": "measured"
   }

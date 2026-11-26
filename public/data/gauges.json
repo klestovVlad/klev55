@@ -1,6 +1,6 @@
 {
  "meta": {
-  "generated_at": "2026-11-25T11:19:15.665Z",
+  "generated_at": "2026-11-26T10:55:49.883Z",
   "sources": [
    "Open-Meteo archive + forecast (CC BY 4.0) — расчёт льда",
    "allrivers.info — последние опубликованные измерения гидропостов"
@@ -28,7 +28,7 @@
    "ice_on": "2026-11-21",
    "thickness_cm": 5,
    "fdd": 6,
-   "days_since_ice_on": 4,
+   "days_since_ice_on": 5,
    "est_ice_off": null,
    "note": "Ориентировочно ~5 см по сумме морозов с 2026-11-21. Это расчёт, не измерение: у берега, на течении и у родников лёд тоньше.",
    "provenance": "generated"
